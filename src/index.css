@@ -374,3 +374,18 @@ body {
 .page-container-initial {
   opacity: 1;
 }
+
+/* ═══════════════════════════════════════════════════
+   SplineSafe — Fallback quando WebGL não está disponível
+   ═══════════════════════════════════════════════════ */
+.spline-fallback {
+  min-height: 400px;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+}
+
+/* ═══════════════════════════════════════════════════
+   ProjectShowcase — Overlay de vídeo flutuante
+   ═══════════════════════════════════════════════════ */
+.showcase-overlay-perf {
+  will-change: transform, opacity;
+}

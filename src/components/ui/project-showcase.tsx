@@ -241,8 +241,8 @@ export function ProjectShowcase() {
             overflow-hidden rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] 
             border border-white/20
             opacity-0 scale-90
+            showcase-overlay-perf
           `}
-          style={{ willChange: "transform, opacity" }}
         >
           <div className="relative w-full h-full bg-stone-950 rounded-2xl overflow-hidden antigravity-glass">
             <video

@@ -53,11 +53,7 @@ const SplineSafe: React.FC<SplineSafeProps> = ({ scene, className, onLoad }) => 
 
   const fallback = (
     <div 
-      className={`flex items-center justify-center bg-transparent ${className}`}
-      style={{ 
-        minHeight: '400px',
-        background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%)'
-      }}
+      className={`spline-fallback flex items-center justify-center bg-transparent ${className}`}
     >
       <div className="text-center p-8 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-violet-500/10 flex items-center justify-center">
