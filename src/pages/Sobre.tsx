@@ -16,7 +16,7 @@ export default function Sobre() {
   const bento3Ref = useRef<HTMLDivElement>(null);
   const bento4Ref = useRef<HTMLDivElement>(null);
 
-  useTilt(profileRef, 10);
+  useTilt(profileRef, 15);
   useTilt(bento1Ref, 15);
   useTilt(bento2Ref, 15);
   useTilt(bento3Ref, 15);
@@ -60,7 +60,11 @@ export default function Sobre() {
               ref={profileRef}
               className="aspect-[4/5] bg-surface-container-highest rounded-2xl parallax-shadow overflow-hidden transform-style-3d"
             >
-              <img className="w-full h-full object-cover tilt-child tz-20" alt="Mariana Bermudes" src={marianaProfile}/>
+              <img 
+                className="w-full h-full object-cover scale-110 tilt-child tz-30" 
+                alt="Mariana Bermudes" 
+                src={marianaProfile}
+              />
             </div>
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-tertiary-container rounded-xl flex items-center justify-center p-4 text-center shadow-lg z-20">
               <p className="text-on-tertiary-container font-headline italic text-sm font-bold">Cuidado 360º para sua saúde</p>

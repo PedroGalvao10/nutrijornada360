@@ -25,6 +25,10 @@ export function useTilt(ref: RefObject<HTMLElement | null>, intensity: number = 
       const tiltX = (py - 0.5) * intensity;
       const tiltY = (px - 0.5) * -intensity;
       
+      // Cálculo das sombras sincronizadas (oposto à inclinação)
+      const shadowX = tiltY * 1.2;
+      const shadowY = -tiltX * 1.2;
+
       gsap.to(el, {
         rotateX: tiltX,
         rotateY: tiltY,
@@ -32,6 +36,12 @@ export function useTilt(ref: RefObject<HTMLElement | null>, intensity: number = 
         ease: 'power2.out',
         overwrite: 'auto'
       });
+
+      // Atualiza variáveis de sombra para elementos com .parallax-shadow
+      if (el.classList.contains('parallax-shadow')) {
+        el.style.setProperty('--shadow-x', `${shadowX.toFixed(2)}px`);
+        el.style.setProperty('--shadow-y', `${(10 + shadowY).toFixed(2)}px`);
+      }
     };
 
     const onMouseLeave = () => {
@@ -42,6 +52,12 @@ export function useTilt(ref: RefObject<HTMLElement | null>, intensity: number = 
         ease: 'power2.out',
         overwrite: 'auto'
       });
+
+      // Resetar sombras
+      if (el.classList.contains('parallax-shadow')) {
+        el.style.setProperty('--shadow-x', '0px');
+        el.style.setProperty('--shadow-y', '10px');
+      }
     };
 
     el.addEventListener('mouseenter', onMouseEnter);

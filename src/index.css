@@ -195,6 +195,24 @@ body {
 .tz-30 { --tz: 30px; }
 .tz-40 { --tz: 40px; }
 
+/* ── Dynamic Parallax Shadows ── */
+.parallax-shadow {
+  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out !important;
+  box-shadow: 
+    calc(var(--shadow-x, 0) * 1) 
+    calc(var(--shadow-y, 10px) * 1) 
+    25px 
+    rgba(0, 0, 0, 0.08);
+}
+
+.dark .parallax-shadow {
+  box-shadow: 
+    calc(var(--shadow-x, 0) * 1) 
+    calc(var(--shadow-y, 10px) * 1) 
+    35px 
+    rgba(0, 0, 0, 0.4);
+}
+
 /* ── Custom Cursor (Seguro para acessibilidade) ── */
 .custom-cursor-active * { cursor: auto; }
 .custom-cursor-active a, .custom-cursor-active button { cursor: pointer; }

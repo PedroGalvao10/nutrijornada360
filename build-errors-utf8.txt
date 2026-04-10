@@ -1,0 +1,12 @@
+﻿
+> site_mariana_react@0.0.0 build
+> tsc -b && vite build
+
+src/components/Layout.tsx(3,1): error TS6133: 'useState' is declared but its value is never read.
+src/components/Layout.tsx(111,36): error TS2304: Cannot find name 'setIsLoginOpen'.
+src/components/Layout.tsx(116,27): error TS2304: Cannot find name 'isLoginOpen'.
+src/components/Layout.tsx(116,55): error TS2304: Cannot find name 'setIsLoginOpen'.
+src/components/ProtectedRoute.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/context/AuthContext.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/context/AuthContext.tsx(1,65): error TS1484: 'ReactNode' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/pages/admin/Dashboard.tsx(1,8): error TS6133: 'React' is declared but its value is never read.

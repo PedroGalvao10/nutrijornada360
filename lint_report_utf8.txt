@@ -1,0 +1,47 @@
+﻿
+> site_mariana_react@0.0.0 lint
+> eslint .
+
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\components\LoginModal.tsx
+  40:14  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\components\ui\RotatingPhrase.tsx
+  2:10  error  'gsap' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\context\AuthContext.tsx
+  11:14  error  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file                      react-refresh/only-export-components
+  54:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\hooks\useScrollReveal.ts
+  7:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\pages\ArtigoDetalhe.tsx
+  32:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\pages\ArtigoDetalhe.tsx:32:5
+  30 |     if (!slug) return;
+  31 |     
+> 32 |     setLoading(true);
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  33 |     fetch(`/api/articles/${slug}`)
+  34 |       .then(res => {
+  35 |         if (!res.ok) throw new Error("Artigo n├úo encontrado");  react-hooks/set-state-in-effect
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\pages\Artigos.tsx
+  17:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\soare\.gemini\antigravity\scratch\site_mariana_react\src\pages\admin\Dashboard.tsx
+  11:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Ô£û 11 problems (11 errors, 0 warnings)
+
