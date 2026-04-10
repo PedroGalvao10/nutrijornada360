@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HulyTextHighlight } from '../components/HulyTextHighlight';
-import Spline from '@splinetool/react-spline';
+import SplineSafe from '../components/ui/SplineSafe';
 import { TypewriterText } from '../components/TypewriterText';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { useTilt } from '../hooks/useTilt';
@@ -373,9 +373,9 @@ export default function Home() {
 
             {/* Elemento 3D (DNA) posicionado à direita */}
             <div className="w-full md:w-1/2 h-full flex items-center justify-center relative">
-              <Spline 
+              <SplineSafe 
                 scene="https://prod.spline.design/23mP4RppmrjsD4Yo/scene.splinecode" 
-                onLoad={(spline) => {
+                onLoad={(spline: any) => {
                   spline.setBackgroundColor('#faf6f0');
                   setSplineApp(spline);
                 }}
