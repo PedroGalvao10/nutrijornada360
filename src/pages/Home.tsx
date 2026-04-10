@@ -6,9 +6,11 @@ import { TypewriterText } from '../components/TypewriterText';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { useTilt } from '../hooks/useTilt';
 import { ScrollingText } from '../components/ui/ScrollingText';
-import { NutritionEcosystem } from '../components/sections/NutritionEcosystem';
+import { ProjectShowcase } from '../components/ui/project-showcase';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
+import Logistica from './Logistica';
+import { ContainerScroll } from '../components/ui/container-scroll-animation';
 
 export default function Home() {
   useDynamicShadow();
@@ -129,6 +131,7 @@ export default function Home() {
     
     // Queue os restantes em background após o load (lazy)
     const loadRest = () => {
+        if (!images || images.length === 0) return;
         setTimeout(() => loadImages(preloadTarget + 1, frameCount), 500);
     };
 
@@ -138,12 +141,39 @@ export default function Home() {
         window.addEventListener('load', loadRest, { once: true });
     }
 
-    // Canvas sizing handling - apenas 1 redimensionamento
+    // Desenha o frame usando preenchimento "cover" mantendo proporção
+    const drawFrame = (frameIndex: number) => {
+        const currentCanvas = document.getElementById('hero-canvas-desktop') as HTMLCanvasElement;
+        if (!currentCanvas || !context) return;
+        
+        const img = images[frameIndex];
+        if (!img || !img.complete || img.naturalWidth === 0) return;
+        
+        try {
+            const hRatio = currentCanvas.width / img.naturalWidth;
+            const vRatio = currentCanvas.height / img.naturalHeight;
+            const ratio = Math.max(hRatio, vRatio);
+            const centerShift_x = (currentCanvas.width - img.naturalWidth * ratio) / 2;
+            const centerShift_y = (currentCanvas.height - img.naturalHeight * ratio) / 2;
+            
+            context.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
+            context.drawImage(
+                img, 0, 0, img.naturalWidth, img.naturalHeight,
+                centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio
+            );
+        } catch (e) {
+            console.error("Erro ao desenhar no canvas:", e);
+        }
+    };
+
+    // Canvas sizing handling
     const setCanvasSize = () => {
-        const parent = canvas.parentElement;
+        const currentCanvas = document.getElementById('hero-canvas-desktop') as HTMLCanvasElement;
+        if (!currentCanvas) return;
+        const parent = currentCanvas.parentElement;
         if (parent) {
-            canvas.width = parent.clientWidth;
-            canvas.height = parent.clientHeight;
+            currentCanvas.width = parent.clientWidth;
+            currentCanvas.height = parent.clientHeight;
             if (images[state.frame] && images[state.frame].complete) {
                 drawFrame(state.frame);
             }
@@ -153,37 +183,24 @@ export default function Home() {
     let resizeTimer: number;
     const handleResize = () => {
         clearTimeout(resizeTimer);
-        // Debounce do resize para não forçar reflow seguidamente
         resizeTimer = window.setTimeout(setCanvasSize, 200);
     };
     window.addEventListener('resize', handleResize, { passive: true });
     setCanvasSize();
 
-    // Desenha o frame usando preenchimento "cover" mantendo proporção
-    const drawFrame = (frameIndex: number) => {
-        const img = images[frameIndex];
-        if (!img || !img.complete || img.naturalWidth === 0) return;
-        
-        const hRatio = canvas.width / img.naturalWidth;
-        const vRatio = canvas.height / img.naturalHeight;
-        const ratio = Math.max(hRatio, vRatio);
-        const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-        const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-        
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(
-            img, 0, 0, img.naturalWidth, img.naturalHeight,
-            centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio
-        );
-    };
-
     // Frame inicial
-    images[0].onload = () => drawFrame(0);
+    if (images[0]) {
+        images[0].onload = () => drawFrame(0);
+        if (images[0].complete) drawFrame(0);
+    }
 
     let animationFrameId: number;
 
     const onScroll = () => {
-        const rect = container.getBoundingClientRect();
+        const currentContainer = document.getElementById('video-hero-container');
+        if (!currentContainer) return;
+        
+        const rect = currentContainer.getBoundingClientRect();
         const containerTop = rect.top;
         const containerHeight = rect.height - window.innerHeight;
 
@@ -192,7 +209,7 @@ export default function Home() {
             progress = 0;
         } else if (containerTop < -containerHeight) {
             progress = 1;
-        } else {
+        } else if (containerHeight > 0) {
             progress = Math.abs(containerTop) / containerHeight;
         }
 
@@ -204,24 +221,20 @@ export default function Home() {
 
     const renderLoop = () => {
         if (state.targetFrame !== state.frame) {
-            // Suaviza a transição (interpolacao) para não engasgar em "mid-scroll"
             const difference = state.targetFrame - state.frame;
-            // Se tiver muito próximo, snap. Se não, interpola pra suavizar
-            if (Math.abs(difference) <= 0.5) {
+            if (Math.abs(difference) <= 0.1) {
                 state.frame = state.targetFrame;
             } else {
-                state.frame += difference * 0.25; // Velocidade de interpolação
+                state.frame += difference * 0.2; 
             }
-
             drawFrame(Math.round(state.frame));
         }
         animationFrameId = requestAnimationFrame(renderLoop);
     };
     
-    // Ouve scroll apenas para calcular current index (sem pintar o canvas aqui)
     window.addEventListener('scroll', onScroll, { passive: true });
     renderLoop();
-    onScroll(); // Calc initial scroll pos
+    onScroll(); 
 
     return () => {
         window.removeEventListener('scroll', onScroll);
@@ -375,7 +388,7 @@ export default function Home() {
 
       {/* Container com z-index maior para garantir que o título do ecossistema fique À FRENTE das mãos */}
       <div className="relative z-30">
-        <NutritionEcosystem />
+        <ProjectShowcase />
       </div>
 
       {/* Mission Section (Organic Bento) */}
@@ -497,6 +510,24 @@ export default function Home() {
             </StaggerItem>
           </StaggerReveal>
         </div>
+      </section>
+
+      {/* Agendamento / Logística Tablet Viewer */}
+      <section className="bg-background relative z-20 overflow-hidden">
+        <ContainerScroll
+          titleComponent={
+            <>
+              <h1 className="text-4xl md:text-5xl font-semibold text-on-background font-headline mb-4 md:mb-0">
+                Sua saúde a um clique. <br />
+                <span className="text-4xl md:text-6xl lg:text-[6rem] font-bold mt-1 leading-none text-primary inline-block">
+                  Agende sua consulta
+                </span>
+              </h1>
+            </>
+          }
+        >
+          <Logistica />
+        </ContainerScroll>
       </section>
 
       <ScrollingText 

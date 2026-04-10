@@ -47,7 +47,6 @@ export function Layout() {
             <Link to="/" className={getLinkClass('/')}>Página Inicial</Link>
             <Link to="/sobre" className={getLinkClass('/sobre')}>Sobre Mariana</Link>
             <Link to="/planos" className={getLinkClass('/planos')}>Planos e Consultoria</Link>
-            <Link to="/logistica" className={getLinkClass('/logistica')}>Agendamento</Link>
             <Link to="/artigos" className={getLinkClass('/artigos')}>Publicações</Link>
           </div>
           <div className="flex items-center gap-4">
@@ -77,10 +76,6 @@ export function Layout() {
         <Link to="/planos" className={getMobileTabClass('/planos')}>
           <span className="material-symbols-outlined text-xl">star</span>
           <span className="text-[10px] mt-0.5 font-semibold leading-none">Planos</span>
-        </Link>
-        <Link to="/logistica" className={getMobileTabClass('/logistica')}>
-          <span className="material-symbols-outlined text-xl">calendar_month</span>
-          <span className="text-[10px] mt-0.5 font-semibold leading-none">Agendar</span>
         </Link>
         <Link to="/artigos" className={getMobileTabClass('/artigos')}>
           <span className="material-symbols-outlined text-xl">menu_book</span>

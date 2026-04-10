@@ -1,3 +1,4 @@
+/* cspell:disable-file */
 import { useEffect, type RefObject } from 'react';
 import { gsap } from 'gsap';
 

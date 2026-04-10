@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { StaggerReveal, StaggerItem } from '../ui/StaggerReveal';
 
@@ -13,8 +13,6 @@ const ECOSYSTEM_NODES = [
 export function NutritionEcosystem() {
   const containerRef = useRef<HTMLDivElement>(null);
   const nodesRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [activeNode, setActiveNode] = useState<number | null>(null);
-
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -43,34 +41,28 @@ export function NutritionEcosystem() {
   }, []);
 
   const handleNodeEnter = (index: number) => {
-    // Se já houver um nó ativo diferente, fecha ele primeiro
-    if (activeNode !== null && activeNode !== index) {
-      handleNodeLeave(activeNode);
-    }
-    
-    setActiveNode(index);
     const node = nodesRef.current[index];
     if (!node) return;
     
     gsap.to(node, {
-      scale: 1.25, // Aumentei um pouco para destacar mais
+      scale: 1.25,
       backgroundColor: 'rgba(255, 255, 255, 0.95)',
       boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
+      zIndex: 50,
       duration: 0.4,
-      ease: 'back.out(1.7)'
+      ease: 'back.out(1.7)',
+      overwrite: 'auto'
     });
     
     gsap.to(`.node-desc-${index}`, {
       opacity: 1,
       y: 0,
-      duration: 0.3
+      duration: 0.3,
+      overwrite: 'auto'
     });
   };
 
   const handleNodeLeave = (index: number) => {
-    if (activeNode === index) {
-      setActiveNode(null);
-    }
     const node = nodesRef.current[index];
     if (!node) return;
 
@@ -78,13 +70,16 @@ export function NutritionEcosystem() {
       scale: 1,
       backgroundColor: 'rgba(255, 255, 255, 0.6)',
       boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
-      duration: 0.3
+      zIndex: 30,
+      duration: 0.3,
+      overwrite: 'auto'
     });
     
     gsap.to(`.node-desc-${index}`, {
       opacity: 0,
       y: 10,
-      duration: 0.2
+      duration: 0.2,
+      overwrite: 'auto'
     });
   };
 
@@ -108,11 +103,9 @@ export function NutritionEcosystem() {
         </StaggerReveal>
 
         <div ref={containerRef} className="relative h-[600px] md:h-[700px] flex items-center justify-center">
-          {/* Central Point (Diminuído conforme solicitado) */}
-          <div className="central-node z-20 w-16 h-16 md:w-20 md:h-20 bg-primary rounded-full flex flex-col items-center justify-center text-on-primary shadow-2xl border-4 border-white/20">
-            <span className="material-symbols-outlined text-xl md:text-2xl mb-0.5 text-on-primary">face_retouching_natural</span>
-            <span className="font-headline font-bold text-[10px] md:text-xs uppercase tracking-tighter text-on-primary">Você</span>
-            <div className="absolute inset-0 rounded-full border border-white/30 animate-ping opacity-20"></div>
+          {/* Central Point */}
+          <div className="central-node z-20 flex flex-col items-center justify-center pointer-events-none">
+            <span className="material-symbols-outlined text-[80px] md:text-[100px] text-primary drop-shadow-[0_10px_25px_rgba(74,124,89,0.3)]">psychology</span>
           </div>
 
           {/* Orbital Nodes */}
@@ -122,7 +115,7 @@ export function NutritionEcosystem() {
               ref={(el) => { if (el) nodesRef.current[i] = el; }}
               onMouseEnter={() => handleNodeEnter(i)}
               onMouseLeave={() => handleNodeLeave(i)}
-              className={`absolute pointer-events-auto cursor-pointer w-32 h-32 md:w-44 md:h-44 rounded-3xl antigravity-glass p-6 text-center flex flex-col items-center justify-center transition-all duration-300 group ecosystem-node ${node.className} ${activeNode === i ? 'z-50 shadow-2xl' : 'z-30'}`}
+              className={`absolute pointer-events-auto cursor-pointer w-32 h-32 md:w-44 md:h-44 rounded-3xl antigravity-glass p-6 text-center flex flex-col items-center justify-center transition-all duration-300 group ecosystem-node z-30 ${node.className}`}
               data-reveal
             >
               <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl ${node.color} flex items-center justify-center mb-3 shadow-inner`}>

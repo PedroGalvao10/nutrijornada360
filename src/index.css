@@ -139,6 +139,8 @@ body {
 }
 .huly-highlight-layer.active, .huly-cursor-layer.active { opacity: 1; }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
 .huly-highlight-bg {
   display: block;
   width: 100%;

@@ -13,6 +13,11 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Garante que o overlay esteja visível no início da animação
+      if (overlayRef.current) {
+        overlayRef.current.style.display = 'block';
+      }
+
       // Animação de entrada da nova página
       gsap.fromTo(containerRef.current,
         { opacity: 0, y: 20, scale: 0.98 },
@@ -20,16 +25,25 @@ export default function PageTransition({ children }: PageTransitionProps) {
           opacity: 1, 
           y: 0, 
           scale: 1, 
-          duration: 0.8, 
+          duration: 0.6, 
           ease: 'power3.out',
-          delay: 0.2
+          delay: 0.1
         }
       );
 
-      // Animação do overlay (opcional para efeito premium)
+      // Animação do overlay
       gsap.fromTo(overlayRef.current,
-        { scaleY: 1 },
-        { scaleY: 0, duration: 0.8, ease: 'expo.inOut', transformOrigin: 'top' }
+        { scaleY: 1, opacity: 1 },
+        { 
+          scaleY: 0, 
+          opacity: 0,
+          duration: 0.5, 
+          ease: 'expo.inOut', 
+          transformOrigin: 'top',
+          onComplete: () => {
+            if (overlayRef.current) overlayRef.current.style.display = 'none';
+          }
+        }
       );
     });
 

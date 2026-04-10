@@ -1,3 +1,4 @@
+/* cspell:disable-file */
 import { useRef } from 'react';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { HulyTextHighlight } from '../components/HulyTextHighlight';
