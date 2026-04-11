@@ -1,29 +1,24 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense } from 'react';
 import Spline from '@splinetool/react-spline';
 
-function isWebGLAvailable() {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch (e) {
-    return false;
-  }
+interface SplineApp {
+  setBackgroundColor?: (color: string) => void;
+  play?: () => void;
+  stop?: () => void;
 }
 
 interface SplineSafeProps {
   scene: string;
   className?: string;
-  onLoad?: (spline: any) => void;
+  onLoad?: (spline: SplineApp) => void;
 }
 
+// Fallback exibido apenas se o Spline lançar um erro real durante a renderização
 class SplineErrorBoundary extends React.Component<
-  { children: React.ReactNode; fallback: React.ReactNode },
+  SplineSafeProps,
   { hasError: boolean }
 > {
-  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+  constructor(props: SplineSafeProps) {
     super(props);
     this.state = { hasError: false };
   }
@@ -32,58 +27,29 @@ class SplineErrorBoundary extends React.Component<
     return { hasError: true };
   }
 
-  componentDidCatch(error: any) {
-    console.warn('Spline WebGL Error captured by SplineSafe:', error);
+  componentDidCatch(error: Error | unknown) {
+    console.warn('[SplineSafe] Erro capturado — Spline oculto silenciosamente:', error instanceof Error ? error.message : error);
   }
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback;
+      // Retorna div com mesmas dimensões para não quebrar o layout
+      return <div className={this.props.className} aria-hidden="true" />;
     }
-    return this.props.children;
+
+    const { scene, className, onLoad } = this.props;
+    return (
+      // className vai direto para o Spline, que aplica no seu wrapper interno (canvas container)
+      <Spline scene={scene} className={className} onLoad={onLoad} />
+    );
   }
 }
 
-const SplineSafe: React.FC<SplineSafeProps> = ({ scene, className, onLoad }) => {
-  const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    setWebglSupported(isWebGLAvailable());
-  }, []);
-
-  const fallback = (
-    <div 
-      className={`spline-fallback flex items-center justify-center bg-transparent ${className}`}
-    >
-      <div className="text-center p-8 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-violet-500/10 flex items-center justify-center">
-          <svg className="w-8 h-8 text-violet-400/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-          </svg>
-        </div>
-        <p className="text-sm text-white/40 font-light max-w-[200px]">
-          O conteúdo 3D está desativado no seu navegador para poupar recursos.
-        </p>
-      </div>
-    </div>
-  );
-
-  if (webglSupported === false) {
-    return fallback;
-  }
-
-  return (
-    <SplineErrorBoundary fallback={fallback}>
-      <Suspense fallback={<div className={className} />}>
-        <div className={className}>
-          <Spline 
-            scene={scene} 
-            onLoad={onLoad}
-          />
-        </div>
-      </Suspense>
-    </SplineErrorBoundary>
-  );
-};
+// Componente público — transparente para quem usa, idêntico ao Spline original
+const SplineSafe: React.FC<SplineSafeProps> = (props) => (
+  <Suspense fallback={<div className={props.className} />}>
+    <SplineErrorBoundary {...props} />
+  </Suspense>
+);
 
 export default SplineSafe;

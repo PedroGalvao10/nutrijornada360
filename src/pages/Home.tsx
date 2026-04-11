@@ -1,32 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion, LayoutGroup } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { HulyTextHighlight } from '../components/HulyTextHighlight';
 import SplineSafe from '../components/ui/SplineSafe';
 import { TypewriterText } from '../components/TypewriterText';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { useTilt } from '../hooks/useTilt';
-import { ScrollingText } from '../components/ui/ScrollingText';
 import { ProjectShowcase } from '../components/ui/project-showcase';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
 import Logistica from './Logistica';
 import { ContainerScroll } from '../components/ui/container-scroll-animation';
+import { TextRotate } from '../components/ui/TextRotate';
 
 export default function Home() {
   useDynamicShadow();
 
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const splineAreaRef = useRef<HTMLDivElement>(null);
+  const plansVideoRef = useRef<HTMLVideoElement>(null);
   const [splineApp, setSplineApp] = useState<{ play?: () => void, stop?: () => void } | null>(null);
 
   // Refs para 3D Tilt - Missão
   const card1Ref = useRef<HTMLDivElement>(null);
   const card2Ref = useRef<HTMLDivElement>(null);
   const card3Ref = useRef<HTMLDivElement>(null);
-  
-  // Refs para 3D Tilt - Dicas
-  const dica1Ref = useRef<HTMLDivElement>(null);
-  const dica2Ref = useRef<HTMLDivElement>(null);
   
   // Refs para 3D Tilt - Planos
   const plano1Ref = useRef<HTMLDivElement>(null);
@@ -36,8 +34,6 @@ export default function Home() {
   useTilt(card1Ref, 15);
   useTilt(card2Ref, 15);
   useTilt(card3Ref, 15);
-  useTilt(dica1Ref, 15);
-  useTilt(dica2Ref, 15);
   useTilt(plano1Ref, 10);
   useTilt(plano2Ref, 10);
   useTilt(plano3Ref, 10);
@@ -74,21 +70,27 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
+  // Performance: Pause/Play plans video when out of viewport
   useEffect(() => {
-    if (!splineApp || !splineAreaRef.current) return;
+    if (!plansVideoRef.current) return;
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          if (typeof splineApp.play === 'function') splineApp.play();
+          plansVideoRef.current?.play().catch(() => {});
         } else {
-          if (typeof splineApp.stop === 'function') splineApp.stop();
+          plansVideoRef.current?.pause();
         }
       });
-    }, { threshold: 0, rootMargin: '100px' });
+    }, { threshold: 0 });
 
-    observer.observe(splineAreaRef.current);
+    observer.observe(plansVideoRef.current);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // O react-spline gerencia a interrupção da renderização nativamente 
+    // quando fora da viewport. Remover o observer manual previne travamentos ou a tela preta com a engine do Spline.
   }, [splineApp]);
 
   useEffect(() => {
@@ -129,10 +131,25 @@ export default function Home() {
     // Inicia carregamento imediato dos primeiros frames
     loadImages(1, preloadTarget);
     
-    // Queue os restantes em background após o load (lazy)
+    // Queue os restantes em background de forma fracionada (chunks) para não travar a Main Thread
     const loadRest = () => {
         if (!images || images.length === 0) return;
-        setTimeout(() => loadImages(preloadTarget + 1, frameCount), 500);
+        
+        const chunkSize = 10;
+        let currentStart = preloadTarget + 1;
+
+        const loadNextChunk = () => {
+            if (currentStart > frameCount) return; // Terminou
+            
+            const currentEnd = Math.min(currentStart + chunkSize - 1, frameCount);
+            loadImages(currentStart, currentEnd);
+            currentStart += chunkSize;
+            
+            // Pausa de 150ms entre cada lote para dar respiro à CPU (evita o site travar)
+            setTimeout(loadNextChunk, 150);
+        };
+        
+        setTimeout(loadNextChunk, 500); 
     };
 
     if (document.readyState === 'complete') {
@@ -196,6 +213,22 @@ export default function Home() {
 
     let animationFrameId: number;
 
+    const renderLoop = () => {
+        if (state.targetFrame !== Math.round(state.frame)) {
+            const difference = state.targetFrame - state.frame;
+            if (Math.abs(difference) <= 0.1) {
+                state.frame = state.targetFrame;
+            } else {
+                state.frame += difference * 0.2; 
+            }
+            drawFrame(Math.round(state.frame));
+            animationFrameId = requestAnimationFrame(renderLoop);
+        } else {
+            animationFrameId = 0; // O loop para aqui para poupar GPU/CPU.
+        }
+    };
+    
+    // Atualizado onScroll para reiniciar o renderLoop
     const onScroll = () => {
         const currentContainer = document.getElementById('video-hero-container');
         if (!currentContainer) return;
@@ -213,23 +246,18 @@ export default function Home() {
             progress = Math.abs(containerTop) / containerHeight;
         }
 
-        state.targetFrame = Math.min(
+        const newTarget = Math.min(
             frameCount - 1,
             Math.floor(progress * (frameCount - 1))
         );
-    };
 
-    const renderLoop = () => {
-        if (state.targetFrame !== state.frame) {
-            const difference = state.targetFrame - state.frame;
-            if (Math.abs(difference) <= 0.1) {
-                state.frame = state.targetFrame;
-            } else {
-                state.frame += difference * 0.2; 
+        if (newTarget !== state.targetFrame) {
+            state.targetFrame = newTarget;
+            // Se o loop estiver parado, reative-o
+            if (!animationFrameId) {
+                renderLoop();
             }
-            drawFrame(Math.round(state.frame));
         }
-        animationFrameId = requestAnimationFrame(renderLoop);
     };
     
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -295,9 +323,29 @@ export default function Home() {
               </StaggerItem>
 
               <StaggerItem>
-                <h1 className="text-4xl sm:text-5xl md:text-7xl font-headline text-on-background leading-tight font-semibold tracking-tight">
-                  Faça as pazes <br /> <span className="text-primary italic font-medium">com a comida.</span>
-                </h1>
+                <LayoutGroup>
+                  <h1 className="text-4xl sm:text-5xl md:text-7xl font-headline text-on-background leading-tight font-semibold tracking-tight flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <motion.span layout className="flex-shrink-0">Faça as pazes</motion.span>
+                    <TextRotate
+                      texts={[
+                        "com a comida",
+                        "com seu corpo",
+                        "com o prazer de comer",
+                        "com a sua saúde",
+                        "com você mesma",
+                        "com o equilíbrio",
+                      ]}
+                      mainClassName="text-secondary-container bg-primary px-3 py-1 md:px-4 md:py-2 rounded-xl shadow-lg inline-flex items-center"
+                      staggerFrom="last"
+                      initial={{ y: "100%", opacity: 0, filter: "blur(10px)" }}
+                      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                      exit={{ y: "-100%", opacity: 0, filter: "blur(10px)" }}
+                      staggerDuration={0.025}
+                      rotationInterval={2500}
+                      transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    />
+                  </h1>
+                </LayoutGroup>
               </StaggerItem>
 
               <StaggerItem>
@@ -375,8 +423,10 @@ export default function Home() {
             <div className="w-full md:w-1/2 h-full flex items-center justify-center relative">
               <SplineSafe 
                 scene="https://prod.spline.design/23mP4RppmrjsD4Yo/scene.splinecode" 
-                onLoad={(spline: any) => {
-                  spline.setBackgroundColor('#faf6f0');
+                onLoad={(spline) => {
+                  if (spline && typeof spline.setBackgroundColor === 'function') {
+                    spline.setBackgroundColor('#faf6f0');
+                  }
                   setSplineApp(spline);
                 }}
                 className="w-full h-full scale-[1.1] md:scale-125 lg:scale-[1.4] origin-center"
@@ -391,9 +441,9 @@ export default function Home() {
         <ProjectShowcase />
       </div>
 
-      {/* Mission Section (Organic Bento) */}
+      {/* Mission Section (Ruixen Style) */}
       <section className="py-16 md:py-24 bg-surface-variant relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <StaggerReveal className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
             <StaggerItem>
               <span className="text-secondary font-label font-bold tracking-widest uppercase text-sm mb-4 block">Nossa Missão</span>
@@ -408,109 +458,65 @@ export default function Home() {
             </StaggerItem>
           </StaggerReveal>
 
-          <StaggerReveal 
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"
-            staggerInterval={0.2}
-          >
-            <StaggerItem>
-              <div 
-                ref={card1Ref}
-                className="bg-surface-container-low p-8 rounded-3xl border border-outline/10 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d h-full"
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary tilt-child tz-30">
-                  <span className="material-symbols-outlined text-3xl">favorite</span>
+          {/* Grid 2-col no estilo Ruixen */}
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Bloco Esquerdo — Saúde Integral + Respeito Mental */}
+            <StaggerReveal className="flex flex-col border border-outline-variant/30 p-4 sm:p-6 lg:p-8 gap-8">
+              <StaggerItem>
+                <div 
+                  ref={card1Ref}
+                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 text-primary tilt-child tz-30">
+                    <span className="material-symbols-outlined text-3xl">favorite</span>
+                  </div>
+                  <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Saúde Integral</h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Foco no equilíbrio metabólico e hormonal, tratando o corpo como um sistema conectado.</p>
                 </div>
-                <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Saúde Integral</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Foco no equilíbrio metabólico e hormonal, tratando o corpo como um sistema conectado.</p>
-              </div>
-            </StaggerItem>
+              </StaggerItem>
+              <StaggerItem>
+                <div 
+                  ref={card2Ref}
+                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d"
+                >
+                  <div className="w-12 h-12 bg-secondary/10 rounded-2xl flex items-center justify-center mb-5 text-secondary tilt-child tz-30">
+                    <span className="material-symbols-outlined text-3xl">psychology</span>
+                  </div>
+                  <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Respeito Mental</h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Sua relação com a comida importa tanto quanto os nutrientes que você consome.</p>
+                </div>
+              </StaggerItem>
+            </StaggerReveal>
 
-            <StaggerItem>
-              <div 
-                ref={card2Ref}
-                className="bg-surface-container-low p-8 rounded-3xl border border-outline/10 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d h-full"
-              >
-                <div className="w-12 h-12 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6 text-secondary tilt-child tz-30">
-                  <span className="material-symbols-outlined text-3xl">psychology</span>
+            {/* Bloco Direito — Nutrição Orgânica + Texto */}
+            <StaggerReveal className="flex flex-col justify-center border border-outline-variant/30 p-4 sm:p-6 lg:p-8" delay={0.2}>
+              <StaggerItem>
+                <div 
+                  ref={card3Ref}
+                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d mb-6"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 text-primary tilt-child tz-30">
+                    <span className="material-symbols-outlined text-3xl">eco</span>
+                  </div>
+                  <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Nutrição Orgânica</h3>
+                  <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Preferência por alimentos reais, minimamente processados para máxima vitalidade.</p>
                 </div>
-                <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Respeito Mental</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Sua relação com a comida importa tanto quanto os nutrientes que você consome.</p>
-              </div>
-            </StaggerItem>
-
-            <StaggerItem>
-              <div 
-                ref={card3Ref}
-                className="bg-surface-container-low p-8 rounded-3xl border border-outline/10 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d h-full"
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary tilt-child tz-30">
-                  <span className="material-symbols-outlined text-3xl">eco</span>
-                </div>
-                <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Nutrição Orgânica</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Preferência por alimentos reais, minimamente processados para máxima vitalidade.</p>
-              </div>
-            </StaggerItem>
-          </StaggerReveal>
+              </StaggerItem>
+              <StaggerItem>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-on-surface leading-relaxed font-headline">
+                  Nutrição com Propósito{' '}
+                  <span className="text-primary font-semibold">NutriJornada</span>{' '}
+                  <span className="text-on-surface-variant text-sm sm:text-base lg:text-lg font-body">
+                    Cada plano é desenhado para integrar ciência, comportamento e rotina — porque saúde de verdade é sustentável.
+                  </span>
+                </h3>
+              </StaggerItem>
+            </StaggerReveal>
+          </div>
         </div>
       </section>
 
-      {/* Practical Tips */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-6">
-          <StaggerReveal className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-4 md:gap-6">
-            <StaggerItem className="max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-headline text-on-background mb-3 md:mb-4 font-semibold">Dicas para o Dia a Dia</h2>
-            </StaggerItem>
-            <StaggerItem className="max-w-2xl">
-              <p className="text-base md:text-lg text-on-surface-variant">Mudanças graduais no seu ambiente geram grandes transformações sustentáveis.</p>
-            </StaggerItem>
-            <StaggerItem>
-              <Link to="/artigos" className="bg-surface-variant text-on-surface px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:bg-outline/10 transition-colors text-sm md:text-base">
-                Explorar dicas <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </Link>
-            </StaggerItem>
-          </StaggerReveal>
 
-          <StaggerReveal 
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
-            staggerInterval={0.25}
-          >
-            <StaggerItem>
-              <div 
-                ref={dica1Ref}
-                className="group bg-surface-container-low rounded-[2rem] p-8 border border-outline/10 hover:shadow-2xl transition-all duration-500 transform-style-3d overflow-hidden h-full"
-              >
-                <div className="flex gap-6 items-start tilt-child tz-30">
-                  <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl font-variation-settings-fill">lunch_dining</span>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-on-surface mb-2 font-headline tilt-child tz-20">Lanches Estratégicos</h3>
-                    <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">O segredo para não chegar morto de fome no jantar é o lanche da tarde equilibrado.</p>
-                  </div>
-                </div>
-              </div>
-            </StaggerItem>
-
-            <StaggerItem>
-              <div 
-                ref={dica2Ref}
-                className="group bg-surface-container-low rounded-[2rem] p-8 border border-outline/10 hover:shadow-2xl transition-all duration-500 transform-style-3d overflow-hidden h-full"
-              >
-                <div className="flex gap-6 items-start tilt-child tz-30">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl font-variation-settings-fill">mindfulness</span>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-on-surface mb-2 font-headline tilt-child tz-20">Consciência no Prato</h3>
-                    <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Comer sem telas aumenta a percepção de saciedade e melhora a digestão.</p>
-                  </div>
-                </div>
-              </div>
-            </StaggerItem>
-          </StaggerReveal>
-        </div>
-      </section>
 
       {/* Agendamento / Logística Tablet Viewer */}
       <section className="bg-background relative z-20 overflow-hidden">
@@ -530,21 +536,25 @@ export default function Home() {
         </ContainerScroll>
       </section>
 
-      <ScrollingText 
-        text={["Liberdade Alimentar", "Consciência", "Equilíbrio", "Harmonia", "Vitalidade"]} 
-        reverse 
-      />
+
 
       {/* Plans Section (Seed Inspired) */}
       <section className="relative py-24 md:py-32 flex flex-col items-center justify-center overflow-hidden w-full bg-stone-900 border-none">
 
         {/* Video Background Layer */}
-        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-          <video autoPlay loop muted playsInline className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 brightness-75 saturate-[0.7]">
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-stone-900">
+          <video 
+            ref={plansVideoRef}
+            muted 
+            playsInline 
+            loop
+            preload="metadata"
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 brightness-75 saturate-[0.7] blur-[2px] scale-[1.02]"
+          >
             <source src="/bg-plans.mp4" type="video/mp4" />
           </video>
-          {/* Dark Overlay Parallax & Gradients */}
-          <div className="absolute inset-0 bg-stone-950/40 backdrop-blur-[2px]"></div>
+          {/* Overlay mantendo o aspecto escuro sem usar o pesadíssimo backdrop-blur */}
+          <div className="absolute inset-0 bg-stone-950/40"></div>
           <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-surface-variant to-transparent z-10 pointer-events-none"></div>
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none"></div>
         </div>
@@ -591,24 +601,27 @@ export default function Home() {
             </StaggerItem>
 
             <StaggerItem>
-              <div 
-                ref={plano2Ref}
-                className="parallax-shadow group bg-[#4a5f4a]/60 backdrop-blur-[32px] border border-[#748c74]/40 rounded-[2.25rem] p-8 md:p-10 hover:bg-[#4a5f4a]/80 hover:border-[#8aa88a]/50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
-              >
-                <div className="absolute top-0 right-0 p-8">
-                  <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse"></div>
+              {/* Wrapper com borda rainbow para destaque premium */}
+              <div className="relative group h-full rounded-[2.25rem] p-[2px] animate-rainbow bg-[length:200%]">
+                <div 
+                  ref={plano2Ref}
+                  className="parallax-shadow bg-[#4a5f4a]/60 backdrop-blur-[32px] border border-[#748c74]/40 rounded-[2.25rem] p-8 md:p-10 hover:bg-[#4a5f4a]/80 hover:border-[#8aa88a]/50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
+                >
+                  <div className="absolute top-0 right-0 p-8">
+                    <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse"></div>
+                  </div>
+                  <div className="w-14 h-14 rounded-full border border-white/30 bg-white/10 flex items-center justify-center mb-10 text-white group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
+                    <span className="material-symbols-outlined font-light text-[24px]">star</span>
+                  </div>
+                  <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Premium 360º</h3>
+                  <div className="flex-grow">
+                    <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com foco integrativo.</p>
+                  </div>
+                  <Link to="/planos" className="w-full bg-white text-[#384a38] rounded-full py-5 px-6 flex items-center justify-between font-semibold group-hover:shadow-[0_8px_32_rgba(255,255,255,0.2)] group-hover:scale-[1.02] transition-all duration-500 ease-out z-10 tilt-child tz-20">
+                    Assinar Agora
+                    <span className="material-symbols-outlined text-[18px] leading-none transform group-hover:translate-x-2 transition-transform duration-500 text-[#384a38] font-bold">arrow_forward</span>
+                  </Link>
                 </div>
-                <div className="w-14 h-14 rounded-full border border-white/30 bg-white/10 flex items-center justify-center mb-10 text-white group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
-                  <span className="material-symbols-outlined font-light text-[24px]">star</span>
-                </div>
-                <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Premium 360º</h3>
-                <div className="flex-grow">
-                  <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com foco integrativo.</p>
-                </div>
-                <Link to="/planos" className="w-full bg-white text-[#384a38] rounded-full py-5 px-6 flex items-center justify-between font-semibold group-hover:shadow-[0_8px_32_rgba(255,255,255,0.2)] group-hover:scale-[1.02] transition-all duration-500 ease-out z-10 tilt-child tz-20">
-                  Assinar Agora
-                  <span className="material-symbols-outlined text-[18px] leading-none transform group-hover:translate-x-2 transition-transform duration-500 text-[#384a38] font-bold">arrow_forward</span>
-                </Link>
               </div>
             </StaggerItem>
 

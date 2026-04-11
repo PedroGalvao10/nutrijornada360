@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContextCore';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleForm from '../../components/ArticleForm';
+import type { Article } from '../../types';
 
 export default function Dashboard() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('artigos');
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<any>(null);
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
 
   const fetchArticles = async () => {
     try {
@@ -41,7 +42,7 @@ export default function Dashboard() {
     setShowForm(true);
   };
 
-  const handleEditArticle = (art: any) => {
+  const handleEditArticle = (art: Article) => {
     setEditingArticle(art);
     setShowForm(true);
   };
@@ -51,7 +52,7 @@ export default function Dashboard() {
     fetchArticles();
   };
 
-  const handleDeleteArticle = async (art: any) => {
+  const handleDeleteArticle = async (art: Article) => {
     if (!window.confirm(`Tem certeza que deseja excluir permanentemente o artigo "${art.title}"?`)) return;
 
     try {

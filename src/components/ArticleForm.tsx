@@ -1,31 +1,15 @@
 import { useState, useEffect } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import type { Article } from '../types';
 
-// TIPAGEM: Interface para os dados do formulário de artigo
-interface ArticleFormData {
-  title: string;
-  hat: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  meta_description: string;
-  cover_image_url: string;
-  image_alt: string;
-  published_at: string;
-  is_published: boolean;
-}
-
-
-// TIPAGEM: Interface para dados iniciais (edição de artigo existente)
-interface ArticleInitialData extends ArticleFormData {
-  id: number;
-}
+// TIPAGEM: Interface para os dados do formulário de artigo (sem ID e datas de sistema)
+type ArticleFormData = Omit<Article, 'id' | 'created_at' | 'updated_at' | 'reading_time'>;
 
 // TIPAGEM: Props do componente
 interface ArticleFormProps {
   onSaved: () => void;
   onCancel: () => void;
-  initialData?: ArticleInitialData | null;
+  initialData?: Article | null;
 }
 
 export default function ArticleForm({ onSaved, onCancel, initialData = null }: ArticleFormProps) {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContextCore';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginModalProps {
@@ -37,7 +37,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       } else {
         setError(data.error || 'Erro ao fazer login');
       }
-    } catch (err) {
+    } catch {
       setError('Problema de rede. Tente novamente.');
     } finally {
       setLoading(false);
@@ -57,8 +57,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">E-mail</label>
+            <label htmlFor="email" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">E-mail</label>
             <input 
+              id="email"
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -67,8 +68,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Senha</label>
+            <label htmlFor="password" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Senha</label>
             <input 
+              id="password"
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}

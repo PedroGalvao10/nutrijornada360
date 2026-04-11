@@ -389,3 +389,43 @@ body {
 .showcase-overlay-perf {
   will-change: transform, opacity;
 }
+
+/* ═══════════════════════════════════════════════════
+   Rainbow Border Animation
+   ═══════════════════════════════════════════════════ */
+:root {
+  --color-1: 142 45% 35%;   /* Primary green */
+  --color-2: 34 40% 40%;    /* Tertiary gold */
+  --color-3: 80 30% 45%;    /* Olive accent */
+  --color-4: 28 15% 40%;    /* Secondary warm */
+  --color-5: 160 35% 40%;   /* Teal accent */
+}
+
+@keyframes rainbow {
+  0% { background-position: 0%; }
+  100% { background-position: 200%; }
+}
+
+.animate-rainbow {
+  background-image: linear-gradient(
+    90deg,
+    hsl(var(--color-1)),
+    hsl(var(--color-5)),
+    hsl(var(--color-3)),
+    hsl(var(--color-4)),
+    hsl(var(--color-2))
+  );
+  background-size: 200%;
+  animation: rainbow 6s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   Pointer Highlight Utility
+   ═══════════════════════════════════════════════════ */
+.pointer-highlight-surface {
+  background: radial-gradient(
+    100px circle at var(--x, 0px) var(--y, 0px),
+    rgba(74, 124, 89, 0.2),
+    transparent 80%
+  );
+}

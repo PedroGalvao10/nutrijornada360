@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import Spline from '@splinetool/react-spline';
+import SplineSafe from '../components/ui/SplineSafe';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { TypewriterText } from '../components/TypewriterText';
 import { Link } from 'react-router-dom';
@@ -321,10 +321,12 @@ export default function Artigos() {
 
           {/* ── Background Spline Render ── */}
           <div className="absolute inset-0 z-0 transform-gpu overflow-hidden bg-black flex items-center justify-center">
-            <Spline 
+            <SplineSafe 
               scene="https://prod.spline.design/CHa5UVfCBrHzmeFt/scene.splinecode" 
               onLoad={(spline) => {
-                spline.setBackgroundColor('#000000');
+                if (spline && typeof spline.setBackgroundColor === 'function') {
+                  spline.setBackgroundColor('#000000');
+                }
                 setSplineApp(spline);
               }}
               className="w-[120%] h-[120%] scale-110 md:scale-[1.25] origin-center cursor-pointer"

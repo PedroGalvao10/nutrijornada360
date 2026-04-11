@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { AuthContext } from './AuthContextCore';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -35,7 +35,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
 
 export default AuthProvider;

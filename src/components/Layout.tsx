@@ -1,4 +1,4 @@
-
+/* cspell:disable-file */
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { LoginModal } from './LoginModal';
@@ -38,23 +38,23 @@ export function Layout() {
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-[#4a7c59] blur-[150px] animate-pulse" />
         <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-[#705c30] blur-[120px] animate-pulse-delayed" />
       </div>
-      <header className="bg-[#faf6f0] dark:bg-stone-950 shadow-[0_4px_20px_rgba(46,50,48,0.06)] sticky top-0 z-40">
-        <nav className="flex justify-between items-center w-full px-4 md:px-6 py-3 md:py-4 max-w-7xl mx-auto">
-          <Link to="/" className="text-lg md:text-xl font-bold italic text-[#4a7c59] dark:text-emerald-500 font-headline truncate mr-2">
+      <header className="fixed top-4 left-0 right-0 z-50 mx-auto w-[95%] max-w-6xl flex justify-center pointer-events-none">
+        <nav className="pointer-events-auto flex justify-between items-center w-full px-4 md:px-6 py-3 rounded-full backdrop-blur-xl bg-[#faf6f0]/80 dark:bg-stone-950/80 shadow-[0_8px_32px_rgba(46,50,48,0.08)] border border-[#4a7c59]/10 dark:border-emerald-500/10 transition-all duration-300">
+          <Link to="/" className="text-lg md:text-xl font-bold italic text-[#4a7c59] dark:text-emerald-500 font-headline truncate mr-4 lg:mr-8 hover:opacity-80 transition-opacity">
             NutriJornada 360º
           </Link>
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
             <Link to="/" className={getLinkClass('/')}>Página Inicial</Link>
             <Link to="/sobre" className={getLinkClass('/sobre')}>Sobre Mariana</Link>
             <Link to="/planos" className={getLinkClass('/planos')}>Planos e Consultoria</Link>
             <Link to="/artigos" className={getLinkClass('/artigos')}>Publicações</Link>
           </div>
-          <div className="flex items-center gap-4">
-            <button onClick={() => setIsLoginOpen(true)} className="text-sm font-bold text-[#705c30] hover:text-[#4a7c59] dark:text-amber-500 flex items-center gap-1 transition-colors">
+          <div className="flex items-center gap-3 lg:gap-4 ml-auto">
+            <button onClick={() => setIsLoginOpen(true)} className="text-sm font-bold text-[#705c30] hover:text-[#4a7c59] dark:text-amber-500 flex items-center gap-1 transition-colors bg-white/50 dark:bg-white/5 px-3 py-2 rounded-full">
               <span className="material-symbols-outlined text-base">login</span>
               <span className="hidden md:inline">Acesso</span>
             </button>
-            <a href="https://wa.me/5511956007142" target="_blank" rel="noopener noreferrer" className="bg-primary text-on-primary px-4 py-2 md:px-6 md:py-2.5 rounded-lg font-semibold text-sm md:text-base hover:opacity-80 transition-all duration-200 whitespace-nowrap">
+            <a href="https://wa.me/5511956007142" target="_blank" rel="noopener noreferrer" className="bg-[#4a7c59] text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base hover:bg-[#3d664a] hover:scale-105 transition-all duration-200 whitespace-nowrap shadow-md">
               Agendar Consulta
             </a>
           </div>

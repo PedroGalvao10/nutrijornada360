@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 
 export interface AuthContextType {
   isAdmin: boolean;
@@ -15,3 +15,5 @@ export const AuthContext = createContext<AuthContextType>({
   checkAuth: async () => {},
   logout: async () => {} 
 });
+
+export const useAuth = () => useContext(AuthContext);
