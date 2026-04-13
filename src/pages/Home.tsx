@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, LayoutGroup } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { HulyTextHighlight } from '../components/HulyTextHighlight';
 import SplineSafe from '../components/ui/SplineSafe';
@@ -12,6 +11,10 @@ import SEO from '../components/SEO';
 import Logistica from './Logistica';
 import { ContainerScroll } from '../components/ui/container-scroll-animation';
 import { TextRotate } from '../components/ui/TextRotate';
+import ArticlesSection from '../components/ArticlesSection';
+import { ScrollExpandMedia } from '../components/ui/ScrollExpandMedia';
+import { VerticalMarquee } from '../components/ui/VerticalMarquee';
+import { GlowWrapper } from '../components/ui/GlowWrapper';
 
 export default function Home() {
   useDynamicShadow();
@@ -20,6 +23,7 @@ export default function Home() {
   const splineAreaRef = useRef<HTMLDivElement>(null);
   const plansVideoRef = useRef<HTMLVideoElement>(null);
   const [splineApp, setSplineApp] = useState<{ play?: () => void, stop?: () => void } | null>(null);
+
 
   // Refs para 3D Tilt - Missão
   const card1Ref = useRef<HTMLDivElement>(null);
@@ -168,7 +172,7 @@ export default function Home() {
         
         try {
             const hRatio = currentCanvas.width / img.naturalWidth;
-            const vRatio = currentCanvas.height / img.naturalHeight;
+            const vRatio = currentCanvas.height / img.naturalWidth; // Usando horizontalRatio para "cover" proporcional
             const ratio = Math.max(hRatio, vRatio);
             const centerShift_x = (currentCanvas.width - img.naturalWidth * ratio) / 2;
             const centerShift_y = (currentCanvas.height - img.naturalHeight * ratio) / 2;
@@ -272,8 +276,15 @@ export default function Home() {
     };
   }, []);
 
-  return (
-    <main className="animate-fade-in-up font-body text-on-background bg-background selection:bg-primary-container selection:text-on-primary-container">
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const homeContent = (
+    <main className="font-body text-on-background bg-background selection:bg-primary-container selection:text-on-primary-container">
+      <ScrollExpandMedia onComplete={() => {
+        window.dispatchEvent(new CustomEvent('portal-complete'));
+      }} />
       <SEO 
         title="Início | Mariana Bermudes Nutrição"
         description="Nutrição de precisão e emagrecimento consciente com Mariana Bermudes. Transforme sua saúde com estratégias personalizadas."
@@ -285,6 +296,8 @@ export default function Home() {
           <div className="absolute inset-0 z-0 justify-end hidden md:flex">
             <div className="w-full h-full relative">
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent z-10"></div>
+              {/* Suavização superior para encontro com o Portal */}
+              <div className="absolute top-0 left-0 right-0 h-[10vh] bg-gradient-to-b from-background to-transparent z-10 pointer-events-none"></div>
               <div className="absolute bottom-0 left-0 right-0 h-[30vh] bg-gradient-to-t from-background to-transparent z-10 pointer-events-none"></div>
               <canvas
                 id="hero-canvas-desktop"
@@ -297,17 +310,20 @@ export default function Home() {
           <div className="absolute inset-0 z-0 flex md:hidden items-center justify-center">
             <div className="w-full h-full relative">
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 to-background/40 z-10"></div>
+              {/* Suavização superior Mobile */}
+              <div className="absolute top-0 left-0 right-0 h-[10vh] bg-gradient-to-b from-background via-background/40 to-transparent z-10 pointer-events-none"></div>
               <div className="absolute bottom-0 left-0 right-0 h-[20vh] bg-gradient-to-t from-background to-transparent z-10 pointer-events-none"></div>
               <video
                 ref={mobileVideoRef}
                 className="w-full h-full object-cover"
-                src="/hero-video-v2.mp4"
                 autoPlay
                 muted
                 loop
                 playsInline
                 preload="auto"
-              ></video>
+              >
+                <source src="/hero-video-v2.webm" type="video/webm" />
+              </video>
             </div>
           </div>
 
@@ -323,33 +339,31 @@ export default function Home() {
               </StaggerItem>
 
               <StaggerItem>
-                <LayoutGroup>
-                  <h1 className="text-4xl sm:text-5xl md:text-7xl font-headline text-on-background leading-tight font-semibold tracking-tight flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <motion.span layout className="flex-shrink-0">Faça as pazes</motion.span>
-                    <TextRotate
-                      texts={[
-                        "com a comida",
-                        "com seu corpo",
-                        "com o prazer de comer",
-                        "com a sua saúde",
-                        "com você mesma",
-                        "com o equilíbrio",
-                      ]}
-                      mainClassName="text-secondary-container bg-primary px-3 py-1 md:px-4 md:py-2 rounded-xl shadow-lg inline-flex items-center"
-                      staggerFrom="last"
-                      initial={{ y: "100%", opacity: 0, filter: "blur(10px)" }}
-                      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                      exit={{ y: "-100%", opacity: 0, filter: "blur(10px)" }}
-                      staggerDuration={0.025}
-                      rotationInterval={2500}
-                      transition={{ type: "spring", damping: 30, stiffness: 400 }}
-                    />
-                  </h1>
-                </LayoutGroup>
+                <h1 className="text-4xl sm:text-5xl md:text-7xl font-body text-on-background leading-[1.1] font-bold tracking-tight mb-4">
+                  <span className="block opacity-90">Faça as pazes</span>
+                  <TextRotate
+                    texts={[
+                      "com a comida",
+                      "com seu corpo",
+                      "com o prazer de comer",
+                      "com a sua saúde",
+                      "com você mesma",
+                      "com o equilíbrio",
+                    ]}
+                    mainClassName="text-primary font-headline"
+                    staggerFrom="last"
+                    initial={{ y: "20%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: "-20%", opacity: 0 }}
+                    staggerDuration={0.025}
+                    rotationInterval={3000}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  />
+                </h1>
               </StaggerItem>
 
               <StaggerItem>
-                <div className="text-base sm:text-lg md:text-xl text-on-surface-variant leading-relaxed opacity-90 drop-shadow-md md:drop-shadow-none max-w-lg mx-auto md:mx-0">
+                <div className="text-base sm:text-lg md:text-xl text-on-surface-variant leading-relaxed opacity-90 drop-shadow-md md:drop-shadow-none max-w-lg mx-auto md:mx-0 font-body">
                   <TypewriterText text="Um convite ao respeito profundo pelo próprio corpo e à nutrição que acolhe. Chega de restrições que ferem a sua essência." speed={35} delay={800} />
                 </div>
               </StaggerItem>
@@ -393,30 +407,24 @@ export default function Home() {
       {/* Reduzi o min-h e apliquei mt negativo para aproximar as mãos da Hero, diminuindo o espaço em branco */}
       <section className="w-full min-h-[600px] md:min-h-[750px] relative z-10 flex flex-col items-center justify-center overflow-visible bg-background py-0 mt-[-80px] md:mt-[-150px]">
         
-        {/* Camada Frontal de Branding: Frases desaceleradas e mais nítidas (20% opacidade) */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-center gap-16 pointer-events-none select-none overflow-hidden opacity-50">
-          <div className="flex whitespace-nowrap animate-marquee-slow will-change-transform">
-            {[...Array(4)].map((_, i) => (
-              <span key={i} className="text-[100px] md:text-[180px] font-black italic tracking-tighter text-primary/20 uppercase mr-24 shrink-0">
-                NutriJornada 360° • NutriJornada 360° • NutriJornada 360° • 
-              </span>
-            ))}
-          </div>
-          <div className="flex whitespace-nowrap animate-marquee-reverse-slow will-change-transform">
-            {[...Array(4)].map((_, i) => (
-              <span key={i} className="text-[80px] md:text-[140px] font-black italic tracking-tighter text-secondary/20 uppercase mr-24 shrink-0">
-                Saúde Integrativa • Bem-estar Pleno • Equilíbrio Metabólico • 
-              </span>
-            ))}
-          </div>
-        </div>
-
         {/* Camada Central: Elemento 3D Spline (Compactado com Fade-out) */}
         <div className="relative z-10 w-full h-full flex items-center justify-center overflow-visible mask-vignette-vertical">
           <div ref={splineAreaRef} className="w-full max-w-[2200px] h-[500px] md:h-[900px] flex flex-col md:flex-row items-center justify-end pointer-events-auto transform-gpu">
-            {/* Espaço reservado à esquerda para futuro conteúdo do usuário */}
-            <div className="hidden md:block w-1/2 h-full z-30 relative px-6 md:px-12 flex items-center">
-              {/* O conteúdo futuro pode ser inserido aqui */}
+            {/* Espaço reservado à esquerda para Marquee Vertical de Branding */}
+            <div className="hidden md:block w-1/2 h-full z-30 relative px-6 md:px-12 flex items-center overflow-hidden">
+              <div className="w-full h-[80%] opacity-35 pointer-events-none transform-gpu">
+                <VerticalMarquee 
+                  items={[
+                    "NutriJornada 360°",
+                    "Saúde Integrativa",
+                    "Bem-estar Pleno",
+                    "Equilíbrio Metabólico",
+                    "Nutrição de Precisão",
+                    "Estratégias Personalizadas"
+                  ]} 
+                  speed={40}
+                />
+              </div>
             </div>
 
             {/* Elemento 3D (DNA) posicionado à direita */}
@@ -463,44 +471,44 @@ export default function Home() {
             {/* Bloco Esquerdo — Saúde Integral + Respeito Mental */}
             <StaggerReveal className="flex flex-col border border-outline-variant/30 p-4 sm:p-6 lg:p-8 gap-8">
               <StaggerItem>
-                <div 
+                <GlowWrapper 
                   ref={card1Ref}
-                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d"
+                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border-none shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d"
                 >
                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 text-primary tilt-child tz-30">
                     <span className="material-symbols-outlined text-3xl">favorite</span>
                   </div>
                   <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Saúde Integral</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Foco no equilíbrio metabólico e hormonal, tratando o corpo como um sistema conectado.</p>
-                </div>
+                </GlowWrapper>
               </StaggerItem>
               <StaggerItem>
-                <div 
+                <GlowWrapper 
                   ref={card2Ref}
-                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d"
+                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border-none shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d"
                 >
                   <div className="w-12 h-12 bg-secondary/10 rounded-2xl flex items-center justify-center mb-5 text-secondary tilt-child tz-30">
                     <span className="material-symbols-outlined text-3xl">psychology</span>
                   </div>
                   <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Respeito Mental</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Sua relação com a comida importa tanto quanto os nutrientes que você consome.</p>
-                </div>
+                </GlowWrapper>
               </StaggerItem>
             </StaggerReveal>
 
             {/* Bloco Direito — Nutrição Orgânica + Texto */}
             <StaggerReveal className="flex flex-col justify-center border border-outline-variant/30 p-4 sm:p-6 lg:p-8" delay={0.2}>
               <StaggerItem>
-                <div 
+                <GlowWrapper 
                   ref={card3Ref}
-                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border border-outline-variant/20 shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d mb-6"
+                  className="bg-surface-container-low p-6 sm:p-8 rounded-3xl border-none shadow-sm hover:shadow-xl transition-all duration-300 transform-style-3d mb-6"
                 >
                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-5 text-primary tilt-child tz-30">
                     <span className="material-symbols-outlined text-3xl">eco</span>
                   </div>
                   <h3 className="font-headline text-xl font-bold text-on-surface mb-3 tilt-child tz-20">Nutrição Orgânica</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed tilt-child tz-10">Preferência por alimentos reais, minimamente processados para máxima vitalidade.</p>
-                </div>
+                </GlowWrapper>
               </StaggerItem>
               <StaggerItem>
                 <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-on-surface leading-relaxed font-headline">
@@ -515,8 +523,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
 
       {/* Agendamento / Logística Tablet Viewer */}
       <section className="bg-background relative z-20 overflow-hidden">
@@ -536,8 +542,6 @@ export default function Home() {
         </ContainerScroll>
       </section>
 
-
-
       {/* Plans Section (Seed Inspired) */}
       <section className="relative py-24 md:py-32 flex flex-col items-center justify-center overflow-hidden w-full bg-stone-900 border-none">
 
@@ -551,7 +555,7 @@ export default function Home() {
             preload="metadata"
             className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 brightness-75 saturate-[0.7] blur-[2px] scale-[1.02]"
           >
-            <source src="/bg-plans.mp4" type="video/mp4" />
+            <source src="/bg-plans.webm" type="video/webm" />
           </video>
           {/* Overlay mantendo o aspecto escuro sem usar o pesadíssimo backdrop-blur */}
           <div className="absolute inset-0 bg-stone-950/40"></div>
@@ -581,9 +585,9 @@ export default function Home() {
             staggerInterval={0.2}
           >
             <StaggerItem>
-              <div 
+              <GlowWrapper 
                 ref={plano1Ref}
-                className="parallax-shadow group bg-white/[0.04] backdrop-blur-[20px] border border-white/[0.08] rounded-[2.25rem] p-8 md:p-10 hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
+                className="parallax-shadow group bg-[#F5EBE0]/[0.06] backdrop-blur-[20px] border-none rounded-[2.25rem] p-8 md:p-10 hover:bg-[#F5EBE0]/[0.12] hover:border-[#F5EBE0]/[0.2] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mb-10 text-white/90 group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
@@ -597,38 +601,35 @@ export default function Home() {
                   Ver Plano
                   <span className="material-symbols-outlined text-sm font-bold leading-none opacity-80 group-hover:opacity-100 transform translate-y-px">arrow_forward</span>
                 </Link>
-              </div>
+              </GlowWrapper>
             </StaggerItem>
 
             <StaggerItem>
-              {/* Wrapper com borda rainbow para destaque premium */}
-              <div className="relative group h-full rounded-[2.25rem] p-[2px] animate-rainbow bg-[length:200%]">
-                <div 
-                  ref={plano2Ref}
-                  className="parallax-shadow bg-[#4a5f4a]/60 backdrop-blur-[32px] border border-[#748c74]/40 rounded-[2.25rem] p-8 md:p-10 hover:bg-[#4a5f4a]/80 hover:border-[#8aa88a]/50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
-                >
-                  <div className="absolute top-0 right-0 p-8">
-                    <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse"></div>
-                  </div>
-                  <div className="w-14 h-14 rounded-full border border-white/30 bg-white/10 flex items-center justify-center mb-10 text-white group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
-                    <span className="material-symbols-outlined font-light text-[24px]">star</span>
-                  </div>
-                  <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Premium 360º</h3>
-                  <div className="flex-grow">
-                    <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com foco integrativo.</p>
-                  </div>
-                  <Link to="/planos" className="w-full bg-white text-[#384a38] rounded-full py-5 px-6 flex items-center justify-between font-semibold group-hover:shadow-[0_8px_32_rgba(255,255,255,0.2)] group-hover:scale-[1.02] transition-all duration-500 ease-out z-10 tilt-child tz-20">
-                    Assinar Agora
-                    <span className="material-symbols-outlined text-[18px] leading-none transform group-hover:translate-x-2 transition-transform duration-500 text-[#384a38] font-bold">arrow_forward</span>
-                  </Link>
+              <GlowWrapper 
+                ref={plano2Ref}
+                className="parallax-shadow bg-[#4a5f4a]/60 backdrop-blur-[32px] border-none rounded-[2.25rem] p-8 md:p-10 hover:bg-[#4a5f4a]/80 hover:border-[#8aa88a]/50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
+              >
+                <div className="absolute top-0 right-0 p-8">
+                  <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse"></div>
                 </div>
-              </div>
+                <div className="w-14 h-14 rounded-full border border-white/30 bg-white/10 flex items-center justify-center mb-10 text-white group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
+                  <span className="material-symbols-outlined font-light text-[24px]">star</span>
+                </div>
+                <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Premium 360º</h3>
+                <div className="flex-grow">
+                  <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com foco integrativo.</p>
+                </div>
+                <Link to="/planos" className="w-full bg-white text-[#384a38] rounded-full py-5 px-6 flex items-center justify-between font-semibold group-hover:shadow-[0_8px_32_rgba(255,255,255,0.2)] group-hover:scale-[1.02] transition-all duration-500 ease-out z-10 tilt-child tz-20">
+                  Assinar Agora
+                  <span className="material-symbols-outlined text-[18px] leading-none transform group-hover:translate-x-2 transition-transform duration-500 text-[#384a38] font-bold">arrow_forward</span>
+                </Link>
+              </GlowWrapper>
             </StaggerItem>
 
             <StaggerItem>
-              <div 
+              <GlowWrapper 
                 ref={plano3Ref}
-                className="parallax-shadow group bg-white/[0.04] backdrop-blur-[20px] border border-white/[0.08] rounded-[2.25rem] p-8 md:p-10 hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
+                className="parallax-shadow group bg-[#F5EBE0]/[0.06] backdrop-blur-[20px] border-none rounded-[2.25rem] p-8 md:p-10 hover:bg-[#F5EBE0]/[0.12] hover:border-[#F5EBE0]/[0.2] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mb-10 text-white/90 group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
@@ -642,12 +643,16 @@ export default function Home() {
                   Ver Plano
                   <span className="material-symbols-outlined text-sm font-bold leading-none opacity-80 group-hover:opacity-100 transform translate-y-px">arrow_forward</span>
                 </Link>
-              </div>
+              </GlowWrapper>
             </StaggerItem>
           </StaggerReveal>
         </div>
       </section>
+
+      {/* Articles Section - Restaurada para a Home */}
+      <ArticlesSection />
     </main>
   );
-}
 
+  return homeContent;
+}

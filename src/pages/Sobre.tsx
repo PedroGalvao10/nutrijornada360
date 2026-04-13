@@ -10,42 +10,11 @@ import { CardStack } from '../components/ui/CardStack';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import marianaProfile from '../assets/mariana-profile.png';
 import SEO from '../components/SEO';
-import { motion } from 'framer-motion';
 import aprovadaCuscs from '../assets/aprovada-cuscs.jpg';
+import amendoasHero from '../assets/amendoas_hero.png';
+import { FloatingAsset } from '../components/ui/FloatingAsset';
+import { GlowWrapper } from '../components/ui/GlowWrapper';
 
-/* Componente de Frutas/Comidas Flutuantes */
-const FLOATING_FOODS = [
-  { emoji: '🥑', top: '15%', left: '-12%', delay: 0 },
-  { emoji: '🍓', top: '65%', left: '-8%', delay: 1 },
-  { emoji: '🥦', top: '35%', right: '-8%', delay: 2 },
-  { emoji: '🥕', top: '85%', right: '-4%', delay: 0.5 },
-  { emoji: '🥗', top: '-15%', left: '20%', delay: 1.5 },
-  { emoji: '🍉', bottom: '-8%', right: '25%', delay: 2.5 },
-];
-
-const FloatingFoodElements = () => {
-  return (
-    <>
-      {FLOATING_FOODS.map((food, idx) => (
-        <motion.div
-          key={idx}
-          className="absolute text-4xl select-none z-30 drop-shadow-md pointer-events-none"
-          initial={{ y: 0 }}
-          animate={{ y: [0, -15, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: food.delay }}
-          style={{ 
-            top: food.top, 
-            left: food.left, 
-            right: food.right, 
-            bottom: food.bottom
-          }}
-        >
-          {food.emoji}
-        </motion.div>
-      ))}
-    </>
-  );
-};
 /* ── Pilares da NutriJornada360º para o CardStack ── */
 const CORE_PAGES_INFO = [
   {
@@ -103,8 +72,59 @@ export default function Sobre() {
       />
       
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-12 md:py-20 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-        <StaggerReveal className="md:col-span-7">
+      <section className="max-w-7xl mx-auto px-6 py-12 md:py-20 grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative overflow-visible">
+        {/* Blueberries HIPER-MONUMENTAIS (6 imagens) - Posicionadas para evitar cobertura pelo texto */}
+        <FloatingAsset 
+          src="/fruits/Blueberry 1.webp" 
+          className="top-[3%] left-[12%] w-[500px] md:w-[850px] drop-shadow-xl z-[60] opacity-70" 
+          depth={0.05} 
+          delay={0}
+          floatIntensity={3}
+        />
+        <FloatingAsset 
+          src="/fruits/Blueberry 2.webp" 
+          className="top-[22%] left-[18%] w-[550px] md:w-[900px] drop-shadow-xl z-0 opacity-80" 
+          depth={0.08} 
+          delay={0.1}
+          floatIntensity={4}
+        />
+        <FloatingAsset 
+          src="/fruits/Blueberry 3.webp" 
+          className="top-[48%] left-[18%] w-[600px] md:w-[950px] drop-shadow-2xl z-[60] opacity-70" 
+          depth={0.12} 
+          delay={0.3}
+          floatIntensity={6}
+        />
+        <FloatingAsset 
+          src="/fruits/Blueberry 4.webp" 
+          className="top-[50%] left-[4%] w-[650px] md:w-[1000px] drop-shadow-2xl z-[60] opacity-70" 
+          depth={0.15} 
+          delay={0.5}
+          floatIntensity={8}
+        />
+        <FloatingAsset 
+          src="/fruits/Blueberry 5.webp" 
+          className="top-[70%] left-[1%] w-[700px] md:w-[1050px] drop-shadow-2xl z-[60] opacity-70" 
+          depth={0.1} 
+          delay={0.7}
+          floatIntensity={5}
+        />
+        <FloatingAsset 
+          src="/fruits/Blueberry 6.webp" 
+          className="top-[85%] left-[6%] w-[750px] md:w-[1100px] drop-shadow-2xl z-[60] opacity-70" 
+          depth={0.18} 
+          delay={0.2}
+          floatIntensity={10}
+        />
+
+        {/* Amêndoas/Sementes TOTALMENTE ESTÁTICAS */}
+        <img 
+          src={amendoasHero} 
+          alt="Sementes decorativas"
+          className="absolute -right-[28%] top-[30%] w-[450px] md:w-[650px] drop-shadow-2xl z-[60] opacity-90" 
+        />
+        <div className="md:col-span-7 relative z-10">
+          <StaggerReveal>
           <StaggerItem>
             <span className="text-tertiary font-bold tracking-widest text-sm uppercase mb-4 block">A Mente por Trás da Jornada</span>
           </StaggerItem>
@@ -118,15 +138,15 @@ export default function Sobre() {
           </StaggerItem>
           <StaggerItem>
             <div className="flex flex-col gap-4 max-w-xl">
-              <div className="flex items-start gap-4 p-4 bg-surface-container rounded-xl border border-outline-variant/30">
+              <GlowWrapper className="flex items-start gap-4 p-4 bg-surface-container rounded-xl border-none">
                 <span className="material-symbols-outlined text-primary text-3xl shrink-0">school</span>
                 <div>
                   <p className="text-sm font-bold text-on-surface mb-1">Formação Acadêmica</p>
                   <p className="text-on-surface-variant text-sm font-body leading-relaxed">Graduada pelo Centro Universitário São Camilo</p>
                 </div>
-              </div>
+              </GlowWrapper>
               
-              <div className="flex items-start gap-4 p-4 bg-surface-container rounded-xl border border-outline-variant/30">
+              <GlowWrapper className="flex items-start gap-4 p-4 bg-surface-container rounded-xl border-none">
                 <span className="material-symbols-outlined text-primary text-3xl shrink-0">local_library</span>
                 <div>
                   <p className="text-sm font-bold text-on-surface mb-1">Experiência Acadêmica</p>
@@ -134,9 +154,9 @@ export default function Sobre() {
                     Durante a graduação, fui Diretora de Pesquisa da Liga de Unidades de Alimentação e Nutrição e monitora da disciplina de Marketing Nutricional, com foco em rotulagem de alimentos e educação nutricional.
                   </p>
                 </div>
-              </div>
+              </GlowWrapper>
 
-              <div className="flex items-start gap-4 p-4 bg-surface-container rounded-xl border border-outline-variant/30">
+              <GlowWrapper className="flex items-start gap-4 p-4 bg-surface-container rounded-xl border-none">
                 <span className="material-symbols-outlined text-primary text-3xl shrink-0">work</span>
                 <div>
                   <p className="text-sm font-bold text-on-surface mb-1">Experiências Profissionais</p>
@@ -144,31 +164,31 @@ export default function Sobre() {
                     Tenho experiência em Unidades de Alimentação e Nutrição no Rosewood Hotel Group, Nutrição Clínica no Hospital São Camilo e Saúde Coletiva na Associação Nossa Turma. Também atuei com marketing e atendimento em consultório na Clínica Escola Promove, com foco em orientação nutricional e medidas antropométricas.
                   </p>
                 </div>
-              </div>
+              </GlowWrapper>
             </div>
           </StaggerItem>
-        </StaggerReveal>
+          </StaggerReveal>
+        </div>
         
-        <StaggerReveal className="md:col-span-5 relative perspective-1200" delay={0.4}>
+        <StaggerReveal className="md:col-span-5 relative perspective-1200 z-20" delay={0.4}>
           <StaggerItem>
             <div className="relative">
-              <FloatingFoodElements />
               <div 
                 ref={profileRef}
-                className="aspect-[4/5] bg-surface-container-highest rounded-2xl parallax-shadow overflow-hidden transform-style-3d relative z-10"
+                className="aspect-[4/5] bg-surface-container-highest rounded-2xl parallax-shadow overflow-hidden transform-style-3d relative z-30"
               >
                 <img 
                   className="w-full h-full object-cover scale-110 tilt-child tz-30" 
                   alt="Mariana Bermudes" 
                   src={marianaProfile}
                 />
-              </div>
             </div>
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-tertiary-container rounded-xl flex items-center justify-center p-4 text-center shadow-lg z-20">
               <p className="text-on-tertiary-container font-headline italic text-sm font-bold">Cuidado 360º para sua saúde</p>
             </div>
-          </StaggerItem>
-        </StaggerReveal>
+          </div>
+        </StaggerItem>
+      </StaggerReveal>
       </section>
 
       {/* ═══ Narrative Bento Grid — Estilo Ruixen UI ═══ */}
@@ -182,7 +202,7 @@ export default function Sobre() {
         {/* Grid 2-col com bordas sutis */}
         <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Bloco Esquerdo — CardStack + Essência */}
-          <StaggerReveal className="flex flex-col items-start justify-center border border-outline-variant/30 p-4 sm:p-6 lg:p-8">
+          <StaggerReveal className="flex flex-col items-start justify-center border border-outline-variant/30 p-4 sm:p-5 lg:p-6">
             <StaggerItem className="relative w-full mb-4 sm:mb-6">
               <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
               <CardStack items={CORE_PAGES_INFO} />
@@ -200,11 +220,21 @@ export default function Sobre() {
                   Minha história começa com o cheiro de &ldquo;comida de verdade&rdquo; vindo da cozinha. Desde a infância, aprendi que nutrir-se é um ato de carinho e conexão com a natureza.
                 </p>
               </div>
+
+              <div className="relative mt-4 mb-8 px-4">
+                <img 
+                  src="/fruits/Castanhas.webp" 
+                  alt="Castanhas decorativas"
+                  loading="lazy"
+                  decoding="async"
+                  className="relative mx-auto w-full max-w-[500px] md:max-w-[800px] z-[60] opacity-100 drop-shadow-2xl" 
+                />
+              </div>
             </StaggerItem>
           </StaggerReveal>
 
           {/* Bloco Direito — Da Dor ao Propósito */}
-          <StaggerReveal className="flex flex-col items-start justify-center border border-outline-variant/30 p-4 sm:p-6 lg:p-8" delay={0.2}>
+          <StaggerReveal className="flex flex-col items-start justify-center border border-outline-variant/30 p-4 sm:p-5 lg:p-6" delay={0.2}>
             <StaggerItem>
               <div className="flex flex-col gap-2 mb-4 sm:mb-6">
                 <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-primary font-headline">
@@ -219,17 +249,25 @@ export default function Sobre() {
               </div>
             </StaggerItem>
 
-            <StaggerItem className="w-full mt-auto">
-              <div 
+            <StaggerItem className="w-full relative">
+              <GlowWrapper 
                 ref={bento2Ref}
-                className="w-full aspect-[3/4] sm:aspect-[4/5] md:aspect-auto md:h-96 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-outline-variant/20 transform-style-3d bg-surface-container"
+                className="w-full aspect-[3/4] sm:aspect-[4/5] md:aspect-auto md:h-96 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-none transform-style-3d bg-surface-container"
               >
                 <img 
                   className="w-full h-full object-cover object-top tilt-child tz-20" 
                   alt="Transformação" 
                   src={aprovadaCuscs}
                 />
-              </div>
+              </GlowWrapper>
+              
+              {/* Logo São Camilo na segunda imagem (Bio/Superação) */}
+              <FloatingAsset 
+                src="/fruits/SaoCamilo.webp" 
+                className="absolute bottom-4 right-4 md:bottom-8 md:right-8 w-16 md:w-32 z-30 drop-shadow-2xl opacity-90" 
+                depth={0.02} 
+                floatIntensity={2}
+              />
             </StaggerItem>
           </StaggerReveal>
         </div>
@@ -270,9 +308,9 @@ export default function Sobre() {
         <StaggerReveal className="grid grid-cols-1 lg:grid-cols-2 mt-8 lg:mt-12" staggerInterval={0.2}>
           {/* Abordagem Integrativa */}
           <StaggerItem>
-            <div 
+            <GlowWrapper 
               ref={bento3Ref}
-              className="h-full border border-outline-variant/30 p-4 sm:p-6 lg:p-8 transform-style-3d"
+              className="h-full border-none p-4 sm:p-6 lg:p-8 transform-style-3d"
             >
               <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-on-surface leading-relaxed font-headline mb-4">
                 <span className="text-primary font-semibold">Abordagem Integrativa</span>
@@ -290,20 +328,20 @@ export default function Sobre() {
                   <p className="text-xs font-bold mt-2 text-on-surface">Corpo</p>
                 </div>
               </div>
-            </div>
+            </GlowWrapper>
           </StaggerItem>
           
           {/* Empatia & Ciência */}
           <StaggerItem>
-            <div 
+            <GlowWrapper 
               ref={bento4Ref}
-              className="h-full bg-primary text-on-primary p-4 sm:p-6 lg:p-8 flex flex-col justify-center transform-style-3d"
+              className="h-full bg-primary text-on-primary p-4 sm:p-6 lg:p-8 flex flex-col justify-center transform-style-3d border-none rounded-xl"
             >
               <div className="tilt-child tz-20">
                 <h3 className="text-xl sm:text-2xl font-bold mb-4 font-headline tilt-child tz-25">Empatia & Ciência</h3>
                 <p className="opacity-90 leading-relaxed font-body text-sm sm:text-base">Acredito em uma nutrição que acolhe sem julgar, fundamentada no rigor técnico e profissional.</p>
               </div>
-            </div>
+            </GlowWrapper>
           </StaggerItem>
         </StaggerReveal>
       </section>

@@ -3,13 +3,16 @@ import React, { useRef, useState } from 'react';
 
 export const PointerHighlight = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const highlightRef = useRef<HTMLSpanElement>(null);
   const [opacity, setOpacity] = useState(0);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!divRef.current) return;
+    if (!divRef.current || !highlightRef.current) return;
     const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    highlightRef.current.style.setProperty('--x', `${x}px`);
+    highlightRef.current.style.setProperty('--y', `${y}px`);
   };
 
   return (
@@ -18,17 +21,13 @@ export const PointerHighlight = ({ children, className = "" }: { children: React
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setOpacity(1)}
       onMouseLeave={() => setOpacity(0)}
-      className={`relative inline-block overflow-hidden rounded-md px-1 -mx-1 transition-colors hover:text-[#4a7c59] dark:hover:text-emerald-400 ${className}`}
+      className={`relative inline-block overflow-hidden rounded-md px-1 -mx-1 transition-colors hover:text-primary dark:hover:text-primary-container ${className}`}
     >
       <span
-        className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 pointer-highlight-surface"
-        style={{
-          opacity,
-          '--x': `${position.x}px`,
-          '--y': `${position.y}px`,
-        } as React.CSSProperties}
+        ref={highlightRef}
+        className={`pointer-events-none absolute inset-0 z-0 transition-opacity duration-300 pointer-highlight-surface ${opacity ? 'opacity-100' : 'opacity-0'}`}
       />
-      <span className="relative z-10 drop-shadow-sm">{children}</span>
+      <span className="relative z-10">{children}</span>
     </span>
   );
 };

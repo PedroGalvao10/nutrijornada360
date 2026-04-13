@@ -65,12 +65,40 @@ function PlanoCard({ title, tag, description, price, items, link, isPopular, cla
   );
 }
 
+import { FloatingAsset } from '../components/ui/FloatingAsset';
+
 export default function Planos() {
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 flex flex-col items-center bg-background text-on-background overflow-x-hidden">
+    <main className="min-h-screen pt-32 pb-24 px-6 flex flex-col items-center bg-background text-on-background overflow-x-hidden relative">
       <SEO 
         title="Planos e Consultorias | Mariana Bermudes Nutrição"
         description="Conheça nossos planos de acompanhamento nutricional personalizado. Emagrecimento, hipertrofia e bem-estar em São Paulo."
+      />
+
+      {/* Kiwis MONUMENTAIS em cascata - DESIGN DE ALTO IMPACTO */}
+      <FloatingAsset 
+        src="/fruits/Kiwi 1.webp" 
+        className="top-[0%] right-[-15%] md:right-[-10%] w-[700px] md:w-[1100px] z-0 opacity-30 grayscale-[20%]" 
+        depth={0.05} 
+        delay={0.2}
+      />
+      <FloatingAsset 
+        src="/fruits/Kiwi 2.webp" 
+        className="top-[12%] right-[-12%] md:right-[-10%] w-[600px] md:w-[900px] z-30 opacity-95" 
+        depth={0.2} 
+        delay={0.5}
+      />
+      <FloatingAsset 
+        src="/fruits/kiwi 3.webp" 
+        className="top-[35%] right-[-15%] md:right-[-12%] w-[550px] md:w-[850px] z-30" 
+        depth={0.12} 
+        delay={0.8}
+      />
+      <FloatingAsset 
+        src="/fruits/kiwi 4.webp" 
+        className="bottom-[20%] right-[-10%] md:right-[-5%] w-[700px] md:w-[1000px] z-50 drop-shadow-3xl" 
+        depth={0.25} 
+        delay={0.4}
       />
       
       <StaggerReveal className="text-center mb-16 max-w-3xl mx-auto">

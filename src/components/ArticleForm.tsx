@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import type { Article } from '../types';
+import type { Article } from '../article_types';
 
 // TIPAGEM: Interface para os dados do formulário de artigo (sem ID e datas de sistema)
 type ArticleFormData = Omit<Article, 'id' | 'created_at' | 'updated_at' | 'reading_time'>;

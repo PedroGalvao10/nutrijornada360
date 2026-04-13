@@ -14,7 +14,7 @@ export default function SEO({
   title = "Mariana Bermudes | Nutricionista em São Paulo",
   description = "Nutrição personalizada e humanizada com Mariana Bermudes. Emagrecimento, hipertrofia e saúde intestinal. Agende sua consulta em São Paulo ou online.",
   canonical = "https://marianabermudes.com.br",
-  ogImage = "/og-image.jpg",
+  ogImage = "/og-image.webp",
   ogType = "website",
   twitterHandle = "@marianabermudes",
   article = false

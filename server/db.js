@@ -23,7 +23,24 @@ const db = new sqlite3.Database(dbPath, (err) => {
 export const initDb = () => {
     db.serialize(() => {
         db.run(`CREATE TABLE IF NOT EXISTS login_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, ip TEXT, attempt_time DATETIME DEFAULT CURRENT_TIMESTAMP, success BOOLEAN)`);
-        db.run(`CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, content TEXT NOT NULL, excerpt TEXT, meta_description TEXT, meta_keywords TEXT, cover_image_url TEXT, author TEXT DEFAULT 'Mariana', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, is_published BOOLEAN DEFAULT 0)`);
+        db.run(`CREATE TABLE IF NOT EXISTS articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            title TEXT NOT NULL, 
+            slug TEXT UNIQUE NOT NULL, 
+            content TEXT NOT NULL, 
+            excerpt TEXT, 
+            hat TEXT,
+            meta_description TEXT, 
+            meta_keywords TEXT, 
+            cover_image_url TEXT, 
+            image_alt TEXT,
+            reading_time INTEGER,
+            author TEXT DEFAULT 'Mariana', 
+            published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+            is_published BOOLEAN DEFAULT 0
+        )`);
         db.run(`CREATE TABLE IF NOT EXISTS ebooks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT, pdf_file_path TEXT NOT NULL, cover_image_url TEXT, requires_registration BOOLEAN DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
         console.log("-> Tabelas SQLite prontas.")
     });

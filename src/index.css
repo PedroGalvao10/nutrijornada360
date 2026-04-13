@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,7 +35,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 60;
+    z-index: 110;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -138,8 +139,6 @@ body {
   opacity: 0;
 }
 .huly-highlight-layer.active, .huly-cursor-layer.active { opacity: 1; }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
 .huly-highlight-bg {
   display: block;
@@ -362,9 +361,34 @@ body {
    CUSTOM MASK & TRANSITION UTILITIES
    ─────────────────────────────────────────────────── */
 
+/* ── Vertical Marquee ── */
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration, 30s) linear infinite;
+}
+
+.mask-marquee-vertical {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 15%,
+    black 85%,
+    transparent
+  );
+}
+
 .mask-vignette-vertical {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
 }
 
 .transition-overlay-initial {
@@ -429,3 +453,92 @@ body {
     transparent 80%
   );
 }
+
+/* ═══════════════════════════════════════════════════
+   Glow Spotlight Effect
+   ═══════════════════════════════════════════════════ */
+[data-glow] {
+  --border-size: calc(var(--border, 2) * 1px);
+  --spotlight-size: calc(var(--size, 150) * 1px);
+  --hue: calc(var(--base) + (var(--xp, 0) * var(--spread, 0)));
+  
+  /* Gradiente principal de spotlight (usa coordenadas sincronizadas via JavaScript no :root ou elemento local) */
+  background-image: radial-gradient(
+    var(--spotlight-size) var(--spotlight-size) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+    hsl(var(--hue, 210) calc(var(--color-saturation, 100) * 1%) calc(var(--lightness, 50) * 1%) / var(--bg-spot-opacity, 0.1)), transparent
+  );
+  background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+  background-position: 50% 50%;
+  position: relative;
+  border-radius: var(--radius, 1.5rem);
+}
+
+[data-glow]::before,
+[data-glow]::after {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: calc(var(--border-size) * -1);
+  border-radius: var(--radius, 1.5rem);
+  border: var(--border-size) solid transparent;
+  background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+
+[data-glow]::before {
+  /* Borda brilhante intensa do mouse iluminando as paredes internas (neon visível) */
+  background-image: radial-gradient(
+    calc(var(--spotlight-size) * 1.2) calc(var(--spotlight-size) * 1.2) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+    hsl(var(--hue, 210) calc(var(--color-saturation, 100) * 1%) calc(var(--border-lightness, 60) * 1%) / var(--border-spot-opacity, 1)), transparent 50%
+  );
+  filter: saturate(1.8) brightness(1.7);
+  z-index: 10;
+}
+
+[data-glow]::after {
+  /* Borda sutil de background inativa */
+  background-image: radial-gradient(
+    calc(var(--spotlight-size) * 0.4) calc(var(--spotlight-size) * 0.4) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+    hsl(var(--hue, 210) calc(var(--color-saturation, 100) * 1%) calc(var(--border-lightness, 55) * 1%) / var(--border-spot-opacity, 0.5)), transparent 100%
+  );
+  z-index: 10;
+}
+
+/* ═══════════════════════════════════════════════════
+   Portal Imersivo - Seção Hero Integrada
+   ═══════════════════════════════════════════════════ */
+.portal-hero-section { 
+  height: 100vh; 
+  position: relative; 
+  width: 100%; 
+  background-color: #1a2e26; 
+  z-index: 100; /* Acima da navbar (z-50) durante a animação */
+  overflow: hidden; /* Garantir que o portal expanda sem criar scroll adicional */
+}
+
+
+.title-premium { 
+  text-shadow: 0 20px 60px rgba(0,0,0,0.8); 
+  letter-spacing: -0.05em; 
+}
+
+.subtitle-premium { 
+  letter-spacing: 0.4em; 
+  text-transform: uppercase; 
+  text-shadow: 0 10px 20px rgba(0,0,0,0.5); 
+}
+
+/* Otimizações de Performance (Will-Change) */
+.will-change-portal {
+  will-change: width, height, border-radius;
+}
+
+.will-change-video-transform {
+  will-change: transform;
+}
+

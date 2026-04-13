@@ -73,8 +73,8 @@ export default {
       animation: {
         "breathing": "breathing 8s ease-in-out infinite",
         "blob-spin": "blob-spin 15s linear infinite",
-        "marquee-slow": "marquee 45s linear infinite",
-        "marquee-reverse-slow": "marquee-reverse 45s linear infinite",
+        "marquee-slow": "marquee 80s linear infinite",
+        "marquee-reverse-slow": "marquee-reverse 80s linear infinite",
         "fade-in-up": "fadeInUp 0.8s ease-out forwards",
       },
       keyframes: {
@@ -96,7 +96,7 @@ export default {
           '100%': { transform: 'rotate(360deg) scale(1)' },
         },
         'fadeInUp': {
-          '0%': { opacity: '0', transform: 'translateY(0px)' },
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         }
       }

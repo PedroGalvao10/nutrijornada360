@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContextCore';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleForm from '../../components/ArticleForm';
-import type { Article } from '../../types';
+import type { Article } from '../../article_types';
 
 export default function Dashboard() {
   const { logout } = useAuth();

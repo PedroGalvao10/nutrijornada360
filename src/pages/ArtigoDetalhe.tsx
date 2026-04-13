@@ -1,26 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import type { Article } from '../article_types';
 import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 
-interface ArticlePost {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  cover_image_url: string;
-  hat?: string;
-  tag?: string;
-  published_at?: string;
-  created_at?: string;
-  reading_time?: number;
-  author_name?: string;
-}
 
 export default function ArtigoDetalhe() {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<ArticlePost | null>(null);
+  const [post, setPost] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -92,7 +79,7 @@ export default function ArtigoDetalhe() {
               <StaggerItem>
                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 backdrop-blur-md rounded-full text-[10px] font-bold tracking-widest uppercase mb-6 border border-primary/30 text-primary w-fit">
                   <span className="material-symbols-outlined text-xs">label</span>
-                  {post.hat || post.tag || 'Nutrição'}
+                  {post.hat || 'Nutrição'}
                </div>
               </StaggerItem>
               
@@ -106,12 +93,12 @@ export default function ArtigoDetalhe() {
                <div className="flex flex-wrap items-center gap-6 text-on-surface-variant font-medium text-sm">
                   <div className="flex items-center gap-2">
                      <div className="w-8 h-8 rounded-full bg-surface-container border border-outline/20 overflow-hidden">
-                        <img src="/avatar-mariana.jpg" alt="Mariana Bermudes" className="w-full h-full object-cover" />
+                        <img src="/avatar-mariana.webp" alt="Mariana Bermudes" className="w-full h-full object-cover" />
                      </div>
-                     <span>{post.author_name || 'Mariana Bermudes'}</span>
+                     <span>Mariana Bermudes</span>
                   </div>
                   <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">calendar_today</span> {formattedDate}</span>
-                  <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">schedule</span> {post.reading_time || 5} min de leitura</span>
+                  <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">schedule</span> {post.reading_time ? `${post.reading_time} min de leitura` : ''}</span>
                </div>
               </StaggerItem>
             </StaggerReveal>
@@ -133,7 +120,7 @@ export default function ArtigoDetalhe() {
             <footer className="pt-12 border-t border-outline/10 flex flex-col md:flex-row justify-between items-center gap-8">
                <div className="flex items-center gap-4 group cursor-pointer">
                   <div className="w-16 h-16 rounded-3xl bg-surface-container border border-outline/20 overflow-hidden relative shadow-md group-hover:shadow-lg transition-all duration-300">
-                     <img src="/avatar-mariana.jpg" alt="Mariana Bermudes" className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-500" />
+                     <img src="/avatar-mariana.webp" alt="Mariana Bermudes" className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-500" />
                   </div>
                   <div className="text-left">
                      <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1">Escrito por</p>

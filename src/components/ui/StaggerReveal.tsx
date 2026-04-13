@@ -19,26 +19,24 @@ import { useRef, forwardRef, useImperativeHandle } from "react";
 // ─── Variantes ───────────────────────────────────────────────────────────────
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 56, filter: "blur(4px)" },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.7,
+      duration: 0.6,
       ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   },
 };
 
 const itemVariantsLeft = {
-  hidden: { opacity: 0, x: -56, filter: "blur(4px)" },
+  hidden: { opacity: 0, x: -40 },
   visible: {
     opacity: 1,
     x: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.7,
+      duration: 0.6,
       ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   },
@@ -87,7 +85,7 @@ export const StaggerReveal = forwardRef<HTMLDivElement, StaggerRevealProps>(({
       variants={dynamicContainerVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      style={{ willChange: "transform, opacity" }}
+      style={{ willChange: "auto" }}
     >
       {children}
     </motion.div>
@@ -116,7 +114,6 @@ export function StaggerItem({
     <motion.div
       className={className}
       variants={variants}
-      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </motion.div>

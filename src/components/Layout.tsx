@@ -1,6 +1,6 @@
 /* cspell:disable-file */
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LoginModal } from './LoginModal';
 import { CustomCursor } from './ui/CustomCursor';
 import { FloatingShapes } from './ui/FloatingShapes';
@@ -8,6 +8,17 @@ import { FloatingShapes } from './ui/FloatingShapes';
 export function Layout() {
   const location = useLocation();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [hasPortalCompleted, setHasPortalCompleted] = useState(false);
+  const isNavbarVisible = location.pathname !== '/' || hasPortalCompleted;
+
+  useEffect(() => {
+    const handlePortalComplete = () => setHasPortalCompleted(true);
+    window.addEventListener('portal-complete', handlePortalComplete);
+    return () => window.removeEventListener('portal-complete', handlePortalComplete);
+  }, []);
+
+
+
 
   const getLinkClass = (path: string) => {
     const isActive = location.pathname === path;
@@ -38,7 +49,9 @@ export function Layout() {
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-[#4a7c59] blur-[150px] animate-pulse" />
         <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-[#705c30] blur-[120px] animate-pulse-delayed" />
       </div>
-      <header className="fixed top-4 left-0 right-0 z-50 mx-auto w-[95%] max-w-6xl flex justify-center pointer-events-none">
+      <header className={`fixed top-4 left-0 right-0 z-[110] mx-auto w-[95%] max-w-6xl flex justify-center pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+      }`}>
         <nav className="pointer-events-auto flex justify-between items-center w-full px-4 md:px-6 py-3 rounded-full backdrop-blur-xl bg-[#faf6f0]/80 dark:bg-stone-950/80 shadow-[0_8px_32px_rgba(46,50,48,0.08)] border border-[#4a7c59]/10 dark:border-emerald-500/10 transition-all duration-300">
           <Link to="/" className="text-lg md:text-xl font-bold italic text-[#4a7c59] dark:text-emerald-500 font-headline truncate mr-4 lg:mr-8 hover:opacity-80 transition-opacity">
             NutriJornada 360º
@@ -64,7 +77,9 @@ export function Layout() {
       <Outlet />
 
       {/* ���� Tab-bar de Navegação Mobile (somente < 768px) ���� */}
-      <nav className="mobile-bottom-nav md:hidden">
+      <nav className={`mobile-bottom-nav md:hidden transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+      }`}>
         <Link to="/" className={getMobileTabClass('/')}>
           <span className="material-symbols-outlined text-xl">home</span>
           <span className="text-[10px] mt-0.5 font-semibold leading-none">Início</span>

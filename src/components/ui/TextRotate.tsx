@@ -8,12 +8,14 @@ import {
   useMemo,
   useState,
 } from "react"
-import {
-  AnimatePresence,
+import type {
   AnimatePresenceProps,
-  motion,
   MotionProps,
   Transition,
+} from "framer-motion"
+import {
+  AnimatePresence,
+  motion,
 } from "framer-motion"
 
 import { cn } from "../../lib/utils"
@@ -174,12 +176,33 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
       return () => clearInterval(intervalId)
     }, [next, rotationInterval, auto])
 
+    // Pre-compute total chars once per render to avoid repeated reduce calls
+    const processedElements = useMemo(() => {
+      const elems = splitBy === "characters"
+        ? (elements as WordObject[])
+        : (elements as string[]).map((el, i) => ({
+            characters: [el],
+            needsSpace: i !== elements.length - 1,
+          }))
+
+      const { withOffsets, total } = elems.reduce(
+        (acc, wordObj) => {
+          acc.withOffsets.push({ ...wordObj, charOffset: acc.cumulative })
+          acc.cumulative += wordObj.characters.length
+          acc.total += wordObj.characters.length
+          return acc
+        },
+        { withOffsets: [] as (WordObject & { charOffset: number })[], cumulative: 0, total: 0 }
+      )
+
+      return { withOffsets, totalChars: total }
+    }, [elements, splitBy])
+
     return (
       <motion.span
         className={cn("flex flex-wrap whitespace-pre-wrap", mainClassName)}
         {...props}
-        layout
-        transition={transition}
+        style={{ willChange: "transform" }}
       >
         <span className="sr-only">{texts[currentTextIndex]}</span>
 
@@ -193,52 +216,37 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
               "flex flex-wrap",
               splitBy === "lines" && "flex-col w-full"
             )}
-            layout
             aria-hidden="true"
           >
-            {(splitBy === "characters"
-              ? (elements as WordObject[])
-              : (elements as string[]).map((el, i) => ({
-                  characters: [el],
-                  needsSpace: i !== elements.length - 1,
-                }))
-            ).map((wordObj, wordIndex, array) => {
-              const previousCharsCount = array
-                .slice(0, wordIndex)
-                .reduce((sum, word) => sum + word.characters.length, 0)
-
-              return (
-                <span
-                  key={wordIndex}
-                  className={cn("inline-flex", splitLevelClassName)}
-                >
-                  {wordObj.characters.map((char, charIndex) => (
-                    <motion.span
-                      initial={initial}
-                      animate={animate}
-                      exit={exit}
-                      key={charIndex}
-                      transition={{
-                        ...transition,
-                        delay: getStaggerDelay(
-                          previousCharsCount + charIndex,
-                          array.reduce(
-                            (sum, word) => sum + word.characters.length,
-                            0
-                          )
-                        ),
-                      }}
-                      className={cn("inline-block", elementLevelClassName)}
-                    >
-                      {char}
-                    </motion.span>
-                  ))}
-                  {wordObj.needsSpace && (
-                    <span className="whitespace-pre"> </span>
-                  )}
-                </span>
-              )
-            })}
+            {processedElements.withOffsets.map((wordObj, wordIndex) => (
+              <span
+                key={wordIndex}
+                className={cn("inline-flex", splitLevelClassName)}
+              >
+                {wordObj.characters.map((char, charIndex) => (
+                  <motion.span
+                    initial={initial}
+                    animate={animate}
+                    exit={exit}
+                    key={charIndex}
+                    transition={{
+                      ...transition,
+                      delay: getStaggerDelay(
+                        wordObj.charOffset + charIndex,
+                        processedElements.totalChars
+                      ),
+                    }}
+                    className={cn("inline-block", elementLevelClassName)}
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+                {wordObj.needsSpace && (
+                  <span className="whitespace-pre"> </span>
+                )}
+              </span>
+            ))}
           </motion.div>
         </AnimatePresence>
       </motion.span>

@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
+import type { Article } from '../article_types';
 import SplineSafe from '../components/ui/SplineSafe';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { TypewriterText } from '../components/TypewriterText';
-import { Link } from 'react-router-dom';
 import { useTilt } from '../hooks/useTilt';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
@@ -15,68 +15,7 @@ interface Ebook {
   pdfUrl: string;
 }
 
-interface ArticlePost {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
-  cover_image_url: string;
-  hat?: string;
-  tag?: string;
-  published_at?: string;
-  created_at?: string;
-  reading_time?: number;
-  imageUrl?: string;
-  readTime?: string;
-  date?: string;
-  image_alt?: string;
-}
-
-function ArticleCard({ post }: { post: ArticlePost }) {
-  const cardRef = useRef<HTMLElement>(null);
-  useTilt(cardRef, 12);
-
-  const dateStr = post.published_at || post.created_at || '';
-  const dateObj = new Date(dateStr);
-  const formattedDate = !isNaN(dateObj.getTime()) 
-                         ? dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) 
-                         : (post.date || '');
-
-  return (
-    <article 
-      ref={cardRef}
-      className="group flex flex-col bg-surface rounded-3xl overflow-hidden parallax-shadow transition-all duration-500 border border-outline/10 cursor-pointer h-full transform-style-3d"
-    >
-      <div className="relative h-64 overflow-hidden tilt-child tz-20">
-        <img src={post.cover_image_url || post.imageUrl} alt={post.image_alt || `Capa do artigo: ${post.title}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
-        <div className="absolute top-4 left-4 bg-surface/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold tracking-wider text-primary shadow-sm border border-white/20 uppercase tilt-child tz-30">
-          {post.hat || post.tag}
-        </div>
-      </div>
-      <div className="p-8 flex flex-col flex-grow tilt-child tz-10">
-        <header>
-          <div className="flex items-center gap-4 text-xs text-on-surface-variant font-medium mb-4">
-            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">calendar_today</span> {formattedDate}</span>
-            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> {post.reading_time ? `${post.reading_time} min de leitura` : post.readTime}</span>
-          </div>
-          <h2 className="text-2xl font-headline font-bold text-on-surface mb-3 group-hover:text-primary transition-colors leading-snug">
-            <Link to={`/blog/${post.slug}`} className="focus:outline-none focus:underline" aria-label={`Ler artigo: ${post.title}`}>
-              {post.title}
-            </Link>
-          </h2>
-        </header>
-        <div className="text-on-surface-variant text-sm flex-grow mb-6 leading-relaxed">
-          <p>{post.excerpt}</p>
-        </div>
-        <footer className="mt-auto">
-          <Link to={`/blog/${post.slug}`} className="inline-flex items-center text-primary font-bold text-sm group-hover:translate-x-1 transition-transform" aria-label={`Ler mais sobre: ${post.title}`}>
-            Ler artigo completo <span className="material-symbols-outlined text-sm ml-1">arrow_forward</span>
-          </Link>
-        </footer>
-      </div>
-    </article>
-  );
-}
+import ArticleCard from '../components/ui/ArticleCard';
 
 function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Ebook) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -106,7 +45,7 @@ function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Eb
 }
 
 export default function Artigos() {
-  const [posts, setPosts] = useState<ArticlePost[]>([]);
+  const [posts, setPosts] = useState<Article[]>([]);
   const splineAreaRef = useRef<HTMLDivElement>(null);
   const [splineApp, setSplineApp] = useState<{ play?: () => void, stop?: () => void } | null>(null);
 

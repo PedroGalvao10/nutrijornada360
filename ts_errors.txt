@@ -1,8 +1,0 @@
-﻿src/components/ArticleForm.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
-src/components/ArticleForm.tsx(3,39): error TS7031: Binding element 'onSaved' implicitly has an 'any' type.
-src/components/ArticleForm.tsx(3,48): error TS7031: Binding element 'onCancel' implicitly has an 'any' type.
-src/components/ArticleForm.tsx(20,39): error TS2698: Spread types may only be created from object types.
-src/components/ArticleForm.tsx(24,25): error TS7006: Parameter 'e' implicitly has an 'any' type.
-src/components/ArticleForm.tsx(42,33): error TS7006: Parameter 'text' implicitly has an 'any' type.
-src/components/ArticleForm.tsx(47,31): error TS7006: Parameter 'e' implicitly has an 'any' type.
-src/components/ArticleForm.tsx(62,67): error TS2339: Property 'id' does not exist on type 'never'.
