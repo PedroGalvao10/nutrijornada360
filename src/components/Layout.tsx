@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { LoginModal } from './LoginModal';
 import { CustomCursor } from './ui/CustomCursor';
 import { FloatingShapes } from './ui/FloatingShapes';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 export function Layout() {
   const location = useLocation();
@@ -63,6 +64,7 @@ export function Layout() {
             <Link to="/artigos" className={getLinkClass('/artigos')}>Publicações</Link>
           </div>
           <div className="flex items-center gap-3 lg:gap-4 ml-auto">
+            <ThemeToggle />
             <button onClick={() => setIsLoginOpen(true)} className="text-sm font-bold text-[#705c30] hover:text-[#4a7c59] dark:text-amber-500 flex items-center gap-1 transition-colors bg-white/50 dark:bg-white/5 px-3 py-2 rounded-full">
               <span className="material-symbols-outlined text-base">login</span>
               <span className="hidden md:inline">Acesso</span>

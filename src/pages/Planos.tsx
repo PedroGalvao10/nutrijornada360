@@ -50,22 +50,28 @@ function PlanoCard({ title, tag, description, price, items, link, isPopular, cla
         </ul>
       </div>
       
-      <div className="mt-auto tilt-child tz-30">
-        <div className="text-3xl font-bold text-on-surface mb-6 font-headline">{price}</div>
-        <a 
-          href={link} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className={`block text-center w-full py-4 rounded-xl font-bold transition-all hover:scale-[1.03] active:scale-95 shadow-sm ${isPopular ? 'bg-primary text-on-primary hover:shadow-lg' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
-        >
-          Escolher Plano
-        </a>
+      <div className="mt-auto tilt-child tz-30 flex justify-center w-full">
+        <div className="text-3xl font-bold text-on-surface mb-6 font-headline text-left w-full">{price}</div>
+        <div className="w-full">
+          <MagneticButton>
+            <a 
+              href={link} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className={`block w-full text-center py-4 rounded-xl font-bold transition-all hover:scale-[1.03] active:scale-95 shadow-sm ${isPopular ? 'bg-primary text-on-primary hover:shadow-lg' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
+            >
+              Escolher Plano
+            </a>
+          </MagneticButton>
+        </div>
       </div>
     </div>
   );
 }
 
 import { FloatingAsset } from '../components/ui/FloatingAsset';
+import { ShineBorder } from '../components/ui/shine-border';
+import { MagneticButton } from '../components/ui/MagneticButton';
 
 export default function Planos() {
   return (
@@ -117,86 +123,96 @@ export default function Planos() {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24 perspective-1200 w-full max-w-7xl"
         staggerInterval={0.2}
       >
-        <StaggerItem>
-          <PlanoCard 
-            tag="Start"
-            title="Consulta Avulsa"
-            description="Ideal para quem busca um norte inicial e ajustes pontuais na alimentação."
-            price="R$200,00"
-            link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Consulta%20Avulsa."
-            items={[
-              { text: "Entendimento da rotina pré-atendimento.", highlight: true },
-              { text: "Orientações iniciais personalizadas" },
-              { text: "Suporte para dúvidas pontuais" }
-            ]}
-          />
+        <StaggerItem className="h-full">
+          <ShineBorder className="h-full">
+            <PlanoCard 
+              tag="Start"
+              title="Consulta Avulsa"
+              description="Ideal para quem busca um norte inicial e ajustes pontuais na alimentação."
+              price="R$200,00"
+              link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Consulta%20Avulsa."
+              items={[
+                { text: "Entendimento da rotina pré-atendimento.", highlight: true },
+                { text: "Orientações iniciais personalizadas" },
+                { text: "Suporte para dúvidas pontuais" }
+              ]}
+            />
+          </ShineBorder>
         </StaggerItem>
 
-        <StaggerItem>
-          <PlanoCard 
-            tag="Foco"
-            title="Consultoria Emagrece+"
-            description="Focado em perda de peso saudável com suporte contínuo para manter a constância."
-            price="R$280,00"
-            link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Consultoria%20Emagrece+."
-            items={[
-              { text: "Check-up completo de hábitos.", highlight: true },
-              { text: "Plano focado em déficit inteligente" },
-              { text: "Suporte via WhatsApp (Horário comercial)" },
-              { text: "Duração de 1 mês de acompanhamento" }
-            ]}
-          />
+        <StaggerItem className="h-full">
+          <ShineBorder className="h-full">
+            <PlanoCard 
+              tag="Foco"
+              title="Consultoria Emagrece+"
+              description="Focado em perda de peso saudável com suporte contínuo para manter a constância."
+              price="R$280,00"
+              link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Consultoria%20Emagrece+."
+              items={[
+                { text: "Check-up completo de hábitos.", highlight: true },
+                { text: "Plano focado em déficit inteligente" },
+                { text: "Suporte via WhatsApp (Horário comercial)" },
+                { text: "Duração de 1 mês de acompanhamento" }
+              ]}
+            />
+          </ShineBorder>
         </StaggerItem>
 
-        <StaggerItem>
-          <PlanoCard 
-            tag="Performance"
-            title="Hipertrofia Pro+"
-            description="Estratégias avançadas para ganho de massa muscular, rendimento físico e foco em hipertrofia."
-            price="R$497,00"
-            isPopular={true}
-            link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Hipertrofia%20Pro+."
-            items={[
-              { text: "Protocolo de ganho de massa muscular.", highlight: true },
-              { text: "Check-up quinzenal de bioimpedância.", highlight: true, icon: "medical_services" },
-              { text: "Otimização de suplementação" },
-              { text: "Período de 3 meses intensivos" }
-            ]}
-          />
+        <StaggerItem className="h-full">
+          <ShineBorder className="h-full">
+            <PlanoCard 
+              tag="Performance"
+              title="Hipertrofia Pro+"
+              description="Estratégias avançadas para ganho de massa muscular, rendimento físico e foco em hipertrofia."
+              price="R$497,00"
+              isPopular={true}
+              link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Hipertrofia%20Pro+."
+              items={[
+                { text: "Protocolo de ganho de massa muscular.", highlight: true },
+                { text: "Check-up quinzenal de bioimpedância.", highlight: true, icon: "medical_services" },
+                { text: "Otimização de suplementação" },
+                { text: "Período de 3 meses intensivos" }
+              ]}
+            />
+          </ShineBorder>
         </StaggerItem>
 
-        <StaggerItem>
-          <PlanoCard 
-            tag="Completo"
-            title="Transformação 360º"
-            description="A experiência definitiva para quem busca uma mudança de vida integral, profunda e duradoura."
-            price="R$697,00"
-            className="bg-primary/5 !border-primary/20"
-            link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Transformação%20360º."
-            items={[
-              { text: "Suporte prioritário 24/7", highlight: true, icon: "star" },
-              { text: "Check-up quinzenal presencial/online.", highlight: true, icon: "medical_services" },
-              { text: "Biofeedback e acompanhamento hormonal" },
-              { text: "Reeducação comportamental completa" },
-              { text: "Ciclo de 6 meses de transformação" }
-            ]}
-          />
+        <StaggerItem className="h-full">
+          <ShineBorder className="h-full">
+            <PlanoCard 
+              tag="Completo"
+              title="Transformação 360º"
+              description="A experiência definitiva para quem busca uma mudança de vida integral, profunda e duradoura."
+              price="R$697,00"
+              className="bg-primary/5 !border-primary/20"
+              link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Transformação%20360º."
+              items={[
+                { text: "Suporte prioritário 24/7", highlight: true, icon: "star" },
+                { text: "Check-up quinzenal presencial/online.", highlight: true, icon: "medical_services" },
+                { text: "Biofeedback e acompanhamento hormonal" },
+                { text: "Reeducação comportamental completa" },
+                { text: "Ciclo de 6 meses de transformação" }
+              ]}
+            />
+          </ShineBorder>
         </StaggerItem>
 
-        <StaggerItem>
-          <PlanoCard 
-            tag="Dupla"
-            title="Plano Casal"
-            description="Acompanhamento conjunto para casais que buscam alinhar saúde e rotina na mesma casa."
-            price="R$640,00*"
-            link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Plano%20Casal."
-            items={[
-              { text: "Cardápio otimizado para facilitar as compras.", highlight: true },
-              { text: "Estratégias para rotina familiar" },
-              { text: "Suporte compartilhado (WhatsApp)" },
-              { text: "Sinergia de objetivos e hábitos" }
-            ]}
-          />
+        <StaggerItem className="h-full">
+          <ShineBorder className="h-full">
+            <PlanoCard 
+              tag="Dupla"
+              title="Plano Casal"
+              description="Acompanhamento conjunto para casais que buscam alinhar saúde e rotina na mesma casa."
+              price="R$640,00*"
+              link="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Plano%20Casal."
+              items={[
+                { text: "Cardápio otimizado para facilitar as compras.", highlight: true },
+                { text: "Estratégias para rotina familiar" },
+                { text: "Suporte compartilhado (WhatsApp)" },
+                { text: "Sinergia de objetivos e hábitos" }
+              ]}
+            />
+          </ShineBorder>
         </StaggerItem>
       </StaggerReveal>
 

@@ -15,6 +15,8 @@ import ArticlesSection from '../components/ArticlesSection';
 import { ScrollExpandMedia } from '../components/ui/ScrollExpandMedia';
 import { VerticalMarquee } from '../components/ui/VerticalMarquee';
 import { GlowWrapper } from '../components/ui/GlowWrapper';
+import { MagneticButton } from '../components/ui/MagneticButton';
+import { SimuladorResultados } from '../components/SimuladorResultados';
 
 export default function Home() {
   useDynamicShadow();
@@ -370,12 +372,16 @@ export default function Home() {
 
               <StaggerItem>
                 <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-5 pt-2 md:pt-4 items-center md:items-start">
-                  <Link to="/planos" className="justify-center bg-tertiary text-on-tertiary px-6 py-3 md:px-8 md:py-4 rounded-full text-base md:text-lg font-semibold hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 w-full sm:w-auto">
-                    Começar minha jornada <span className="material-symbols-outlined">arrow_forward</span>
-                  </Link>
-                  <Link to="/sobre" className="justify-center text-center bg-white/80 backdrop-blur-md border border-primary/20 text-primary px-6 py-3 md:px-8 md:py-4 rounded-full text-base md:text-lg font-semibold hover:bg-white hover:shadow-md transition-all duration-300 w-full sm:w-auto">
-                    Conhecer o método
-                  </Link>
+                  <MagneticButton as="div" className="w-full sm:w-auto">
+                    <Link to="/planos" className="justify-center bg-tertiary text-on-tertiary px-6 py-3 md:px-8 md:py-4 rounded-full text-base md:text-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center gap-2 w-full sm:w-auto">
+                      Começar minha jornada <span className="material-symbols-outlined">arrow_forward</span>
+                    </Link>
+                  </MagneticButton>
+                  <MagneticButton as="div" className="w-full sm:w-auto">
+                    <Link to="/sobre" className="justify-center text-center bg-white/80 backdrop-blur-md border border-primary/20 text-primary px-6 py-3 md:px-8 md:py-4 rounded-full text-base md:text-lg font-semibold hover:bg-white hover:shadow-md transition-all duration-300 w-full sm:w-auto mt-0">
+                      Conhecer o método
+                    </Link>
+                  </MagneticButton>
                 </div>
               </StaggerItem>
 
@@ -648,6 +654,9 @@ export default function Home() {
           </StaggerReveal>
         </div>
       </section>
+
+      {/* Simulador de Resultados Interativo */}
+      <SimuladorResultados />
 
       {/* Articles Section - Restaurada para a Home */}
       <ArticlesSection />

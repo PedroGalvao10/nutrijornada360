@@ -18,7 +18,7 @@
 }
 
 body {
-  @apply bg-background text-on-surface font-body leading-relaxed;
+  @apply bg-background dark:bg-stone-950 text-on-surface dark:text-stone-300 font-body leading-relaxed;
 }
 
 /* ═══════════════════════════════════════════════════

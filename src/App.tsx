@@ -21,6 +21,7 @@ function ScrollToTop() {
 }
 
 import PageTransition from './components/ui/PageTransition';
+import { AnimatePresence } from 'framer-motion';
 
 function AppContent() {
   const location = useLocation();
@@ -28,27 +29,27 @@ function AppContent() {
   return (
     <ErrorBoundary>
       <ScrollToTop />
-      <PageTransition>
+      <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="planos" element={<Planos />} />
-            <Route path="sobre" element={<Sobre />} />
-            <Route path="artigos" element={<Artigos />} />
-            <Route path="blog/:slug" element={<ArtigoDetalhe />} />
+            <Route index element={<PageTransition><Home /></PageTransition>} />
+            <Route path="planos" element={<PageTransition><Planos /></PageTransition>} />
+            <Route path="sobre" element={<PageTransition><Sobre /></PageTransition>} />
+            <Route path="artigos" element={<PageTransition><Artigos /></PageTransition>} />
+            <Route path="blog/:slug" element={<PageTransition><ArtigoDetalhe /></PageTransition>} />
             {/* Redireciona /login para a home pois o login é um modal */}
             <Route path="login" element={<Navigate to="/" replace />} />
           </Route>
 
           {/* Rotas Administrativas CMS */}
           <Route path="/admin" element={<ProtectedRoute />}>
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
           </Route>
 
           {/* Rota de Fallback para qualquer URL inexistente */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </PageTransition>
+      </AnimatePresence>
     </ErrorBoundary>
   );
 }
