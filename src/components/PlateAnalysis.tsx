@@ -2,7 +2,9 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, TrendingUp, AlertTriangle, CheckCircle, Flame, Beef, Wheat, Droplets, Target, Lightbulb, Award, Edit2, Save } from 'lucide-react';
 import { usePlate } from '../context/PlateContext';
+import { useAuth } from '../context/AuthContextCore';
 import type { PlateItem, DailyGoals } from '../context/PlateContext';
+import { Lock } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════
 //  PLATE ANALYSIS — Modal de Análise Nutricional
@@ -264,6 +266,7 @@ const ScoreBadge: React.FC<{ score: number; quality: PlateQuality }> = ({ score,
 // ═══════════════════════════════════════════════════
 export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose }) => {
     const { items, totals, dailyGoals, updateDailyGoals } = usePlate();
+    const { isPremium } = useAuth();
     const [isEditingGoals, setIsEditingGoals] = useState(false);
     const [tempGoals, setTempGoals] = useState<DailyGoals>(dailyGoals);
 
@@ -367,13 +370,28 @@ export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose })
                                             <Save className="w-3.5 h-3.5" /> Salvar
                                         </button>
                                     ) : (
-                                        <button onClick={() => setIsEditingGoals(true)} className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-primary transition-colors">
-                                            <Edit2 className="w-3.5 h-3.5" /> Editar
+                                        <button 
+                                            onClick={() => isPremium ? setIsEditingGoals(true) : null} 
+                                            className={`flex items-center gap-1 text-xs font-bold transition-colors ${isPremium ? 'text-stone-400 hover:text-primary' : 'text-stone-300 cursor-not-allowed'}`}
+                                            title={isPremium ? "Editar Metas" : "Funcionalidade exclusiva para usuários Premium"}
+                                        >
+                                            {isPremium ? <Edit2 className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
+                                            {isPremium ? "Editar" : "Premium"}
                                         </button>
                                     )}
                                 </div>
 
-                                {isEditingGoals ? (
+                                {!isPremium && !isEditingGoals && (
+                                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-3 mb-4 flex items-start gap-3">
+                                        <Lock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                        <p className="text-[10px] text-stone-600 leading-tight">
+                                            A personalização de metas é uma funcionalidade exclusiva do plano **Transformação 360º**. 
+                                            <button className="text-primary font-bold ml-1 hover:underline">Saiba mais</button>
+                                        </p>
+                                    </div>
+                                )}
+
+                                {isEditingGoals && isPremium ? (
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>

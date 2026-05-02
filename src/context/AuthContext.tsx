@@ -3,6 +3,7 @@ import { AuthContext } from './AuthContextCore';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
@@ -31,11 +32,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const value = useMemo(() => ({
     isAdmin,
+    isPremium,
     isLoading,
     setIsAdmin,
+    setIsPremium,
     checkAuth,
     logout
-  }), [isAdmin, isLoading, checkAuth, logout]);
+  }), [isAdmin, isPremium, isLoading, checkAuth, logout]);
 
   return (
     <AuthContext.Provider value={value}>
