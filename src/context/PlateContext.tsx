@@ -12,6 +12,13 @@ export interface PlateItem {
     unit: 'g' | 'serving';
 }
 
+export interface DailyGoals {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+}
+
 interface PlateContextType {
     items: PlateItem[];
     addItem: (item: Omit<PlateItem, 'quantity' | 'unit'>, quantity: number, unit: 'g' | 'serving') => void;
@@ -29,6 +36,8 @@ interface PlateContextType {
         carbs: number;
         fat: number;
     };
+    dailyGoals: DailyGoals;
+    updateDailyGoals: (goals: Partial<DailyGoals>) => void;
 }
 
 const PlateContext = createContext<PlateContextType | undefined>(undefined);
@@ -38,11 +47,19 @@ export const PlateProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const saved = localStorage.getItem('mariana_plate');
         return saved ? JSON.parse(saved) : [];
     });
+    const [dailyGoals, setDailyGoals] = useState<DailyGoals>(() => {
+        const saved = localStorage.getItem('mariana_daily_goals');
+        return saved ? JSON.parse(saved) : { calories: 2000, protein: 75, carbs: 250, fat: 65 };
+    });
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('mariana_plate', JSON.stringify(items));
     }, [items]);
+
+    useEffect(() => {
+        localStorage.setItem('mariana_daily_goals', JSON.stringify(dailyGoals));
+    }, [dailyGoals]);
 
     const toggleDrawer = () => setIsOpen(prev => !prev);
     const openDrawer = () => setIsOpen(true);
@@ -71,6 +88,10 @@ export const PlateProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const clearPlate = () => setItems([]);
 
+    const updateDailyGoals = (goals: Partial<DailyGoals>) => {
+        setDailyGoals(prev => ({ ...prev, ...goals }));
+    };
+
     const totals = useMemo(() => {
         return items.reduce((acc, item) => {
             const factor = item.unit === 'g' ? item.quantity / 100 : item.quantity;
@@ -84,7 +105,7 @@ export const PlateProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, [items]);
 
     return (
-        <PlateContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearPlate, isOpen, setIsOpen, toggleDrawer, openDrawer, closeDrawer, totals }}>
+        <PlateContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearPlate, isOpen, setIsOpen, toggleDrawer, openDrawer, closeDrawer, totals, dailyGoals, updateDailyGoals }}>
             {children}
         </PlateContext.Provider>
     );

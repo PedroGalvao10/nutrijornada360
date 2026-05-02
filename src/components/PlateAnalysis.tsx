@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, TrendingUp, AlertTriangle, CheckCircle, Flame, Beef, Wheat, Droplets, Target, Lightbulb, Award } from 'lucide-react';
+import { X, TrendingUp, AlertTriangle, CheckCircle, Flame, Beef, Wheat, Droplets, Target, Lightbulb, Award, Edit2, Save } from 'lucide-react';
 import { usePlate } from '../context/PlateContext';
-import type { PlateItem } from '../context/PlateContext';
+import type { PlateItem, DailyGoals } from '../context/PlateContext';
 
 // ═══════════════════════════════════════════════════
 //  PLATE ANALYSIS — Modal de Análise Nutricional
@@ -14,14 +14,6 @@ interface PlateAnalysisProps {
     isOpen: boolean;
     onClose: () => void;
 }
-
-// ── Metas Diárias de Referência (Adulto Médio ~2000kcal) ──
-const DAILY_GOALS = {
-    calories: 2000,
-    protein: 75,   // g
-    carbs: 250,     // g
-    fat: 65,        // g
-};
 
 // ── Faixas ideais de distribuição calórica (% do total) ──
 const IDEAL_RANGES = {
@@ -48,7 +40,7 @@ interface AnalysisResult {
 // ═══════════════════════════════════════════════════
 //  STEP 1: Analisar o prato e gerar insights
 // ═══════════════════════════════════════════════════
-function analyzePlate(items: PlateItem[], totals: { calories: number; protein: number; carbs: number; fat: number }): AnalysisResult {
+function analyzePlate(items: PlateItem[], totals: { calories: number; protein: number; carbs: number; fat: number }, dailyGoals: DailyGoals): AnalysisResult {
     if (items.length === 0) {
         return {
             quality: 'poor',
@@ -103,7 +95,7 @@ function analyzePlate(items: PlateItem[], totals: { calories: number; protein: n
     }
 
     // Calorias vs meta diária
-    const calPercentOfDaily = (totals.calories / DAILY_GOALS.calories) * 100;
+    const calPercentOfDaily = dailyGoals.calories > 0 ? (totals.calories / dailyGoals.calories) * 100 : 0;
     if (calPercentOfDaily > 50) {
         score -= 10;
         insights.push(`Esta refeição representa ${Math.round(calPercentOfDaily)}% das calorias diárias recomendadas. Atenção às demais refeições.`);
@@ -271,9 +263,20 @@ const ScoreBadge: React.FC<{ score: number; quality: PlateQuality }> = ({ score,
 //  COMPONENTE PRINCIPAL — PlateAnalysis
 // ═══════════════════════════════════════════════════
 export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose }) => {
-    const { items, totals } = usePlate();
+    const { items, totals, dailyGoals, updateDailyGoals } = usePlate();
+    const [isEditingGoals, setIsEditingGoals] = useState(false);
+    const [tempGoals, setTempGoals] = useState<DailyGoals>(dailyGoals);
 
-    const analysis = useMemo(() => analyzePlate(items, totals), [items, totals]);
+    useEffect(() => {
+        setTempGoals(dailyGoals);
+    }, [dailyGoals]);
+
+    const handleSaveGoals = () => {
+        updateDailyGoals(tempGoals);
+        setIsEditingGoals(false);
+    };
+
+    const analysis = useMemo(() => analyzePlate(items, totals, dailyGoals), [items, totals, dailyGoals]);
 
     // Calorias vindas de cada macro (para o donut)
     const proteinCals = totals.protein * 4;
@@ -354,43 +357,79 @@ export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose })
 
                             {/* Macro Bars vs Daily Goals */}
                             <div className="bg-stone-50/50 rounded-[2rem] p-6 border border-stone-100 space-y-5">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Target className="w-4 h-4 text-primary" />
-                                    <span className="text-xs font-bold text-stone-500 uppercase tracking-[0.2em]">Comparativo com Meta Diária</span>
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <Target className="w-4 h-4 text-primary" />
+                                        <span className="text-xs font-bold text-stone-500 uppercase tracking-[0.2em]">Comparativo com Meta Diária</span>
+                                    </div>
+                                    {isEditingGoals ? (
+                                        <button onClick={handleSaveGoals} className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-dark transition-colors">
+                                            <Save className="w-3.5 h-3.5" /> Salvar
+                                        </button>
+                                    ) : (
+                                        <button onClick={() => setIsEditingGoals(true)} className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-primary transition-colors">
+                                            <Edit2 className="w-3.5 h-3.5" /> Editar
+                                        </button>
+                                    )}
                                 </div>
 
-                                <ProgressBar
-                                    label="Calorias"
-                                    current={totals.calories}
-                                    goal={DAILY_GOALS.calories}
-                                    unit=""
-                                    color="#4a7c59"
-                                    icon={<Flame className="w-3.5 h-3.5 text-primary" />}
-                                />
-                                <ProgressBar
-                                    label="Proteína"
-                                    current={totals.protein}
-                                    goal={DAILY_GOALS.protein}
-                                    unit="g"
-                                    color="#4a7c59"
-                                    icon={<Beef className="w-3.5 h-3.5 text-primary" />}
-                                />
-                                <ProgressBar
-                                    label="Carboidrato"
-                                    current={totals.carbs}
-                                    goal={DAILY_GOALS.carbs}
-                                    unit="g"
-                                    color="#d97706"
-                                    icon={<Wheat className="w-3.5 h-3.5 text-amber-500" />}
-                                />
-                                <ProgressBar
-                                    label="Gordura"
-                                    current={totals.fat}
-                                    goal={DAILY_GOALS.fat}
-                                    unit="g"
-                                    color="#e11d48"
-                                    icon={<Droplets className="w-3.5 h-3.5 text-rose-500" />}
-                                />
+                                {isEditingGoals ? (
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Calorias (kcal)</label>
+                                                <input type="number" value={tempGoals.calories} onChange={(e) => setTempGoals({ ...tempGoals, calories: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Proteína (g)</label>
+                                                <input type="number" value={tempGoals.protein} onChange={(e) => setTempGoals({ ...tempGoals, protein: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Carboidrato (g)</label>
+                                                <input type="number" value={tempGoals.carbs} onChange={(e) => setTempGoals({ ...tempGoals, carbs: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Gordura (g)</label>
+                                                <input type="number" value={tempGoals.fat} onChange={(e) => setTempGoals({ ...tempGoals, fat: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <ProgressBar
+                                            label="Calorias"
+                                            current={totals.calories}
+                                            goal={dailyGoals.calories}
+                                            unit=""
+                                            color="#4a7c59"
+                                            icon={<Flame className="w-3.5 h-3.5 text-primary" />}
+                                        />
+                                        <ProgressBar
+                                            label="Proteína"
+                                            current={totals.protein}
+                                            goal={dailyGoals.protein}
+                                            unit="g"
+                                            color="#4a7c59"
+                                            icon={<Beef className="w-3.5 h-3.5 text-primary" />}
+                                        />
+                                        <ProgressBar
+                                            label="Carboidrato"
+                                            current={totals.carbs}
+                                            goal={dailyGoals.carbs}
+                                            unit="g"
+                                            color="#d97706"
+                                            icon={<Wheat className="w-3.5 h-3.5 text-amber-500" />}
+                                        />
+                                        <ProgressBar
+                                            label="Gordura"
+                                            current={totals.fat}
+                                            goal={dailyGoals.fat}
+                                            unit="g"
+                                            color="#e11d48"
+                                            icon={<Droplets className="w-3.5 h-3.5 text-rose-500" />}
+                                        />
+                                    </>
+                                )}
                             </div>
 
                             {/* Items Breakdown */}
