@@ -119,13 +119,23 @@ export const ScrollExpandMedia: React.FC<ScrollExpandMediaProps> = ({
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('keydown', handleKeyDown, { passive: false });
 
+    // Safety net: garante restauração do overflow em navegação abrupta
+    const restoreOverflow = () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+    window.addEventListener('pagehide', restoreOverflow);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') restoreOverflow();
+    });
+
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      window.removeEventListener('pagehide', restoreOverflow);
+      restoreOverflow();
     };
   }, [mediaFullyExpanded, rawProgress]);
 

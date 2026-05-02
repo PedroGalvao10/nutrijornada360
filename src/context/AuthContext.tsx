@@ -1,11 +1,11 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import { AuthContext } from './AuthContextCore';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/check');
       setIsAdmin(res.ok);
@@ -14,23 +14,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       setIsAdmin(false);
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
+
+  const value = useMemo(() => ({
+    isAdmin,
+    isLoading,
+    setIsAdmin,
+    checkAuth,
+    logout
+  }), [isAdmin, isLoading, checkAuth, logout]);
 
   return (
-    <AuthContext.Provider value={{ isAdmin, isLoading, setIsAdmin, checkAuth, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

@@ -85,7 +85,6 @@ export const StaggerReveal = forwardRef<HTMLDivElement, StaggerRevealProps>(({
       variants={dynamicContainerVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      style={{ willChange: "auto" }}
     >
       {children}
     </motion.div>
@@ -101,12 +100,14 @@ interface StaggerItemProps {
   className?: string;
   /** "up" = de baixo (padrão), "left" = slide da esquerda */
   direction?: "up" | "left";
+  onClick?: () => void;
 }
 
 export function StaggerItem({
   children,
   className = "",
   direction = "up",
+  onClick,
 }: StaggerItemProps) {
   const variants = direction === "left" ? itemVariantsLeft : itemVariants;
 
@@ -114,6 +115,8 @@ export function StaggerItem({
     <motion.div
       className={className}
       variants={variants}
+      onClick={onClick}
+      style={{ willChange: "transform, opacity" }}
     >
       {children}
     </motion.div>

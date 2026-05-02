@@ -12,8 +12,8 @@ type ShineBorderProps = {
 export const ShineBorder = ({
   children,
   className,
-  borderWidth = 2,
-  duration = 3,
+  borderWidth = 1,
+  duration = 14,
   gradient = "from-emerald-400 via-primary to-emerald-950",
 }: ShineBorderProps) => {
   return (

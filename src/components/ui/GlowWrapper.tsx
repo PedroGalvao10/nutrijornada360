@@ -1,4 +1,5 @@
 import React, { forwardRef, useEffect, useRef } from 'react';
+import { glowPointerManager } from '../../lib/glowPointerManager';
 
 export interface GlowWrapperProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
@@ -50,21 +51,15 @@ export const GlowWrapper = forwardRef<HTMLElement, GlowWrapperProps>(({
     }
   };
 
+  // STEP: Usar o singleton em vez de listeners individuais na window
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      const el = localRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      // Calcula X e Y baseados no canto superior esquerdo deste elemento (local)
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      el.style.setProperty('--x', `${x}`);
-      el.style.setProperty('--y', `${y}`);
+    const el = localRef.current;
+    if (!el) return;
+
+    glowPointerManager.register(el);
+    return () => {
+      glowPointerManager.unregister(el);
     };
-    
-    // Escuta na window para que a iluminação funcione quando o mouse passar perto (para fora do card)
-    window.addEventListener('pointermove', handlePointerMove);
-    return () => window.removeEventListener('pointermove', handlePointerMove);
   }, []);
 
   const getStyleVars = () => {

@@ -15,7 +15,7 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({ children, classN
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className={`text-4xl md:text-5xl font-headline text-on-background mb-6 leading-tight font-semibold tracking-tight ${className}`}
+      className={`text-4xl md:text-5xl font-headline text-on-background dark:text-stone-100 mb-6 leading-tight font-semibold tracking-tight ${className}`}
     >
       {children}
     </motion.h2>

@@ -18,9 +18,10 @@ function AnimatedCounter({ value, suffix = '', prefix = '', decimals = 0 }: Anim
   }, [value, springValue]);
 
   useEffect(() => {
-    return springValue.onChange((v) => {
+    const unsubscribe = springValue.on('change', (v) => {
       setDisplayValue(v);
     });
+    return () => unsubscribe();
   }, [springValue]);
 
   return (
@@ -62,7 +63,7 @@ export function SimuladorResultados() {
           </StaggerItem>
         </StaggerReveal>
 
-        <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-xl border border-primary/10 dark:border-emerald-500/10 rounded-[2rem] p-8 md:p-12 shadow-xl dark:shadow-2xl">
+        <div className="bg-white/50 dark:bg-stone-900/50 antigravity-glass rounded-[2rem] p-8 md:p-12 border border-primary/10 dark:border-emerald-500/10 shadow-xl">
           
           <div className="mb-12">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">

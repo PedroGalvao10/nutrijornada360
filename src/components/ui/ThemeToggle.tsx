@@ -13,6 +13,8 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const root = window.document.documentElement;
+    // Ativa a transição suave temporariamente
+    root.classList.add('transitioning-theme');
     if (isDark) {
       root.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -20,6 +22,9 @@ export function ThemeToggle() {
       root.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+    // Remove a classe de transição após a animação completar
+    const timer = setTimeout(() => root.classList.remove('transitioning-theme'), 600);
+    return () => clearTimeout(timer);
   }, [isDark]);
 
   return (

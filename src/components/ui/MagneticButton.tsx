@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 interface MagneticButtonProps {
   children: React.ReactNode;
@@ -11,9 +11,21 @@ interface MagneticButtonProps {
   rel?: string;
 }
 
+/**
+ * MagneticButton — Botão com efeito magnético que segue o cursor.
+ * 
+ * OTIMIZAÇÃO: Substituído useState por useMotionValue para eliminar re-renders
+ * a cada mousemove. Framer Motion anima diretamente os motion values sem causar
+ * reconciliação do React, resultando em performance Apple-grade.
+ */
 export function MagneticButton({ children, className = '', as = 'button', ...props }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement | HTMLAnchorElement | HTMLDivElement | null>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  // STEP: useMotionValue + useSpring em vez de useState (zero re-renders)
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15, mass: 0.1 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15, mass: 0.1 });
 
   const handleMouse = (e: React.MouseEvent) => {
     if (!ref.current) return;
@@ -21,11 +33,13 @@ export function MagneticButton({ children, className = '', as = 'button', ...pro
     const { height, width, left, top } = ref.current.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX * 0.2, y: middleY * 0.2 });
+    x.set(middleX * 0.2);
+    y.set(middleY * 0.2);
   };
 
   const reset = () => {
-    setPosition({ x: 0, y: 0 });
+    x.set(0);
+    y.set(0);
   };
 
   const commonProps = {
@@ -33,9 +47,7 @@ export function MagneticButton({ children, className = '', as = 'button', ...pro
     onMouseMove: handleMouse,
     onMouseLeave: reset,
     className: `inline-block relative ${className}`,
-    initial: { x: 0, y: 0 },
-    animate: { x: position.x, y: position.y },
-    transition: { type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }
+    style: { x: springX, y: springY },
   };
 
   if (as === 'a') {

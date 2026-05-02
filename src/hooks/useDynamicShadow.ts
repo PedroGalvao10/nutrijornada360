@@ -3,6 +3,9 @@ import { useEffect } from 'react';
 /**
  * Hook para criar sombras de paralaxe dinâmicas que reagem ao scroll.
  * Simula uma fonte de luz que se desloca conforme o usuário navega.
+ * 
+ * OTIMIZAÇÃO: O loop rAF agora pausa automaticamente quando nenhum elemento
+ * .parallax-shadow está visível no viewport, economizando CPU/GPU.
  */
 export function useDynamicShadow(dependencies: unknown[] = []) {
   useEffect(() => {
@@ -14,6 +17,8 @@ export function useDynamicShadow(dependencies: unknown[] = []) {
     // Armazenar os valores atuais para interpolação (LERP)
     const currentValues = new Map<HTMLElement, { x: number; y: number; py: number }>();
     const visibleElements = new Set<HTMLElement>();
+    let rafId: number = 0;
+    let isLoopRunning = false;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -24,6 +29,13 @@ export function useDynamicShadow(dependencies: unknown[] = []) {
             visibleElements.delete(entry.target as HTMLElement);
           }
         });
+
+        // STEP: Iniciar/parar o loop baseado na visibilidade
+        if (visibleElements.size > 0 && !isLoopRunning) {
+          isLoopRunning = true;
+          rafId = requestAnimationFrame(animate);
+        }
+        // Se não há elementos visíveis, o loop para naturalmente no próximo frame
       },
       { threshold: 0, rootMargin: '200px 0px' }
     );
@@ -35,9 +47,14 @@ export function useDynamicShadow(dependencies: unknown[] = []) {
       currentValues.set(el as HTMLElement, { x: 0, y: 10, py: 0 });
     });
 
-    let rafId: number;
-
     const animate = () => {
+      // STEP: Pausa quando nenhum elemento está visível
+      if (visibleElements.size === 0) {
+        isLoopRunning = false;
+        rafId = 0;
+        return;
+      }
+
       const vh = window.innerHeight;
       const vCenter = vh / 2;
 
@@ -73,11 +90,16 @@ export function useDynamicShadow(dependencies: unknown[] = []) {
       rafId = requestAnimationFrame(animate);
     };
 
-    rafId = requestAnimationFrame(animate);
+    // Iniciar loop apenas se já houver elementos visíveis
+    if (visibleElements.size > 0) {
+      isLoopRunning = true;
+      rafId = requestAnimationFrame(animate);
+    }
 
     return () => {
       observer.disconnect();
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
+      isLoopRunning = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);

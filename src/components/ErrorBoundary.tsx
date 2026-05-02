@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { MagneticButton } from "./ui/MagneticButton";
 
 interface Props {
   children: ReactNode;
@@ -36,15 +37,17 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-stone-500 mb-6">Pedimos desculpas pelo inconveniente. A aplicação encontrou um problema técnico.</p>
             
             <div className="flex flex-col gap-3">
-              <button 
-                onClick={() => {
-                  window.location.hash = '#/';
-                  window.location.reload();
-                }}
-                className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20"
-              >
-                Recarregar Site
-              </button>
+              <MagneticButton as="div" className="w-full">
+                <button 
+                  onClick={() => {
+                    window.location.hash = '#/';
+                    window.location.reload();
+                  }}
+                  className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-primary/20 w-full"
+                >
+                  Recarregar Site
+                </button>
+              </MagneticButton>
               
               {this.state.error && (
                 <details className="text-left mt-4 mb-2">

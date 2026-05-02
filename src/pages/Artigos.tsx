@@ -7,6 +7,7 @@ import { TypewriterText } from '../components/TypewriterText';
 import { useTilt } from '../hooks/useTilt';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
+import { MagneticButton } from '../components/ui/MagneticButton';
 
 interface Ebook {
   id: number;
@@ -24,21 +25,23 @@ function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Eb
   return (
     <div 
       ref={cardRef}
-      className="bg-surface border border-outline/10 p-6 rounded-3xl flex flex-col sm:flex-row gap-6 items-center parallax-shadow hover:shadow-lg transition-shadow duration-300 transform-style-3d"
+      className="bg-surface dark:bg-stone-900 border border-outline/10 dark:border-stone-800 p-6 rounded-3xl flex flex-col sm:flex-row gap-6 items-center parallax-shadow hover:shadow-lg transition-shadow duration-300 transform-style-3d"
     >
-      <div className="w-40 h-52 flex-shrink-0 bg-surface-container rounded-lg overflow-hidden border border-outline/20 relative tilt-child tz-30 shadow-md">
+      <div className="w-40 h-52 flex-shrink-0 bg-surface-container dark:bg-stone-800 rounded-lg overflow-hidden border border-outline/20 dark:border-stone-700 relative tilt-child tz-30 shadow-md">
         <img src={ebook.imageUrl} alt={`Capa ${ebook.title}`} className="w-full h-full object-cover" />
-        <div className="absolute top-2 right-2 bg-secondary text-on-secondary text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest shadow-sm">PDF</div>
+        <div className="absolute top-2 right-2 bg-secondary dark:bg-stone-700 text-on-secondary dark:text-stone-100 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest shadow-sm">PDF</div>
       </div>
       <div className="flex flex-col flex-1 text-center sm:text-left tilt-child tz-10">
-        <h3 className="text-xl font-headline font-bold text-on-surface mb-3">{ebook.title}</h3>
-        <p className="text-sm text-on-surface-variant mb-6">Um guia prático com passos eficientes desenhados para a sua rotina diária.</p>
-        <button 
-          onClick={() => onDownload(ebook)}
-          className="bg-primary text-on-primary font-bold px-6 py-3 rounded-full hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-auto w-full sm:w-auto self-start shadow-sm active:scale-[0.98] tilt-child tz-20"
-        >
-          <span className="material-symbols-outlined text-[18px]">download</span> Baixar Grátis
-        </button>
+        <h3 className="text-xl font-headline font-bold text-on-surface dark:text-stone-100 mb-3">{ebook.title}</h3>
+        <p className="text-sm text-on-surface-variant dark:text-stone-400 mb-6">Um guia prático com passos eficientes desenhados para a sua rotina diária.</p>
+        <MagneticButton as="div" className="self-start sm:w-auto w-full">
+          <button 
+            onClick={() => onDownload(ebook)}
+            className="bg-primary dark:bg-emerald-500 text-on-primary dark:text-stone-950 font-bold px-6 py-3 rounded-full hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-auto w-full shadow-sm active:scale-[0.98] tilt-child tz-20"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span> Baixar Grátis
+          </button>
+        </MagneticButton>
       </div>
     </div>
   );
@@ -248,7 +251,7 @@ export default function Artigos() {
   };
 
   return (
-    <main className="animate-fade-in bg-background min-h-screen relative pt-[80px]">
+    <main className="animate-fade-in bg-background dark:bg-stone-950 min-h-screen relative pt-40">
       <SEO 
         title="Blog e Conteúdos | Mariana Bermudes Nutrição"
         description="Acesse artigos científicos, guias práticos e e-books gratuitos sobre nutrição comportamental, emagrecimento e saúde integral."
@@ -312,14 +315,14 @@ export default function Artigos() {
       </section>
 
       {/* Seção de E-books Gratuitos */}
-      <section className="py-20 px-6 bg-surface-variant/10 relative">
+      <section className="py-20 px-6 bg-surface-variant/10 dark:bg-stone-900/50 relative">
         <div className="max-w-7xl mx-auto">
           <StaggerReveal className="text-center mb-12">
              <StaggerItem>
-               <h2 className="text-3xl md:text-5xl font-headline font-bold text-on-surface mb-4">E-books Gratuitos</h2>
+               <h2 className="text-3xl md:text-5xl font-headline font-bold text-on-surface dark:text-stone-100 mb-4">E-books Gratuitos</h2>
              </StaggerItem>
              <StaggerItem>
-               <p className="text-on-surface-variant md:text-lg max-w-2xl mx-auto">Baixe nossos materiais exclusivos e aprofunde seus conhecimentos em nutrição prática e bem-estar.</p>
+               <p className="text-on-surface-variant dark:text-stone-300 md:text-lg max-w-2xl mx-auto">Baixe nossos materiais exclusivos e aprofunde seus conhecimentos em nutrição prática e bem-estar.</p>
              </StaggerItem>
           </StaggerReveal>
           
@@ -337,14 +340,14 @@ export default function Artigos() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="bg-surface-container py-20 px-6 relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+      <section className="bg-surface-container dark:bg-stone-900 py-20 px-6 relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 dark:via-emerald-500/20 to-transparent"></div>
         <StaggerReveal className="max-w-4xl mx-auto text-center">
           <StaggerItem>
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-on-surface mb-6">Assine a nossa Newsletter</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-on-surface dark:text-stone-100 mb-6">Assine a nossa Newsletter</h2>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-on-surface-variant mb-10 text-lg md:text-xl max-w-2xl mx-auto">Receba novos artigos, materiais de nutrição comportamental e atualizações diretamente no seu e-mail.</p>
+            <p className="text-on-surface-variant dark:text-stone-300 mb-10 text-lg md:text-xl max-w-2xl mx-auto">Receba novos artigos, materiais de nutrição comportamental e atualizações diretamente no seu e-mail.</p>
           </StaggerItem>
           <StaggerItem>
             <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto" onSubmit={handleNewsletterSubmit}>
@@ -355,21 +358,23 @@ export default function Artigos() {
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Digite seu melhor e-mail" 
-                className="flex-1 bg-surface border-2 border-outline-variant/60 px-6 py-4 rounded-full text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base hover:border-outline shadow-sm" 
+                className="flex-1 bg-surface border-2 border-outline-variant/60 px-6 py-4 rounded-full text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base hover:border-outline shadow-sm dark:bg-stone-950 dark:border-stone-700 dark:text-stone-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-400 dark:hover:border-stone-500" 
                 required 
                 disabled={newsletterSubmitting}
               />
-              <button 
-                type="submit" 
-                disabled={newsletterSubmitting}
-                className="bg-primary text-on-primary font-bold px-8 py-4 rounded-full hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 hover:scale-105 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50"
-              >
-                {newsletterSubmitting ? (
-                   <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
-                ) : (
-                   <>Inscrever-se <span className="material-symbols-outlined text-lg">rocket_launch</span></>
-                )}
-              </button>
+              <MagneticButton as="div">
+                <button 
+                  type="submit" 
+                  disabled={newsletterSubmitting}
+                  className="bg-primary text-on-primary dark:bg-emerald-500 dark:text-stone-950 font-bold px-8 py-4 rounded-full hover:bg-opacity-90 dark:hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 hover:scale-105 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 w-full"
+                >
+                  {newsletterSubmitting ? (
+                     <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                  ) : (
+                     <>Inscrever-se <span className="material-symbols-outlined text-lg">rocket_launch</span></>
+                  )}
+                </button>
+              </MagneticButton>
             </form>
           </StaggerItem>
         </StaggerReveal>
@@ -379,38 +384,38 @@ export default function Artigos() {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => !isSubmitting && setIsModalOpen(false)}></div>
-           <div className="bg-surface relative z-10 w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden border border-outline/10 flex flex-col max-h-[90vh]">
-              <div className="bg-primary/5 px-8 pt-8 pb-4 border-b border-outline/10 relative shrink-0">
-                 <button onClick={() => !isSubmitting && setIsModalOpen(false)} className="absolute top-6 right-6 text-on-surface-variant hover:text-primary transition-colors focus:outline-none">
+           <div className="bg-surface dark:bg-stone-900 relative z-10 w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden border border-outline/10 dark:border-stone-800 flex flex-col max-h-[90vh]">
+              <div className="bg-primary/5 dark:bg-emerald-500/10 px-8 pt-8 pb-4 border-b border-outline/10 dark:border-stone-800 relative shrink-0">
+                 <button onClick={() => !isSubmitting && setIsModalOpen(false)} className="absolute top-6 right-6 text-on-surface-variant dark:text-stone-400 hover:text-primary dark:hover:text-emerald-400 transition-colors focus:outline-none">
                     <span className="material-symbols-outlined">close</span>
                  </button>
-                 <h3 className="text-2xl font-headline font-bold text-on-surface mb-2 leading-tight">Garantir acesso ao E-book</h3>
-                 <p className="text-on-surface-variant text-sm flex items-center gap-2"><span className="material-symbols-outlined text-primary text-[16px]">check_circle</span> "{selectedEbook?.title}"</p>
+                 <h3 className="text-2xl font-headline font-bold text-on-surface dark:text-stone-100 mb-2 leading-tight">Garantir acesso ao E-book</h3>
+                 <p className="text-on-surface-variant dark:text-stone-300 text-sm flex items-center gap-2"><span className="material-symbols-outlined text-primary dark:text-emerald-400 text-[16px]">check_circle</span> "{selectedEbook?.title}"</p>
               </div>
 
               <div className="p-8 overflow-y-auto custom-scrollbar">
                  {successMessage ? (
                      <div className="flex flex-col items-center justify-center text-center py-8">
-                        <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                           <span className="material-symbols-outlined text-3xl text-primary">task_alt</span>
+                        <div className="w-16 h-16 bg-primary/20 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-4">
+                           <span className="material-symbols-outlined text-3xl text-primary dark:text-emerald-400">task_alt</span>
                         </div>
-                        <h4 className="text-xl font-bold text-on-surface mb-2">Quase lá!</h4>
-                        <p className="text-on-surface-variant">{successMessage}</p>
+                        <h4 className="text-xl font-bold text-on-surface dark:text-stone-100 mb-2">Quase lá!</h4>
+                        <p className="text-on-surface-variant dark:text-stone-300">{successMessage}</p>
                      </div>
                  ) : (
                     <form onSubmit={handleFormSubmit} className="flex flex-col gap-6">
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-semibold text-on-surface ml-1">Nome Completo *</label>
-                        <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-surface-container/50 border border-outline/30 px-4 py-3 rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="Ex: Maria de Souza" required disabled={isSubmitting} />
+                        <label className="text-sm font-semibold text-on-surface dark:text-stone-200 ml-1">Nome Completo *</label>
+                        <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-surface-container/50 border border-outline/30 px-4 py-3 rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm dark:bg-stone-950 dark:border-stone-700 dark:text-stone-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-400" placeholder="Ex: Maria de Souza" required disabled={isSubmitting} />
                       </div>
 
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-semibold text-on-surface ml-1">E-mail de preferência *</label>
-                        <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-surface-container/50 border border-outline/30 px-4 py-3 rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm" placeholder="seu@email.com" required disabled={isSubmitting} />
+                        <label className="text-sm font-semibold text-on-surface dark:text-stone-200 ml-1">E-mail de preferência *</label>
+                        <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-surface-container/50 border border-outline/30 px-4 py-3 rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm dark:bg-stone-950 dark:border-stone-700 dark:text-stone-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-400" placeholder="seu@email.com" required disabled={isSubmitting} />
                       </div>
 
                       <div className="flex flex-col gap-2.5">
-                        <label className="text-sm font-semibold text-on-surface ml-1">Quais são seus Objetivos de Saúde? *</label>
+                        <label className="text-sm font-semibold text-on-surface dark:text-stone-200 ml-1">Quais são seus Objetivos de Saúde? *</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
                           {GOAL_OPTIONS.map(goal => (
                             <button
@@ -420,8 +425,8 @@ export default function Artigos() {
                               disabled={isSubmitting}
                               className={`text-left px-4 py-2.5 rounded-xl text-xs font-medium transition-all border ${
                                 formData.goals.includes(goal)
-                                  ? 'bg-primary/10 border-primary text-primary shadow-sm'
-                                  : 'bg-surface-container/30 border-outline/20 text-on-surface-variant hover:border-primary/40'
+                                  ? 'bg-primary/10 border-primary text-primary shadow-sm dark:bg-emerald-500/20 dark:border-emerald-400 dark:text-emerald-400'
+                                  : 'bg-surface-container/30 border-outline/20 text-on-surface-variant hover:border-primary/40 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-300 dark:hover:border-emerald-400/50'
                               }`}
                             >
                               <div className="flex items-center gap-2">
@@ -433,38 +438,40 @@ export default function Artigos() {
                             </button>
                           ))}
                         </div>
-                        <p className="text-[10px] text-on-surface-variant/70 italic ml-1">* Selecione pelo menos uma opção</p>
+                        <p className="text-[10px] text-on-surface-variant/70 dark:text-stone-400/70 italic ml-1">* Selecione pelo menos uma opção</p>
                       </div>
 
                       <div className="flex flex-col gap-3 mt-2">
                         <label className="flex items-start gap-3 cursor-pointer group">
                           <div className="relative flex items-center mt-0.5">
-                             <input type="checkbox" checked={formData.consentMarketing} onChange={(e) => setFormData({...formData, consentMarketing: e.target.checked})} className="peer w-5 h-5 appearance-none border-2 border-outline rounded-md checked:bg-primary checked:border-primary transition-colors cursor-pointer" required disabled={isSubmitting} />
-                             <span className="material-symbols-outlined absolute inset-0 text-white opacity-0 peer-checked:opacity-100 pointer-events-none text-xl leading-[1.2]">check</span>
+                             <input type="checkbox" checked={formData.consentMarketing} onChange={(e) => setFormData({...formData, consentMarketing: e.target.checked})} className="peer w-5 h-5 appearance-none border-2 border-outline rounded-md checked:bg-primary checked:border-primary transition-colors cursor-pointer dark:border-stone-600 dark:checked:bg-emerald-500 dark:checked:border-emerald-500" required disabled={isSubmitting} />
+                             <span className="material-symbols-outlined absolute inset-0 text-white dark:text-stone-900 opacity-0 peer-checked:opacity-100 pointer-events-none text-xl leading-[1.2]">check</span>
                           </div>
-                          <span className="text-xs text-on-surface-variant leading-relaxed">
+                          <span className="text-xs text-on-surface-variant dark:text-stone-300 leading-relaxed">
                             Concordo em receber e-mails com conteúdos, novidades e comunicações de marketing. *
                           </span>
                         </label>
 
                         <label className="flex items-start gap-3 cursor-pointer group">
                           <div className="relative flex items-center mt-0.5">
-                             <input type="checkbox" checked={formData.consentNewsletter} onChange={(e) => setFormData({...formData, consentNewsletter: e.target.checked})} className="peer w-5 h-5 appearance-none border-2 border-outline rounded-md checked:bg-primary checked:border-primary transition-colors cursor-pointer" disabled={isSubmitting} />
-                             <span className="material-symbols-outlined absolute inset-0 text-white opacity-0 peer-checked:opacity-100 pointer-events-none text-xl leading-[1.2]">check</span>
+                             <input type="checkbox" checked={formData.consentNewsletter} onChange={(e) => setFormData({...formData, consentNewsletter: e.target.checked})} className="peer w-5 h-5 appearance-none border-2 border-outline rounded-md checked:bg-primary checked:border-primary transition-colors cursor-pointer dark:border-stone-600 dark:checked:bg-emerald-500 dark:checked:border-emerald-500" disabled={isSubmitting} />
+                             <span className="material-symbols-outlined absolute inset-0 text-white dark:text-stone-900 opacity-0 peer-checked:opacity-100 pointer-events-none text-xl leading-[1.2]">check</span>
                           </div>
-                          <span className="text-xs text-on-surface-variant leading-relaxed">
+                          <span className="text-xs text-on-surface-variant dark:text-stone-300 leading-relaxed">
                             Gostaria de me inscrever na Newsletter para receber novos artigos e materiais (opcional).
                           </span>
                         </label>
                       </div>
 
-                      <button type="submit" disabled={!isValidForm || isSubmitting} className="mt-4 w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-md transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2">
-                         {isSubmitting ? (
-                            <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                         ) : (
-                            <>Confirmar e Liberar Download <span className="material-symbols-outlined text-[18px]">download</span></>
-                         )}
-                      </button>
+                      <MagneticButton as="div" className="mt-4">
+                        <button type="submit" disabled={!isValidForm || isSubmitting} className="w-full bg-primary text-on-primary dark:bg-emerald-500 dark:text-stone-950 font-bold py-4 rounded-xl shadow-md transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                           {isSubmitting ? (
+                              <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                           ) : (
+                              <>Confirmar e Liberar Download <span className="material-symbols-outlined text-[18px]">download</span></>
+                           )}
+                        </button>
+                      </MagneticButton>
                     </form>
                  )}
               </div>

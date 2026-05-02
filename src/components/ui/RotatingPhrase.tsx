@@ -25,6 +25,7 @@ export function RotatingPhrase({ text }: RotatingPhraseProps) {
         {chars.map((char, i) => (
           <span
             key={i}
+            style={{ '--char-index': i } as React.CSSProperties}
             className="rotating-char text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary/60 dark:text-amber-500/60"
           >
             {char}

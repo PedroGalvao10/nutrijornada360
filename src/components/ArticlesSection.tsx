@@ -32,17 +32,17 @@ export default function ArticlesSection() {
   if (!loading && articles.length === 0) return null;
 
   return (
-    <section id="articles" className="py-24 bg-surface" aria-labelledby="articles-heading">
+    <section id="articles" className="py-24 bg-surface dark:bg-stone-950 transition-colors duration-500" aria-labelledby="articles-heading">
       <div className="container mx-auto px-6">
         <StaggerReveal className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <StaggerItem className="max-w-2xl">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-bold tracking-wider uppercase mb-4">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 dark:bg-emerald-500/10 text-primary dark:text-emerald-400 text-sm font-bold tracking-wider uppercase mb-4">
               Blog & Conhecimento
             </span>
             <SectionHeading id="articles-heading">
-              Últimos <span className="text-primary italic">Artigos</span>
+              Últimos <span className="text-primary dark:text-emerald-400 italic">Artigos</span>
             </SectionHeading>
-            <p className="text-on-surface-variant text-lg max-w-xl">
+            <p className="text-on-surface-variant dark:text-stone-400 text-lg max-w-xl">
               Confira meus últimos textos sobre saúde mental, neurociência e bem-estar emocional.
             </p>
           </StaggerItem>
@@ -60,7 +60,7 @@ export default function ArticlesSection() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-surface-variant/20 rounded-3xl h-[450px] animate-pulse" />
+              <div key={i} className="bg-surface-variant/20 dark:bg-stone-800/30 rounded-3xl h-[450px] animate-pulse" />
             ))}
           </div>
         ) : (

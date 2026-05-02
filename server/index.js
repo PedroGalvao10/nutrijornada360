@@ -8,7 +8,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-dotenv.config({ path: '../.env' });
+// Importa o novo módulo de rotas de nutrição
+import nutritionRouter from './nutrition-api.js';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,7 +27,12 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: [
+        'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175',
+        'http://localhost:5176', 'http://localhost:5177', 'http://localhost:5178',
+        'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://127.0.0.1:5175',
+        'http://127.0.0.1:5176', 'http://127.0.0.1:5177', 'http://127.0.0.1:5178',
+    ],
     credentials: true,
 }));
 
@@ -78,6 +86,8 @@ app.get('/api/auth/check', requireAuth, (req, res) => {
     res.json({ ok: true });
 });
 
+// Registra as rotas de nutrição (Proxy para USDA, Spoonacular, etc)
+app.use('/api/nutrition', nutritionRouter);
 
 app.get('/api/articles', (req, res) => {
     db.all(`SELECT * FROM articles WHERE is_published = 1 ORDER BY published_at DESC`, [], (err, rows) => {
