@@ -60,7 +60,7 @@ export default function Planos() {
   const { openBooking } = useBooking();
   
   return (
-    <main className="min-h-screen pt-40 pb-24 px-6 flex flex-col items-center bg-background dark:bg-stone-950 text-on-background overflow-x-hidden relative transition-colors duration-500">
+    <div className="min-h-screen pt-12 pb-24 px-6 flex flex-col items-center bg-background dark:bg-stone-950 text-on-background overflow-x-hidden relative transition-colors duration-500">
       <SEO 
         title="Planos e Consultorias | Mariana Bermudes Nutrição"
         description="Conheça nossos planos de acompanhamento nutricional personalizado. Emagrecimento, hipertrofia e bem-estar em São Paulo."
@@ -216,6 +216,6 @@ export default function Planos() {
           </div>
         </StaggerItem>
       </StaggerReveal>
-    </main>
+    </div>
   );
 }

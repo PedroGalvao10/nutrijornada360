@@ -317,10 +317,11 @@ export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose })
                             </div>
                             <button
                                 onClick={onClose}
+                                aria-label="Fechar análise"
                                 data-cursor="Fechar"
                                 className="w-10 h-10 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center hover:bg-stone-100 transition-colors"
                             >
-                                <X className="w-5 h-5 text-stone-400" />
+                                <X className="w-5 h-5 text-stone-400" aria-hidden="true" />
                             </button>
                         </div>
 
@@ -366,12 +367,17 @@ export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose })
                                         <span className="text-xs font-bold text-stone-500 uppercase tracking-[0.2em]">Comparativo com Meta Diária</span>
                                     </div>
                                     {isEditingGoals ? (
-                                        <button onClick={handleSaveGoals} className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-dark transition-colors">
+                                        <button 
+                                            onClick={handleSaveGoals} 
+                                            aria-label="Salvar novas metas"
+                                            className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-dark transition-colors"
+                                        >
                                             <Save className="w-3.5 h-3.5" /> Salvar
                                         </button>
                                     ) : (
                                         <button 
                                             onClick={() => isPremium ? setIsEditingGoals(true) : null} 
+                                            aria-label={isPremium ? "Editar metas nutricionais" : "Acesso premium necessário para editar metas"}
                                             className={`flex items-center gap-1 text-xs font-bold transition-colors ${isPremium ? 'text-stone-400 hover:text-primary' : 'text-stone-300 cursor-not-allowed'}`}
                                             title={isPremium ? "Editar Metas" : "Funcionalidade exclusiva para usuários Premium"}
                                         >
@@ -395,20 +401,20 @@ export const PlateAnalysis: React.FC<PlateAnalysisProps> = ({ isOpen, onClose })
                                     <div className="space-y-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Calorias (kcal)</label>
-                                                <input type="number" value={tempGoals.calories} onChange={(e) => setTempGoals({ ...tempGoals, calories: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                                <label htmlFor="goal-calories" className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Calorias (kcal)</label>
+                                                <input id="goal-calories" type="number" value={tempGoals.calories} onChange={(e) => setTempGoals({ ...tempGoals, calories: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Proteína (g)</label>
-                                                <input type="number" value={tempGoals.protein} onChange={(e) => setTempGoals({ ...tempGoals, protein: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                                <label htmlFor="goal-protein" className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Proteína (g)</label>
+                                                <input id="goal-protein" type="number" value={tempGoals.protein} onChange={(e) => setTempGoals({ ...tempGoals, protein: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Carboidrato (g)</label>
-                                                <input type="number" value={tempGoals.carbs} onChange={(e) => setTempGoals({ ...tempGoals, carbs: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                                <label htmlFor="goal-carbs" className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Carboidrato (g)</label>
+                                                <input id="goal-carbs" type="number" value={tempGoals.carbs} onChange={(e) => setTempGoals({ ...tempGoals, carbs: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
                                             </div>
                                             <div>
-                                                <label className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Gordura (g)</label>
-                                                <input type="number" value={tempGoals.fat} onChange={(e) => setTempGoals({ ...tempGoals, fat: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
+                                                <label htmlFor="goal-fat" className="block text-[10px] font-bold text-stone-500 uppercase mb-1">Gordura (g)</label>
+                                                <input id="goal-fat" type="number" value={tempGoals.fat} onChange={(e) => setTempGoals({ ...tempGoals, fat: Number(e.target.value) })} className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-bold text-stone-700 outline-none focus:border-primary transition-colors" />
                                             </div>
                                         </div>
                                     </div>

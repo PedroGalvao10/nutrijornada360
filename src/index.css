@@ -420,6 +420,7 @@ button.bg-primary:not(.no-glass),
 button.bg-tertiary:not(.no-glass) {
   background-color: rgba(74, 124, 89, 0.8) !important; /* Verde da marca mas com transparência de vidro */
   color: white !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
 }
 

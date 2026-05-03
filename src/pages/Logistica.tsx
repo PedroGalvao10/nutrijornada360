@@ -18,7 +18,7 @@ export default function Logistica() {
   useTilt(ctaRef, 12);
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-12 pt-40 bg-background dark:bg-stone-950 transition-colors duration-500">
+    <main className="max-w-7xl mx-auto px-6 py-12 pt-52 bg-background dark:bg-stone-950 transition-colors duration-500">
       <SEO 
         title="Logística e Agendamento | Mariana Bermudes"
         description="Entenda como funcionam as consultas online e presenciais com Mariana Bermudes. Passo a passo do agendamento à consulta."

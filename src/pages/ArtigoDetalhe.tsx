@@ -32,7 +32,7 @@ export default function ArtigoDetalhe() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background dark:bg-stone-950 flex items-center justify-center pt-40">
+      <div className="min-h-screen bg-background dark:bg-stone-950 flex items-center justify-center pt-52">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary/20 dark:border-emerald-500/20 border-t-primary dark:border-t-emerald-500 rounded-full animate-spin"></div>
           <p className="text-on-surface-variant dark:text-stone-300 font-medium animate-pulse">Carregando conhecimento...</p>
@@ -43,7 +43,7 @@ export default function ArtigoDetalhe() {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background dark:bg-stone-950 flex flex-col items-center justify-center px-6 pt-40">
+      <div className="min-h-screen bg-background dark:bg-stone-950 flex flex-col items-center justify-center px-6 pt-52">
         <span className="material-symbols-outlined text-6xl text-outline-variant dark:text-stone-600 mb-4">find_in_page</span>
         <h1 className="text-3xl font-headline font-bold text-on-surface dark:text-stone-100 mb-2">Artigo não encontrado</h1>
         <p className="text-on-surface-variant dark:text-stone-400 mb-8 text-center max-w-md">Parece que este conteúdo foi movido ou ainda não está disponível.</p>
@@ -62,7 +62,7 @@ export default function ArtigoDetalhe() {
     : '';
 
   return (
-    <main className="bg-background dark:bg-stone-950 min-h-screen pt-40">
+    <div className="bg-background dark:bg-stone-950 min-h-screen pt-8">
       <SEO 
         title={`${post.title} | Blog Mariana Bermudes`}
         description={post.excerpt || "Leia o artigo completo no blog da nutricionista Mariana Bermudes."}
@@ -172,6 +172,6 @@ export default function ArtigoDetalhe() {
           </StaggerItem>
         </StaggerReveal>
       </section>
-    </main>
+    </div>
   );
 }

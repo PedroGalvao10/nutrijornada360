@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChefHat, Loader2, Info, AlertCircle, Sparkles } from 'lucide-react';
+import { ChefHat, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { useQuota } from '../hooks/useQuota';
+
 
 interface RecipeResult {
     id: number | string;
@@ -17,9 +19,8 @@ export const IntelligentRecipes: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [source, setSource] = useState<string | null>(null);
     
-    // Limits
-    const [limitWarning, setLimitWarning] = useState<string | null>(null);
-    const [remainingSearches, setRemainingSearches] = useState<number | null>(null);
+    // Hook centralizado de quota (elimina duplicação)
+    const { remaining: remainingSearches, totalLimit, isUnlimited, limitWarning, setLimitWarning, clearLimitWarning, fetchQuota, usagePercentage, usageCount } = useQuota();
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,15 +28,13 @@ export const IntelligentRecipes: React.FC = () => {
 
         setIsLoading(true);
         setError(null);
-        setLimitWarning(null);
+        clearLimitWarning();
 
         try {
-            const response = await fetch(`http://localhost:3001/api/nutrition/recipes?ingredients=${encodeURIComponent(ingredients)}`);
+            const response = await fetch(`/api/nutrition/recipes?ingredients=${encodeURIComponent(ingredients)}`);
             
-            const remaining = response.headers.get('X-RateLimit-Remaining');
-            if (remaining !== null) {
-                setRemainingSearches(parseInt(remaining, 10));
-            }
+            // Atualizar quota após busca
+            fetchQuota();
 
             const data = await response.json();
 
@@ -53,12 +52,14 @@ export const IntelligentRecipes: React.FC = () => {
                      setError("Nenhuma receita encontrada com esses ingredientes.");
                 }
             }
-        } catch (err: any) {
-            setError(err.message || 'Falha de conexão.');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Falha de conexão.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
     };
+
 
     return (
         <div className="w-full">
@@ -93,16 +94,35 @@ export const IntelligentRecipes: React.FC = () => {
                 <p className="text-[10px] text-stone-400 mt-4 px-8 uppercase tracking-[0.2em] font-bold">Separe os ingredientes por vírgula para melhores resultados</p>
             </form>
 
-             {/* Status Bars (Limits & Errors) */}
+             {/* Quota Progress Indicator */}
              <AnimatePresence>
-                {remainingSearches !== null && remainingSearches <= 2 && remainingSearches > 0 && !limitWarning && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-6">
-                        <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center gap-3">
-                            <Info className="w-5 h-5 flex-shrink-0 text-amber-500" />
-                            <p className="text-sm font-medium">Você tem apenas <strong>{remainingSearches} buscas gratuitas</strong> restantes hoje.</p>
+                {!limitWarning && remainingSearches !== null && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        className="max-w-3xl mx-auto mb-10"
+                    >
+                        <div className="flex justify-between items-end mb-2 px-1">
+                            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                                {isUnlimited ? 'Acesso Ilimitado (Dev)' : 'Buscas Gratuitas Diárias'}
+                            </span>
+                            <span className="text-xs font-bold text-primary">
+                                {isUnlimited ? 'Ilimitado' : `Ações realizadas: ${usageCount} / ${totalLimit}`}
+                            </span>
                         </div>
+                        {!isUnlimited && (
+                            <div className="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${usagePercentage}%` }}
+                                    className="h-full bg-primary"
+                                />
+                            </div>
+                        )}
                     </motion.div>
                 )}
+            </AnimatePresence>
+
 
                 {limitWarning && (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-8">
@@ -125,7 +145,6 @@ export const IntelligentRecipes: React.FC = () => {
                         {error}
                     </motion.div>
                 )}
-            </AnimatePresence>
 
             {/* Results */}
             {recipes.length > 0 && (

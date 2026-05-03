@@ -11,7 +11,7 @@ const Ferramentas: React.FC = () => {
     const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
     // Animation Variants
     return (
-        <div className="min-h-screen bg-[#fafaf8] text-on-background pt-40 pb-20 relative overflow-hidden font-body">
+        <div className="min-h-screen bg-[#fafaf8] text-on-background pt-8 pb-20 relative overflow-hidden font-body">
             {/* Background Effects: More subtle and atmospheric */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-primary/3 blur-[180px] rounded-full opacity-60" />
@@ -69,7 +69,10 @@ const Ferramentas: React.FC = () => {
                     {/* Secondary Tools Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <StaggerItem
-                            onClick={() => setIsCalculatorOpen(true)}
+                            onClick={() => {
+                                setIsCalculatorOpen(true);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
                             className="antigravity-glass rounded-[2.5rem] p-10 border-white/40 group cursor-pointer hover:bg-white transition-all shadow-lg shadow-stone-200/40"
                         >
                             <div className="flex justify-between items-start mb-8">

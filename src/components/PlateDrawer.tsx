@@ -35,6 +35,8 @@ const PlateDrawer: React.FC = () => {
                                 <button 
                                     onClick={() => setIsExpanded(false)}
                                     data-cursor="Fechar"
+                                    aria-label="Fechar Painel"
+                                    title="Fechar Painel"
                                     className="w-10 h-10 rounded-full bg-white border border-stone-100 flex items-center justify-center hover:bg-stone-50 transition-colors shadow-sm"
                                 >
                                     <X className="w-5 h-5 text-stone-400" />
@@ -53,6 +55,8 @@ const PlateDrawer: React.FC = () => {
                                             <button 
                                                 onClick={() => removeItem(item.id)}
                                                 data-cursor="Remover"
+                                                aria-label="Remover ingrediente"
+                                                title="Remover ingrediente"
                                                 className="w-8 h-8 rounded-lg bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100 transition-colors"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -61,9 +65,9 @@ const PlateDrawer: React.FC = () => {
                                         
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border border-stone-100">
-                                                <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 10))} data-cursor="Diminuir" className="text-stone-300 hover:text-primary transition-colors"><ChevronDown className="w-4 h-4" /></button>
+                                                <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 10))} data-cursor="Diminuir" aria-label="Diminuir quantidade" title="Diminuir quantidade" className="text-stone-300 hover:text-primary transition-colors"><ChevronDown className="w-4 h-4" /></button>
                                                 <span className="text-sm font-black text-on-background w-12 text-center">{item.quantity}{item.unit}</span>
-                                                <button onClick={() => updateQuantity(item.id, item.quantity + 10)} data-cursor="Aumentar" className="text-stone-300 hover:text-primary transition-colors"><ChevronUp className="w-4 h-4" /></button>
+                                                <button onClick={() => updateQuantity(item.id, item.quantity + 10)} data-cursor="Aumentar" aria-label="Aumentar quantidade" title="Aumentar quantidade" className="text-stone-300 hover:text-primary transition-colors"><ChevronUp className="w-4 h-4" /></button>
                                             </div>
                                             <div className="text-right">
                                                 <span className="block text-sm font-bold text-primary">{Math.round(item.calories * (item.unit === 'g' ? item.quantity / 100 : item.quantity))} kcal</span>
@@ -94,6 +98,8 @@ const PlateDrawer: React.FC = () => {
                                     <button 
                                         onClick={clearPlate}
                                         data-cursor="Limpar"
+                                        aria-label="Limpar prato"
+                                        title="Limpar prato"
                                         className="flex-1 py-4 text-xs font-bold text-stone-400 uppercase tracking-widest hover:text-red-400 transition-colors"
                                     >
                                         Limpar Prato
@@ -118,6 +124,8 @@ const PlateDrawer: React.FC = () => {
                     layout
                     onClick={() => setIsExpanded(!isExpanded)}
                     data-cursor={isExpanded ? "Fechar" : "Abrir Prato"}
+                    aria-label={isExpanded ? "Fechar resumo do prato" : "Abrir resumo do prato"}
+                    title={isExpanded ? "Fechar resumo do prato" : "Abrir resumo do prato"}
                     className={`relative group flex items-center gap-3 p-4 h-20 rounded-[2.5rem] shadow-2xl transition-all ${
                         isExpanded ? 'bg-on-background text-white' : 'antigravity-glass border-white/60'
                     }`}

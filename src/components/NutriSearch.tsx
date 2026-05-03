@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Loader2, AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, CheckCircle2 } from 'lucide-react';
+import { Search, Loader2, AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, CheckCircle2, BookOpen } from 'lucide-react';
 import { usePlate } from '../context/PlateContext';
+import { useQuota } from '../hooks/useQuota';
 
 interface FoodResult {
     id: string;
@@ -24,10 +25,11 @@ export const NutriSearch: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [source, setSource] = useState<string | null>(null);
     const [selectedFood, setSelectedFood] = useState<FoodResult | null>(null);
+    // Toast inline para IA (substitui alert() bruto)
+    const [iaInsight, setIaInsight] = useState<string | null>(null);
 
-    // Limit Tracking States
-    const [limitWarning, setLimitWarning] = useState<string | null>(null);
-    const [remainingSearches, setRemainingSearches] = useState<number | null>(null);
+    // Hook centralizado de quota (elimina duplicação)
+    const { remaining: remainingSearches, totalLimit, isUnlimited, limitWarning, setLimitWarning, clearLimitWarning, fetchQuota, usagePercentage, usageCount } = useQuota();
 
     const { addItem } = usePlate();
     const [addFeedback, setAddFeedback] = useState<string | null>(null);
@@ -54,16 +56,15 @@ export const NutriSearch: React.FC = () => {
 
         setIsLoading(true);
         setError(null);
-        setLimitWarning(null);
+        clearLimitWarning();
+        setIaInsight(null);
         setSelectedFood(null);
 
         try {
-            const response = await fetch(`http://localhost:3001/api/nutrition/search?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/nutrition/search?query=${encodeURIComponent(query)}`);
             
-            const remaining = response.headers.get('X-RateLimit-Remaining');
-            if (remaining !== null) {
-                setRemainingSearches(parseInt(remaining, 10));
-            }
+            // Atualizar quota após busca
+            fetchQuota();
 
             const data = await response.json();
 
@@ -78,12 +79,14 @@ export const NutriSearch: React.FC = () => {
                 setResults(data.results);
                 setSource(data.source);
             }
-        } catch (err: any) {
-            setError(err.message || 'Falha de conexão. Tente novamente mais tarde.');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Falha de conexão. Tente novamente mais tarde.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const MacroChart = ({ protein, carbs, fat }: { protein: number, carbs: number, fat: number }) => {
         const total = protein + carbs + fat;
@@ -136,34 +139,57 @@ export const NutriSearch: React.FC = () => {
         <div className="w-full">
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto mb-16 group">
+                <label htmlFor="food-search" className="sr-only">Buscar alimentos</label>
                 <input
+                    id="food-search"
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Busque alimentos, marcas ou nutrientes..."
+                    aria-label="Campo de busca de alimentos"
                     data-cursor="Buscar"
                     className="w-full bg-white/40 backdrop-blur-2xl border border-white/40 rounded-3xl py-6 pl-8 pr-16 text-on-background placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-xl shadow-stone-200/20 group-hover:shadow-stone-200/40 text-lg font-light tracking-tight"
                 />
                 <button 
                     type="submit" 
                     disabled={isLoading}
+                    aria-label="Pesquisar"
                     data-cursor="Buscar"
                     className="absolute right-3 top-3 bottom-3 aspect-square bg-primary text-white rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                 >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" /> : <Search className="w-5 h-5" aria-hidden="true" />}
                 </button>
             </form>
 
-            {/* Status Bars */}
+            {/* Quota Progress Indicator */}
             <AnimatePresence>
-                {remainingSearches !== null && remainingSearches <= 2 && remainingSearches > 0 && !limitWarning && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-6">
-                        <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl flex items-center gap-3 max-w-2xl mx-auto shadow-sm">
-                            <Info className="w-5 h-5 flex-shrink-0 text-amber-500" />
-                            <p className="text-sm font-medium">Você tem apenas <strong>{remainingSearches} buscas gratuitas</strong> restantes hoje.</p>
+                {!limitWarning && remainingSearches !== null && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        className="max-w-2xl mx-auto mb-10"
+                    >
+                        <div className="flex justify-between items-end mb-2 px-1">
+                            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                                {isUnlimited ? 'Acesso Ilimitado (Dev)' : 'Buscas Gratuitas Diárias'}
+                            </span>
+                            <span className="text-xs font-bold text-primary">
+                                {isUnlimited ? 'Ilimitado' : `Ações realizadas: ${usageCount} / ${totalLimit}`}
+                            </span>
                         </div>
+                        {!isUnlimited && (
+                            <div className="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${usagePercentage}%` }}
+                                    className="h-full bg-primary"
+                                />
+                            </div>
+                        )}
                     </motion.div>
                 )}
+            </AnimatePresence>
+
 
                 {limitWarning && (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mb-8">
@@ -186,7 +212,6 @@ export const NutriSearch: React.FC = () => {
                         {error}
                     </motion.div>
                 )}
-            </AnimatePresence>
 
             {/* Results Grid */}
             {!selectedFood && results.length > 0 && (
@@ -203,6 +228,10 @@ export const NutriSearch: React.FC = () => {
                             key={food.id}
                             whileHover={{ y: -8 }}
                             onClick={() => setSelectedFood(food)}
+                            onKeyDown={(e) => e.key === 'Enter' && setSelectedFood(food)}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Ver detalhes de ${food.name}`}
                             data-cursor="Ver Detalhes"
                             className="antigravity-glass p-8 rounded-[2.5rem] cursor-pointer border-white/60 hover:border-primary/20 transition-all flex flex-col justify-between h-full group active:scale-[0.98] shadow-lg shadow-stone-200/30"
                         >
@@ -228,8 +257,9 @@ export const NutriSearch: React.FC = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div 
+                                <button 
                                     onClick={(e) => handleAddToPlate(food, e)}
+                                    aria-label={`Adicionar ${food.name} ao prato`}
                                     data-cursor="Adicionar"
                                     className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all border ${
                                         addFeedback === food.id.toString() 
@@ -238,7 +268,7 @@ export const NutriSearch: React.FC = () => {
                                     }`}
                                 >
                                     {addFeedback === food.id.toString() ? <CheckCircle2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                                </div>
+                                </button>
                             </div>
                         </motion.div>
                     ))}
@@ -283,10 +313,58 @@ export const NutriSearch: React.FC = () => {
                                         <Plus className="w-5 h-5" />
                                         Adicionar ao Prato
                                     </button>
-                                    <button data-cursor="Informação" className="w-full py-4 bg-tertiary/5 text-tertiary rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-tertiary/10 transition-colors text-sm">
+                                    <button disabled title="Em breve: visão detalhada de vitaminas e minerais" data-cursor="Informação" className="w-full py-4 bg-tertiary/5 text-tertiary/40 rounded-2xl font-bold flex items-center justify-center gap-3 cursor-not-allowed text-sm">
                                         <Info className="w-4 h-4" />
-                                        Ver Detalhes Micronutrientes
+                                        Micronutrientes (Em Breve)
                                     </button>
+                                    <button 
+                                        onClick={async () => {
+                                            const msg = `Quais as principais evidências científicas e benefícios para a saúde do consumo de ${selectedFood.name}? Resuma de forma profissional e direta.`;
+                                            setIsLoading(true);
+                                            setIaInsight(null);
+                                            try {
+                                                const res = await fetch('/api/nutrition/chat-articles', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({ message: msg })
+                                                });
+                                                const data = await res.json();
+                                                setIaInsight(data.answer || 'Sem insights disponíveis no momento.');
+                                            } catch (err) {
+                                                const errorMsg = err instanceof Error ? err.message : 'Erro ao consultar base de artigos.';
+                                                setIaInsight(`⚠️ ${errorMsg}`);
+                                            } finally {
+                                                setIsLoading(false);
+                                            }
+                                        }}
+                                        data-cursor="Artigos" 
+                                        className="w-full py-4 bg-primary/5 text-primary rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-primary/10 transition-colors text-sm border border-primary/10"
+                                    >
+                                        <BookOpen className="w-4 h-4" />
+                                        Consultar IA de Artigos
+                                    </button>
+                                    {/* Toast inline de IA — substitui alert() bruto */}
+                                    <AnimatePresence>
+                                        {iaInsight && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                className="p-5 bg-primary/5 border border-primary/10 rounded-2xl text-sm text-on-background leading-relaxed"
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <BookOpen className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-[10px] uppercase tracking-widest text-primary font-bold mb-2">Insight da Nutri-IA</p>
+                                                        <p className="text-tertiary/80 font-light">{iaInsight}</p>
+                                                    </div>
+                                                </div>
+                                                <button onClick={() => setIaInsight(null)} className="mt-3 text-[10px] uppercase tracking-widest text-stone-400 hover:text-primary transition-colors font-bold">
+                                                    Fechar
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             </div>
 

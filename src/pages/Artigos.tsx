@@ -17,6 +17,7 @@ interface Ebook {
 }
 
 import ArticleCard from '../components/ui/ArticleCard';
+import ArticleChatIA from '../components/ArticleChatIA';
 
 function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Ebook) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -251,7 +252,7 @@ export default function Artigos() {
   };
 
   return (
-    <main className="animate-fade-in bg-background dark:bg-stone-950 min-h-screen relative pt-40">
+    <div className="animate-fade-in bg-background dark:bg-stone-950 min-h-screen relative pt-8">
       <SEO 
         title="Blog e Conteúdos | Mariana Bermudes Nutrição"
         description="Acesse artigos científicos, guias práticos e e-books gratuitos sobre nutrição comportamental, emagrecimento e saúde integral."
@@ -312,6 +313,15 @@ export default function Artigos() {
             </StaggerItem>
           ))}
         </StaggerReveal>
+      </section>
+
+      {/* Chat IA com Artigos */}
+      <section className="pb-20">
+        <div className="max-w-7xl mx-auto px-6 mb-8 text-center">
+          <h2 className="text-3xl md:text-5xl font-headline font-bold text-on-surface dark:text-stone-100 mb-4">Dúvida sobre um Artigo?</h2>
+          <p className="text-on-surface-variant dark:text-stone-300 md:text-lg max-w-2xl mx-auto">Converse com nossa inteligência artificial treinada em toda a base científica da Mariana.</p>
+        </div>
+        <ArticleChatIA />
       </section>
 
       {/* Seção de E-books Gratuitos */}
@@ -478,6 +488,6 @@ export default function Artigos() {
            </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

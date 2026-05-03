@@ -26,7 +26,17 @@ export default function Home() {
 
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const splineAreaRef = useRef<HTMLDivElement>(null);
-  const [splineApp, setSplineApp] = useState<{ play?: () => void, stop?: () => void } | null>(null);
+  const [splineApp, setSplineApp] = useState<any>(null);
+
+  const handleSplineLoad = (spline: unknown) => {
+    if (spline && typeof spline === 'object') {
+      const splineObj = spline as { setBackgroundColor?: (c: string) => void };
+      if (typeof splineObj.setBackgroundColor === 'function') {
+        splineObj.setBackgroundColor('transparent');
+      }
+    }
+    setSplineApp(spline);
+  };
 
   // PostHog A/B Testing Flag
   const ctaTextVariant = useFeatureFlagVariantKey('hero-cta-text-test');
@@ -74,7 +84,7 @@ export default function Home() {
   }, []);
 
   const homeContent = (
-    <main className="font-body text-on-background dark:text-stone-300 bg-background dark:bg-stone-950 selection:bg-primary-container selection:text-on-primary-container transition-colors duration-500">
+    <div className="font-body text-on-background dark:text-stone-300 bg-background dark:bg-stone-950 selection:bg-primary-container selection:text-on-primary-container transition-colors duration-500">
       <ScrollExpandMedia onComplete={() => {
         window.dispatchEvent(new CustomEvent('portal-complete'));
       }} />
@@ -120,7 +130,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20 w-full pt-16 md:pt-0">
+          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20 w-full pt-32 md:pt-0">
             {/* Hero text — entrada linha a linha */}
             <StaggerReveal className="space-y-5 md:space-y-8 max-w-2xl mx-auto md:mx-0 text-center md:text-left">
 
@@ -210,12 +220,7 @@ export default function Home() {
             <div className="w-full md:w-1/2 h-full flex items-center justify-center relative">
               <SplineSafe 
                 scene="https://prod.spline.design/23mP4RppmrjsD4Yo/scene.splinecode" 
-                onLoad={(spline: any) => {
-                  if (spline && typeof spline.setBackgroundColor === 'function') {
-                    spline.setBackgroundColor('transparent');
-                  }
-                  setSplineApp(spline);
-                }}
+                onLoad={handleSplineLoad}
                 className="w-full h-full scale-[1.1] md:scale-125 lg:scale-[1.4] origin-center"
               />
             </div>
@@ -252,7 +257,7 @@ export default function Home() {
 
       {/* Articles Section - Restaurada para a Home */}
       <ArticlesSection />
-    </main>
+    </div>
   );
 
   return homeContent;

@@ -1,31 +1,187 @@
 // server/nutrition-api.js
+// ═══════════════════════════════════════════════════════════════
+//  MÓDULO DE NUTRIÇÃO — Proxy seguro para USDA, TACO e NotebookLM
+//  Refatorado: 2026-05-03 | Segurança, Performance, Resiliência
+// ═══════════════════════════════════════════════════════════════
 import express from 'express';
 import NodeCache from 'node-cache';
-import fetch from 'node-fetch';
+import { execFile } from 'child_process';
 
 const router = express.Router();
-// Cache: TTL de 1 hora, verificação de expiração a cada 10 min
-const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
-// Variáveis de ambiente das APIs
+// ── CACHES SEPARADOS ──────────────────────────────────────────
+// Cache de busca: TTL 1 hora, verificação a cada 10 min
+const searchCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
+// Cache de traduções: TTL 24 horas (traduções raramente mudam)
+const translationCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });
+
+// ── CONFIGURAÇÕES DO NOTEBOOKLM ──────────────────────────────
+const ARTICLES_NOTEBOOK_ID = '0c074a6d-3943-410e-8535-2c9500c8d03a';
+const TACO_NOTEBOOK_ID = '58532935-cd30-467c-9b7e-cf1920496423';
+
+// ── VARIÁVEIS DE AMBIENTE ─────────────────────────────────────
 const USDA_KEY = process.env.USDA_API_KEY || 'DEMO_KEY';
 const SPOONACULAR_KEY = process.env.SPOONACULAR_API_KEY || '';
+const FREE_TIER_LIMIT = 50;
 
-// ==========================================
-// SISTEMA DE CONTROLE DE LIMITES (RATE LIMITING) E PAYWALL
-// ==========================================
+// ═══════════════════════════════════════════════════════════════
+//  UTILIDADES REUTILIZÁVEIS
+// ═══════════════════════════════════════════════════════════════
 
-// Armazena quantas requisições cada IP já fez (simulação simples em memória)
-// Idealmente seria Redis num ambiente escalado.
+// STEP: Retry com Exponential Backoff para chamadas externas
+async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+    let lastError;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: AbortSignal.timeout(10000) // 10s timeout
+            });
+            if (response.status === 429 || response.status === 503) {
+                // Rate limited ou serviço indisponível — esperar e tentar de novo
+                const delay = Math.pow(2, attempt) * 1000;
+                console.warn(`[Retry] Tentativa ${attempt + 1}/${maxRetries} para ${url} — aguardando ${delay}ms`);
+                await new Promise(r => setTimeout(r, delay));
+                continue;
+            }
+            return response;
+        } catch (err) {
+            lastError = err;
+            if (attempt < maxRetries - 1) {
+                const delay = Math.pow(2, attempt) * 500;
+                await new Promise(r => setTimeout(r, delay));
+            }
+        }
+    }
+    throw lastError || new Error(`Falha após ${maxRetries} tentativas: ${url}`);
+}
+
+// STEP: Whitelist de IP centralizada (elimina duplicação M3)
+function isWhitelistedIP(ip) {
+    const cleanIP = ip.includes('::ffff:') ? ip.split('::ffff:')[1] : ip;
+    
+    const exactWhitelist = ['127.0.0.1', '::1', 'localhost', '0.0.0.0', '::ffff:127.0.0.1'];
+    const localRanges = [
+        '192.168.', '10.',
+        '172.16.', '172.17.', '172.18.', '172.19.', '172.20.',
+        '172.21.', '172.22.', '172.23.', '172.24.', '172.25.',
+        '172.26.', '172.27.', '172.28.', '172.29.', '172.30.', '172.31.'
+    ];
+    
+    // IPs adicionados via variável de ambiente
+    if (process.env.ADMIN_IP) exactWhitelist.push(process.env.ADMIN_IP);
+    if (process.env.WHITELISTED_IP) exactWhitelist.push(process.env.WHITELISTED_IP);
+
+    return exactWhitelist.some(wip => cleanIP === wip || cleanIP.includes(wip)) ||
+           localRanges.some(range => cleanIP.startsWith(range));
+}
+
+// STEP: Extrair IP limpo da requisição
+function getCleanIP(req) {
+    let userIp = req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress;
+    if (typeof userIp === 'string' && userIp.includes('::ffff:')) {
+        userIp = userIp.split('::ffff:')[1];
+    }
+    return userIp;
+}
+
+// STEP: Consultar NotebookLM via CLI (SEGURO — usa execFile, não exec)
+// Corrige C2: Shell injection prevenido usando execFile com argumentos separados
+async function queryNotebook(notebookId, query) {
+    return new Promise((resolve) => {
+        // execFile NÃO interpreta shell metacaracteres — seguro contra injection
+        execFile('nlm', ['query', notebookId, query], { timeout: 30000 }, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`[NotebookLM] Erro ao consultar: ${error.message}`);
+                return resolve(null);
+            }
+            try {
+                const response = JSON.parse(stdout);
+                resolve(response.answer || stdout);
+            } catch (e) {
+                resolve(stdout.trim() || null);
+            }
+        });
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TRADUÇÃO PT↔EN (com cache dedicado)
+// ═══════════════════════════════════════════════════════════════
+async function translateText(text, langPair) {
+    const cacheKey = `${langPair}_${text.toLowerCase().trim()}`;
+    const cached = translationCache.get(cacheKey);
+    if (cached) return cached;
+
+    try {
+        const res = await fetchWithRetry(
+            `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`
+        );
+        const data = await res.json();
+        const translated = data.responseData?.translatedText || text;
+        translationCache.set(cacheKey, translated);
+        return translated;
+    } catch (e) {
+        console.warn(`[Tradução] Falha para "${text}" (${langPair}): ${e.message}`);
+        return text;
+    }
+}
+
+const translateToEnglish = (text) => translateText(text, 'pt|en');
+const translateToPortuguese = (text) => translateText(text, 'en|pt');
+
+// ═══════════════════════════════════════════════════════════════
+//  BANCO DE DADOS LOCAL (100g de referência — resposta instantânea)
+// ═══════════════════════════════════════════════════════════════
+const localFoodDB = {
+    'pão': { name: 'Pão Francês', brand: 'Genérico', calories: 289, protein: 9, carbs: 58, fat: 3 },
+    'pao': { name: 'Pão Francês', brand: 'Genérico', calories: 289, protein: 9, carbs: 58, fat: 3 },
+    'arroz': { name: 'Arroz Branco Cozido', brand: 'Genérico', calories: 130, protein: 2.7, carbs: 28, fat: 0.3 },
+    'feijao': { name: 'Feijão Carioca Cozido', brand: 'Genérico', calories: 76, protein: 4.8, carbs: 13.6, fat: 0.5 },
+    'feijão': { name: 'Feijão Carioca Cozido', brand: 'Genérico', calories: 76, protein: 4.8, carbs: 13.6, fat: 0.5 },
+    'ovo': { name: 'Ovo Frito', brand: 'Genérico', calories: 196, protein: 13.6, carbs: 0.9, fat: 14.8 },
+    'frango': { name: 'Peito de Frango Grelhado', brand: 'Genérico', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+    'carne': { name: 'Bife de Carne Bovina', brand: 'Genérico', calories: 250, protein: 26, carbs: 0, fat: 15 },
+    'leite': { name: 'Leite Integral', brand: 'Genérico', calories: 60, protein: 3.2, carbs: 4.8, fat: 3.2 },
+    'banana': { name: 'Banana Prata', brand: 'Genérico', calories: 89, protein: 1.1, carbs: 23, fat: 0.3 },
+    'maçã': { name: 'Maçã', brand: 'Genérico', calories: 52, protein: 0.3, carbs: 14, fat: 0.2 },
+    'maca': { name: 'Maçã', brand: 'Genérico', calories: 52, protein: 0.3, carbs: 14, fat: 0.2 },
+    'aveia': { name: 'Aveia em Flocos', brand: 'Genérico', calories: 389, protein: 16.9, carbs: 66.3, fat: 6.9 },
+    'azeite': { name: 'Azeite de Oliva Extra Virgem', brand: 'Genérico', calories: 884, protein: 0, carbs: 0, fat: 100 },
+    'tomate': { name: 'Tomate', brand: 'Genérico', calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2 },
+    'alface': { name: 'Alface', brand: 'Genérico', calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2 },
+    'batata': { name: 'Batata Inglesa Cozida', brand: 'Genérico', calories: 86, protein: 1.7, carbs: 20, fat: 0.1 },
+    'queijo': { name: 'Queijo Mussarela', brand: 'Genérico', calories: 300, protein: 22, carbs: 2.2, fat: 22 },
+    'ovo cozido': { name: 'Ovo Cozido', brand: 'Genérico', calories: 155, protein: 13, carbs: 1.1, fat: 11 },
+    'ovo mexido': { name: 'Ovos Mexidos', brand: 'Genérico', calories: 148, protein: 10, carbs: 1.6, fat: 11 },
+    'pão integral': { name: 'Pão Integral', brand: 'Genérico', calories: 247, protein: 13, carbs: 41, fat: 3.4 },
+    'pao integral': { name: 'Pão Integral', brand: 'Genérico', calories: 247, protein: 13, carbs: 41, fat: 3.4 },
+    'iogurte': { name: 'Iogurte Natural', brand: 'Genérico', calories: 63, protein: 3.5, carbs: 5, fat: 3.3 },
+    'café': { name: 'Café (sem açúcar)', brand: 'Genérico', calories: 1, protein: 0.1, carbs: 0, fat: 0 },
+    'cafe': { name: 'Café (sem açúcar)', brand: 'Genérico', calories: 1, protein: 0.1, carbs: 0, fat: 0 },
+    'suco de laranja': { name: 'Suco de Laranja Natural', brand: 'Genérico', calories: 45, protein: 0.7, carbs: 10.4, fat: 0.2 },
+    'melancia': { name: 'Melancia', brand: 'Genérico', calories: 30, protein: 0.6, carbs: 7.6, fat: 0.2 },
+    'morango': { name: 'Morango', brand: 'Genérico', calories: 32, protein: 0.7, carbs: 7.7, fat: 0.3 },
+    'abacate': { name: 'Abacate', brand: 'Genérico', calories: 160, protein: 2, carbs: 8.5, fat: 14.7 }
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  RATE LIMITING MIDDLEWARE (Paywall Simulado)
+// ═══════════════════════════════════════════════════════════════
 const ipLimits = new Map();
-const FREE_TIER_LIMIT = 15; // Aumentado para 15 buscas no tier gratuito para melhor UX de teste
 
-// Middleware de Limitação de Uso (Paywall Simulado)
 const rateLimitMiddleware = (req, res, next) => {
-    const userIp = req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress;
-    const currentUsage = ipLimits.get(userIp) || 0;
+    const userIp = getCleanIP(req);
+    
+    if (isWhitelistedIP(userIp)) {
+        console.log(`[RateLimit] Acesso liberado para IP Whitelisted: ${userIp}`);
+        res.setHeader('X-RateLimit-Limit', 'Unlimited');
+        return next();
+    }
 
-    // Se o usuário já atingiu o limite
+    const currentUsage = ipLimits.get(userIp) || 0;
+    console.log(`[RateLimit] IP: ${userIp} | Uso: ${currentUsage}/${FREE_TIER_LIMIT}`);
+
     if (currentUsage >= FREE_TIER_LIMIT) {
         return res.status(429).json({
             error: 'LIMIT_REACHED',
@@ -39,19 +195,80 @@ const rateLimitMiddleware = (req, res, next) => {
         });
     }
 
-    // Incrementa uso e passa pro próximo
     ipLimits.set(userIp, currentUsage + 1);
-    
-    // Adiciona headers úteis para o frontend exibir a barra de progresso
-    res.setHeader('X-RateLimit-Limit', FREE_TIER_LIMIT);
-    res.setHeader('X-RateLimit-Remaining', Math.max(0, FREE_TIER_LIMIT - (currentUsage + 1)));
-    
+    res.setHeader('X-RateLimit-Limit', String(FREE_TIER_LIMIT));
+    res.setHeader('X-RateLimit-Remaining', String(Math.max(0, FREE_TIER_LIMIT - (currentUsage + 1))));
     next();
 };
 
-// ==========================================
-// ROTA 1: BUSCA DE ALIMENTOS (FALLBACK CHAIN: USDA -> OpenFoodFacts)
-// ==========================================
+// ═══════════════════════════════════════════════════════════════
+//  ROTAS
+// ═══════════════════════════════════════════════════════════════
+
+// ROTA: Health Check (E3) — Status do ecossistema
+router.get('/health', async (_req, res) => {
+    const checks = {
+        server: 'ok',
+        searchCache: { keys: searchCache.keys().length, hits: searchCache.getStats().hits, misses: searchCache.getStats().misses },
+        translationCache: { keys: translationCache.keys().length },
+        activeIPs: ipLimits.size,
+        apis: {}
+    };
+
+    // Testar USDA (não-bloqueante)
+    try {
+        const usdaRes = await fetchWithRetry(`https://api.nal.usda.gov/fdc/v1/foods/search?query=test&pageSize=1&api_key=${USDA_KEY}`, {}, 1);
+        checks.apis.usda = usdaRes.ok ? 'online' : `error_${usdaRes.status}`;
+    } catch {
+        checks.apis.usda = 'offline';
+    }
+
+    // Testar MyMemory
+    try {
+        const mmRes = await fetchWithRetry('https://api.mymemory.translated.net/get?q=test&langpair=en|pt', {}, 1);
+        checks.apis.myMemory = mmRes.ok ? 'online' : `error_${mmRes.status}`;
+    } catch {
+        checks.apis.myMemory = 'offline';
+    }
+
+    checks.apis.spoonacular = SPOONACULAR_KEY ? 'configured' : 'not_configured';
+
+    res.json(checks);
+});
+
+// ROTA: Consulta de quota
+router.get('/quota', (req, res) => {
+    const userIp = getCleanIP(req);
+    const currentUsage = ipLimits.get(userIp) || 0;
+    const whitelisted = isWhitelistedIP(userIp);
+
+    res.json({
+        usage: currentUsage,
+        limit: FREE_TIER_LIMIT,
+        remaining: whitelisted ? 9999 : Math.max(0, FREE_TIER_LIMIT - currentUsage),
+        isUnlimited: whitelisted
+    });
+});
+
+// ROTA: Chat com IA de Artigos (via NotebookLM)
+router.post('/chat-articles', async (req, res) => {
+    const { message } = req.body;
+    if (!message) return res.status(400).json({ error: 'Mensagem é obrigatória' });
+
+    try {
+        const answer = await queryNotebook(ARTICLES_NOTEBOOK_ID, message);
+        if (answer) {
+            res.json({ answer });
+        } else {
+            res.json({ answer: 'Desculpe, não consegui processar sua pergunta no momento. A base de artigos pode estar temporariamente indisponível.' });
+        }
+    } catch (error) {
+        console.error('[Chat] Erro:', error);
+        res.status(500).json({ error: 'Falha ao consultar IA de Artigos' });
+    }
+});
+
+// ROTA: Busca de Alimentos (Fallback Chain: Local → TACO → USDA)
 router.get('/search', rateLimitMiddleware, async (req, res) => {
     const { query } = req.query;
     
@@ -59,8 +276,9 @@ router.get('/search', rateLimitMiddleware, async (req, res) => {
         return res.status(400).json({ error: 'Query parameter is required' });
     }
 
-    const cacheKey = `search_${query.toLowerCase()}`;
-    const cachedData = cache.get(cacheKey);
+    const normalizedQuery = query.toLowerCase().trim();
+    const cacheKey = `search_${normalizedQuery}`;
+    const cachedData = searchCache.get(cacheKey);
 
     if (cachedData) {
         console.log(`[Cache Hit] /search?query=${query}`);
@@ -70,141 +288,190 @@ router.get('/search', rateLimitMiddleware, async (req, res) => {
     console.log(`[Cache Miss] /search?query=${query}`);
 
     try {
-        // TENTATIVA 1: USDA (Precisa e rica, mas tem limite diário na chave)
-        console.log(`Tentando USDA API para "${query}"...`);
-        const usdaUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query + '*')}&requireAllWords=false&pageSize=10&api_key=${USDA_KEY}`;
+        // TENTATIVA 1: Banco de Dados Local (instantâneo, 100% em Português)
+        const localMatch = Object.keys(localFoodDB).find(key => 
+            normalizedQuery.includes(key) || key.includes(normalizedQuery)
+        );
+
+        if (localMatch) {
+            console.log(`[Busca Local] Match: ${localMatch}`);
+            const food = localFoodDB[localMatch];
+            const formattedResult = {
+                source: 'Mariana_LocalDB',
+                results: [{
+                    id: `local_${localMatch}`,
+                    name: food.name,
+                    brand: food.brand,
+                    calories: food.calories,
+                    protein: food.protein,
+                    carbs: food.carbs,
+                    fat: food.fat,
+                    servingSize: 100,
+                    servingUnit: 'g'
+                }]
+            };
+            searchCache.set(cacheKey, formattedResult);
+            return res.json(formattedResult);
+        }
+
+        // TENTATIVA 2: NotebookLM TACO (dados brasileiros)
+        console.log(`[Busca] Tentando NotebookLM TACO para: ${query}`);
+        const tacoAnswer = await queryNotebook(
+            TACO_NOTEBOOK_ID,
+            `Aja como uma base de dados nutricional técnica brasileira (TACO). Retorne EXATAMENTE os dados para 100g de ${query}. Responda APENAS com um objeto JSON puro seguindo este formato: {"name": "Nome em Português", "calories": número, "protein": número, "carbs": número, "fat": número, "fiber": número}. Não inclua explicações.`
+        );
         
-        const usdaResponse = await fetch(usdaUrl);
+        if (tacoAnswer && tacoAnswer.includes('{')) {
+            try {
+                const jsonStr = tacoAnswer.match(/\{[\s\S]*\}/)[0];
+                const tacoData = JSON.parse(jsonStr);
+                if (tacoData.calories) {
+                    console.log(`[Busca] TACO match: ${tacoData.name}`);
+                    const tacoResult = {
+                        source: 'TACO (NotebookLM)',
+                        results: [{
+                            id: `taco_${Date.now()}`,
+                            name: tacoData.name,
+                            brand: 'TACO/BR',
+                            calories: tacoData.calories,
+                            protein: tacoData.protein,
+                            carbs: tacoData.carbs,
+                            fat: tacoData.fat,
+                            servingSize: 100,
+                            servingUnit: 'g'
+                        }]
+                    };
+                    searchCache.set(cacheKey, tacoResult);
+                    return res.json(tacoResult);
+                }
+            } catch (e) {
+                console.warn(`[Busca] Falha ao parsear TACO JSON, continuando busca externa...`);
+            }
+        }
+
+        // TENTATIVA 3: USDA (com tradução + retry)
+        console.log(`[Busca] Traduzindo "${query}" para busca USDA...`);
+        const queryEn = await translateToEnglish(query);
+        console.log(`[Busca] Tradução: "${queryEn}". Buscando na USDA...`);
+        
+        const usdaUrl = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(queryEn + '*')}&requireAllWords=false&pageSize=10&api_key=${USDA_KEY}`;
+        
+        const usdaResponse = await fetchWithRetry(usdaUrl);
         
         if (usdaResponse.ok) {
             const data = await usdaResponse.json();
             
-            // Formatando dados para o nosso frontend
             if (data.foods && data.foods.length > 0) {
+                // STEP: Batch translation — traduz todos os nomes em paralelo (C4 fix)
+                const translationPromises = data.foods.map(food => 
+                    translateToPortuguese(food.description)
+                );
+                const translatedNames = await Promise.allSettled(translationPromises);
+
+                const formattedResults = data.foods.map((food, idx) => {
+                    const getNutrient = (id) => {
+                        const nut = food.foodNutrients.find(n => n.nutrientId === id);
+                        return nut ? nut.value : 0;
+                    };
+                    
+                    const namePt = translatedNames[idx].status === 'fulfilled' 
+                        ? translatedNames[idx].value 
+                        : food.description;
+                    
+                    return {
+                        id: `usda_${food.fdcId}`,
+                        name: `(Aproximado) ${namePt}`,
+                        brand: food.brandOwner || 'Genérico',
+                        calories: getNutrient(1008),
+                        protein: getNutrient(1003),
+                        carbs: getNutrient(1005),
+                        fat: getNutrient(1004),
+                        servingSize: food.servingSize || 100,
+                        servingUnit: food.servingSizeUnit || 'g'
+                    };
+                });
+
                 const formattedResult = {
                     source: 'USDA',
-                    results: data.foods.map(food => {
-                        // Extrair macros
-                        const getNutrient = (id) => {
-                           const nut = food.foodNutrients.find(n => n.nutrientId === id);
-                           return nut ? nut.value : 0;
-                        };
-                        
-                        // IDs USDA: Proteina: 1003, Gordura: 1004, Carbo: 1005, Calorias: 1008
-                        return {
-                            id: `usda_${food.fdcId}`,
-                            name: food.description,
-                            brand: food.brandOwner || 'Genérico',
-                            calories: getNutrient(1008),
-                            protein: getNutrient(1003),
-                            carbs: getNutrient(1005),
-                            fat: getNutrient(1004),
-                            servingSize: food.servingSize || null,
-                            servingUnit: food.servingSizeUnit || 'g'
-                        }
-                    })
+                    results: formattedResults
                 };
                 
-                cache.set(cacheKey, formattedResult);
+                searchCache.set(cacheKey, formattedResult);
                 return res.json(formattedResult);
             }
         }
         
-        console.warn(`USDA falhou ou vazia. Status: ${usdaResponse.status}. Fazendo Fallback para OpenFoodFacts...`);
-        
-        // TENTATIVA 2: Open Food Facts (Gratuita, sem chave, ótima para industrializados no BR)
-        const offUrl = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=5`;
-        const offResponse = await fetch(offUrl, {
-            headers: { 'User-Agent': 'MarianaSite/1.0 - OpenFoodFacts' }
-        });
-        
-        if (!offResponse.ok) throw new Error('Ambas APIs falharam');
-        
-        const offData = await offResponse.json();
-        
-        const formattedResult = {
-            source: 'OpenFoodFacts',
-            results: offData.products.slice(0, 5).map(product => ({
-                id: `off_${product.id}`,
-                name: product.product_name_pt || product.product_name || 'Produto Desconhecido',
-                brand: product.brands || 'Desconhecida',
-                calories: product.nutriments?.['energy-kcal_100g'] || 0,
-                protein: product.nutriments?.proteins_100g || 0,
-                carbs: product.nutriments?.carbohydrates_100g || 0,
-                fat: product.nutriments?.fat_100g || 0,
-                servingSize: product.serving_quantity || null,
-                servingUnit: product.serving_quantity_unit || 'g',
-                image: product.image_front_small_url,
-                nutriscore: product.nutriscore_grade?.toUpperCase() || null
-            }))
-        };
-        
-        cache.set(cacheKey, formattedResult);
-        return res.json(formattedResult);
+        throw new Error('Todas as fontes de dados falharam ou não encontraram o alimento.');
 
     } catch (error) {
         console.error('[API] Erro ao buscar dados nutricionais:', error);
         res.status(500).json({ 
-            error: 'Falha ao buscar dados nutricionais.',
+            error: 'Falha ao buscar dados nutricionais. Tente um alimento diferente ou busque de forma aproximada.',
             details: error.message
         });
     }
 });
 
 
-// ==========================================
-// ROTA 2: RECEITAS INTELIGENTES ("O que tem na geladeira")
-// Fallback Chain: Spoonacular -> TheMealDB
-// ==========================================
+// ROTA: Receitas Inteligentes (Fallback: Spoonacular → TheMealDB)
 router.get('/recipes', rateLimitMiddleware, async (req, res) => {
-    const { ingredients } = req.query; // Ex: "frango,tomate"
+    const { ingredients } = req.query;
     
     if (!ingredients) {
-         return res.status(400).json({ error: 'Ingredients parameter is required' });
+        return res.status(400).json({ error: 'Ingredients parameter is required' });
     }
 
     const cacheKey = `recipes_${ingredients.toLowerCase().replace(/\s+/g, '')}`;
-    const cachedData = cache.get(cacheKey);
+    const cachedData = searchCache.get(cacheKey);
 
     if (cachedData) {
         return res.json(cachedData);
     }
 
     try {
-        // TENTATIVA 1: Spoonacular (Premium, limite apertado)
+        console.log(`[Receitas] Traduzindo "${ingredients}"...`);
+        const ingredientsEn = await translateToEnglish(ingredients);
+
+        // TENTATIVA 1: Spoonacular (se configurado)
         if (SPOONACULAR_KEY) {
-            console.log(`Tentando Spoonacular para receitas com "${ingredients}"...`);
-            const spUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=3&apiKey=${SPOONACULAR_KEY}`;
-            const spResponse = await fetch(spUrl);
+            console.log(`[Receitas] Tentando Spoonacular...`);
+            const spUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredientsEn)}&number=3&apiKey=${SPOONACULAR_KEY}`;
             
-            // Só usa se não der rate limit (402 Payment Required na Spoonacular)
-            if (spResponse.ok) {
-                 const data = await spResponse.json();
-                 if(data && data.length > 0) {
-                     const formatted = {
-                         source: 'Spoonacular',
-                         recipes: data.map(r => ({
-                             id: r.id,
-                             title: r.title,
-                             image: r.image,
-                             usedIngredients: r.usedIngredientCount,
-                             missedIngredients: r.missedIngredientCount
-                         }))
-                     };
-                     cache.set(cacheKey, formatted);
-                     return res.json(formatted);
-                 }
-            } else {
-                 console.warn(`Spoonacular status: ${spResponse.status}. Entrando em Fallback...`);
+            try {
+                const spResponse = await fetchWithRetry(spUrl);
+                
+                if (spResponse.ok) {
+                    const data = await spResponse.json();
+                    if (data && data.length > 0) {
+                        // Batch translate titles
+                        const titlePromises = data.map(r => translateToPortuguese(r.title));
+                        const translatedTitles = await Promise.allSettled(titlePromises);
+
+                        const formattedRecipes = data.map((r, idx) => ({
+                            id: r.id,
+                            title: translatedTitles[idx].status === 'fulfilled' ? translatedTitles[idx].value : r.title,
+                            image: r.image,
+                            usedIngredients: r.usedIngredientCount,
+                            missedIngredients: r.missedIngredientCount
+                        }));
+
+                        const formatted = { source: 'Spoonacular', recipes: formattedRecipes };
+                        searchCache.set(cacheKey, formatted);
+                        return res.json(formatted);
+                    }
+                } else {
+                    console.warn(`[Receitas] Spoonacular status: ${spResponse.status}. Fallback...`);
+                }
+            } catch (spErr) {
+                console.warn(`[Receitas] Spoonacular falhou: ${spErr.message}. Fallback...`);
             }
         }
 
-        // TENTATIVA 2: TheMealDB (Totalmente Grátis, busca por 1 ingrediente principal)
-        console.log(`Fallback para TheMealDB...`);
-        // TheMealDB na API grátis só aceita filtrar por 1 ingrediente por vez. Pegamos o primeiro.
-        const mainIngredient = ingredients.split(',')[0].trim();
-        const mdbUrl = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(mainIngredient)}`;
-        const mdbResponse = await fetch(mdbUrl);
+        // TENTATIVA 2: TheMealDB (gratuito)
+        console.log(`[Receitas] Fallback para TheMealDB...`);
+        const mainIngredientEn = ingredientsEn.split(',')[0].trim();
+        const mdbUrl = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(mainIngredientEn)}`;
+        const mdbResponse = await fetchWithRetry(mdbUrl);
         
         if (!mdbResponse.ok) throw new Error('Falha no TheMealDB');
         
@@ -214,31 +481,37 @@ router.get('/recipes', rateLimitMiddleware, async (req, res) => {
             return res.json({ source: 'TheMealDB', recipes: [] });
         }
 
-        const formatted = {
-            source: 'TheMealDB',
-            recipes: mdbData.meals.slice(0, 3).map(m => ({
-                id: m.idMeal,
-                title: m.strMeal,
-                image: m.strMealThumb,
-                usedIngredients: 'N/A', // MealDB lista não traz os faltantes nessa rota
-                missedIngredients: 'N/A'
-            }))
-        };
+        // Batch translate meal titles
+        const meals = mdbData.meals.slice(0, 3);
+        const mealTitlePromises = meals.map(m => translateToPortuguese(m.strMeal));
+        const translatedMealTitles = await Promise.allSettled(mealTitlePromises);
 
-        cache.set(cacheKey, formatted);
+        const formattedRecipes = meals.map((m, idx) => ({
+            id: m.idMeal,
+            title: translatedMealTitles[idx].status === 'fulfilled' ? translatedMealTitles[idx].value : m.strMeal,
+            image: m.strMealThumb,
+            usedIngredients: 'N/A',
+            missedIngredients: 'N/A'
+        }));
+
+        const formatted = { source: 'TheMealDB', recipes: formattedRecipes };
+        searchCache.set(cacheKey, formatted);
         return res.json(formatted);
 
     } catch (error) {
-         console.error('Erro na rota /recipes:', error);
-         res.status(500).json({ error: 'Não foi possível encontrar receitas no momento.' });
+        console.error('[Receitas] Erro:', error);
+        res.status(500).json({ error: 'Não foi possível encontrar receitas no momento.' });
     }
 });
 
-
-// Rota auxiliar para resetar limites (Apenas desenvolvimento, remover em prod)
-router.post('/_reset_limits', (req, res) => {
-    ipLimits.clear();
-    res.json({ message: 'IP limits reset successfully' });
-});
+// ROTA: Reset de limites (M2 fix — apenas em desenvolvimento)
+if (process.env.NODE_ENV !== 'production') {
+    router.post('/_reset_limits', (_req, res) => {
+        ipLimits.clear();
+        searchCache.flushAll();
+        translationCache.flushAll();
+        res.json({ message: 'Limites e caches resetados com sucesso (DEV only)' });
+    });
+}
 
 export default router;
