@@ -38,6 +38,7 @@ interface PlateContextType {
     };
     dailyGoals: DailyGoals;
     updateDailyGoals: (goals: Partial<DailyGoals>) => void;
+    savePlate: (title?: string) => Promise<any>;
 }
 
 const PlateContext = createContext<PlateContextType | undefined>(undefined);
@@ -92,6 +93,26 @@ export const PlateProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setDailyGoals(prev => ({ ...prev, ...goals }));
     };
 
+    const savePlate = async (title?: string) => {
+        try {
+            const response = await fetch('http://localhost:3001/api/nutrition/plates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title,
+                    items,
+                    totals
+                })
+            });
+            if (!response.ok) throw new Error('Falha ao salvar prato');
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            console.error('[SavePlate] Erro:', err);
+            throw err;
+        }
+    };
+
     const totals = useMemo(() => {
         return items.reduce((acc, item) => {
             const factor = item.unit === 'g' ? item.quantity / 100 : item.quantity;
@@ -105,7 +126,7 @@ export const PlateProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, [items]);
 
     return (
-        <PlateContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearPlate, isOpen, setIsOpen, toggleDrawer, openDrawer, closeDrawer, totals, dailyGoals, updateDailyGoals }}>
+        <PlateContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearPlate, isOpen, setIsOpen, toggleDrawer, openDrawer, closeDrawer, totals, dailyGoals, updateDailyGoals, savePlate }}>
             {children}
         </PlateContext.Provider>
     );

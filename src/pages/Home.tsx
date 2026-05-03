@@ -18,6 +18,7 @@ import SplineSafe from '../components/ui/SplineSafe';
 import NutritionMyths from '../components/NutritionMyths';
 import { MissionSection } from '../components/sections/MissionSection';
 import { PlansSection } from '../components/sections/PlansSection';
+import { HomeToolsSection } from '../components/sections/HomeToolsSection';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
 import posthog from 'posthog-js';
 
@@ -230,6 +231,9 @@ export default function Home() {
 
       {/* Mission Section (Ruixen Style) */}
       <MissionSection />
+
+      {/* 🛠️ Ferramentas Inteligentes (Nova Seção Integrada) */}
+      <HomeToolsSection />
 
       {/* 🚀 Simulador de Resultados Interativo (Subiu: Gerador de Desejo) */}
       <SimuladorResultados />

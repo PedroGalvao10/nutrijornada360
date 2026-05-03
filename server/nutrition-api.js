@@ -6,6 +6,7 @@
 import express from 'express';
 import NodeCache from 'node-cache';
 import { execFile } from 'child_process';
+import db from './db.js';
 
 const router = express.Router();
 
@@ -85,22 +86,26 @@ function getCleanIP(req) {
     return userIp;
 }
 
-// STEP: Consultar NotebookLM via CLI (SEGURO — usa execFile, não exec)
-// Corrige C2: Shell injection prevenido usando execFile com argumentos separados
+// STEP: Consultar NotebookLM via Proxy Determinístico (C1, C2 Fix)
 async function queryNotebook(notebookId, query) {
     return new Promise((resolve) => {
-        // execFile NÃO interpreta shell metacaracteres — seguro contra injection
-        execFile('nlm', ['query', notebookId, query], { timeout: 30000 }, (error, stdout, stderr) => {
+        // Path absoluto para o proxy determinístico que resolve problemas de encoding no Windows
+        const proxyPath = 'c:\\Users\\soare\\.gemini\\antigravity\\scratch\\execution\\nlm_proxy.py';
+        
+        const execOptions = { 
+            timeout: 90000,
+            env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+        };
+        
+        // Usamos python para rodar o proxy que gerencia a CLI nlm
+        execFile('python', [proxyPath, notebookId, query], execOptions, (error, stdout, stderr) => {
             if (error) {
-                console.error(`[NotebookLM] Erro ao consultar: ${error.message}`);
+                console.error(`[NotebookLM] Erro (code ${error.code}): ${error.message}`);
+                console.error(`[NotebookLM] Stderr: ${stderr}`);
                 return resolve(null);
             }
-            try {
-                const response = JSON.parse(stdout);
-                resolve(response.answer || stdout);
-            } catch (e) {
-                resolve(stdout.trim() || null);
-            }
+            const cleanOutput = stdout.trim();
+            resolve(cleanOutput || null);
         });
     });
 }
@@ -513,5 +518,44 @@ if (process.env.NODE_ENV !== 'production') {
         res.json({ message: 'Limites e caches resetados com sucesso (DEV only)' });
     });
 }
+
+// ── PERSISTÊNCIA DO DIÁRIO (PLATES) ───────────────────────────
+
+// ROTA: Salvar Prato no Diário
+router.post('/plates', async (req, res) => {
+    const { title, items, totals } = req.body;
+    const userIp = getCleanIP(req);
+
+    if (!items || items.length === 0) {
+        return res.status(400).json({ error: 'O prato deve conter itens.' });
+    }
+
+    db.run(
+        `INSERT INTO plates (user_ip, title, total_calories, total_protein, total_carbs, total_fat) VALUES (?, ?, ?, ?, ?, ?)`,
+        [userIp, title || 'Meu Prato', totals.calories, totals.protein, totals.carbs, totals.fat],
+        function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            const plateId = this.lastID;
+            const stmt = db.prepare(`INSERT INTO plate_items (plate_id, food_name, quantity, unit, calories, protein, carbs, fat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+            
+            items.forEach(item => {
+                stmt.run(plateId, item.name, item.quantity, item.unit, item.calories, item.protein, item.carbs, item.fat);
+            });
+            
+            stmt.finalize();
+            res.json({ id: plateId, message: 'Prato salvo com sucesso!' });
+        }
+    );
+});
+
+// ROTA: Listar Pratos do Usuário (baseado no IP para simplicidade sem login)
+router.get('/plates', (req, res) => {
+    const userIp = getCleanIP(req);
+    db.all(`SELECT * FROM plates WHERE user_ip = ? ORDER BY created_at DESC LIMIT 10`, [userIp], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
 
 export default router;

@@ -171,6 +171,43 @@ app.get('/api/admin/articles', requireAuth, (req, res) => {
     });
 });
 
+// --- NOVO: Integração NutriChat (NotebookLM CLI) ---
+import { spawn } from 'child_process';
+app.post('/api/ai/chat', async (req, res) => {
+    const { message, notebookId = '58532935-cd30-467c-9b7e-cf1920496423' } = req.body;
+    
+    if (!message) return res.status(400).json({ error: 'Mensagem é obrigatória' });
+
+    // Path absoluto para o proxy determinístico
+    const proxyPath = 'c:\\Users\\soare\\.gemini\\antigravity\\scratch\\execution\\nlm_proxy.py';
+    
+    console.log(`[AI Chat] Consultando Notebook: ${notebookId} | Query: ${message.substring(0, 50)}...`);
+
+    const pythonProcess = spawn('python', [proxyPath, notebookId, message], {
+        env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+        stdout += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+            console.error(`[AI Chat] Erro (code ${code}): ${stderr}`);
+            return res.status(500).json({ error: 'Erro ao consultar a IA.', details: stderr });
+        }
+        res.json({ response: stdout.trim() });
+    });
+});
+// --------------------------------------------------
+
 // Configuração para Hostinger: Servir a pasta /dist do compilado do React
 // Rota de Proxy para Google Sheets (Elimina erros de CORS no Navegador)
 app.post('/api/leads', express.json(), async (req, res) => {

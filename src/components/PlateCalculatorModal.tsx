@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, ChevronUp, ChevronDown, Sparkles, Activity, Apple, Scale } from 'lucide-react';
+import { X, Trash2, ChevronUp, ChevronDown, Sparkles, Activity, Apple, Scale, Save, Loader2, Check } from 'lucide-react';
 import { usePlate } from '../context/PlateContext';
 import { PlateAnalysis } from './PlateAnalysis';
 import { NutriSearch } from './NutriSearch';
@@ -11,8 +11,23 @@ interface Props {
 }
 
 export const PlateCalculatorModal: React.FC<Props> = ({ isOpen, onClose }) => {
-    const { items, removeItem, updateQuantity, clearPlate, totals } = usePlate();
+    const { items, removeItem, updateQuantity, clearPlate, totals, savePlate } = usePlate();
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await savePlate();
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // Bloquear scroll do body quando aberto
     React.useEffect(() => {
@@ -197,9 +212,29 @@ export const PlateCalculatorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                                                 aria-label="Limpar prato"
                                                 title="Limpar prato"
                                                 disabled={items.length === 0}
-                                                className="px-8 py-5 rounded-2xl text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] hover:text-red-500 bg-white border border-white hover:border-red-100 transition-all disabled:opacity-50"
+                                                className="w-14 h-14 rounded-2xl text-stone-400 hover:text-red-500 bg-white border border-white hover:border-red-100 transition-all disabled:opacity-50 flex items-center justify-center shrink-0"
                                             >
-                                                Zerar
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                            
+                                            <button
+                                                onClick={handleSave}
+                                                data-cursor="Salvar"
+                                                disabled={items.length === 0 || isSaving}
+                                                className={`px-6 py-5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 border ${
+                                                    saveSuccess 
+                                                        ? 'bg-green-500 text-white border-green-500' 
+                                                        : 'bg-white text-primary border-white hover:border-primary/20'
+                                                } disabled:opacity-50 min-w-[120px]`}
+                                            >
+                                                {isSaving ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : saveSuccess ? (
+                                                    <Check className="w-4 h-4" />
+                                                ) : (
+                                                    <Save className="w-4 h-4" />
+                                                )}
+                                                {saveSuccess ? 'Salvo!' : 'Salvar'}
                                             </button>
                                             <button
                                                 onClick={() => setIsAnalysisOpen(true)}

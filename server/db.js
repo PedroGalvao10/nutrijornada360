@@ -42,6 +42,31 @@ export const initDb = () => {
             is_published BOOLEAN DEFAULT 0
         )`);
         db.run(`CREATE TABLE IF NOT EXISTS ebooks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT, pdf_file_path TEXT NOT NULL, cover_image_url TEXT, requires_registration BOOLEAN DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+        
+        db.run(`CREATE TABLE IF NOT EXISTS plates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_ip TEXT,
+            title TEXT,
+            total_calories REAL,
+            total_protein REAL,
+            total_carbs REAL,
+            total_fat REAL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        db.run(`CREATE TABLE IF NOT EXISTS plate_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            plate_id INTEGER,
+            food_name TEXT,
+            quantity REAL,
+            unit TEXT,
+            calories REAL,
+            protein REAL,
+            carbs REAL,
+            fat REAL,
+            FOREIGN KEY(plate_id) REFERENCES plates(id)
+        )`);
+
         console.log("-> Tabelas SQLite prontas.")
     });
 };
