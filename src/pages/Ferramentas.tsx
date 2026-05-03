@@ -91,27 +91,6 @@ const Ferramentas: React.FC = () => {
                             </p>
                         </StaggerItem>
 
-                        <StaggerItem
-                            onClick={() => {
-                                // Reutilizar o modal se possível ou criar um local
-                                // Por simplicidade, vamos adicionar o card que descreve a IA
-                                alert('Iniciando Assistente de Evolução...');
-                            }}
-                            className="antigravity-glass rounded-[2.5rem] p-10 border-white/40 group cursor-pointer hover:bg-white transition-all shadow-lg shadow-stone-200/40 bg-gradient-to-br from-primary/5 to-transparent"
-                        >
-                            <div className="flex justify-between items-start mb-8">
-                                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center border border-stone-100 shadow-inner">
-                                    <Sparkles className="w-8 h-8 text-primary" />
-                                </div>
-                                <div className="p-3 rounded-full bg-stone-50 group-hover:bg-primary/5 transition-colors">
-                                    <ChevronRight className="w-6 h-6 text-stone-300 group-hover:text-primary transition-all" />
-                                </div>
-                            </div>
-                            <h3 className="text-2xl font-headline font-bold mb-3 text-on-surface tracking-tight">Nutri-IA Evolução</h3>
-                            <p className="text-on-surface-variant/70 leading-relaxed font-light">
-                                Assistente inteligente que analisa sua jornada semanal e tira dúvidas baseadas em artigos científicos.
-                            </p>
-                        </StaggerItem>
 
                         <StaggerItem
                             onClick={() => setIsDiaryOpen(true)}
