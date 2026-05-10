@@ -33,7 +33,7 @@ export default function ArticlesSection() {
 
   return (
     <section id="articles" className="py-24 bg-surface dark:bg-stone-950 transition-colors duration-500" aria-labelledby="articles-heading">
-      <div className="container mx-auto px-6">
+      <div className="w-full px-6 md:px-12">
         <StaggerReveal className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <StaggerItem className="max-w-2xl">
             <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 dark:bg-emerald-500/10 text-primary dark:text-emerald-400 text-sm font-bold tracking-wider uppercase mb-4">

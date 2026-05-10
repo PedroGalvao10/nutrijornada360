@@ -17,6 +17,25 @@
   100% { transform: scale(1); }
 }
 
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+:root {
+  --button-ripple-color: rgba(255, 255, 255, 0.4);
+}
+
+.dark {
+  --button-ripple-color: rgba(52, 211, 153, 0.3);
+}
+
+.animate-ripple {
+  animation: ripple 600ms linear;
+}
+
 body {
   @apply bg-[#fafaf8] dark:bg-stone-950 text-on-surface dark:text-stone-300 font-body leading-relaxed antialiased;
   position: relative;

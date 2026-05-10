@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Loader2, AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, CheckCircle2, BookOpen } from 'lucide-react';
-import { usePlate } from '../context/PlateContext';
+import { Search, Loader2, AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, BookOpen } from 'lucide-react';
 import { useQuota } from '../hooks/useQuota';
 
 interface FoodResult {
@@ -31,24 +30,7 @@ export const NutriSearch: React.FC = () => {
     // Hook centralizado de quota (elimina duplicação)
     const { remaining: remainingSearches, totalLimit, isUnlimited, limitWarning, setLimitWarning, clearLimitWarning, fetchQuota, usagePercentage, usageCount } = useQuota();
 
-    const { addItem } = usePlate();
-    const [addFeedback, setAddFeedback] = useState<string | null>(null);
 
-    const handleAddToPlate = (food: FoodResult, e: React.MouseEvent) => {
-        e.stopPropagation();
-        addItem({
-            id: food.id,
-            name: food.name,
-            brand: food.brand,
-            calories: food.calories,
-            protein: food.protein,
-            carbs: food.carbs,
-            fat: food.fat
-        }, 100, 'g');
-        
-        setAddFeedback(food.id.toString());
-        setTimeout(() => setAddFeedback(null), 2000);
-    };
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -257,18 +239,9 @@ export const NutriSearch: React.FC = () => {
                                         </div>
                                     )}
                                 </div>
-                                <button 
-                                    onClick={(e) => handleAddToPlate(food, e)}
-                                    aria-label={`Adicionar ${food.name} ao prato`}
-                                    data-cursor="Adicionar"
-                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all border ${
-                                        addFeedback === food.id.toString() 
-                                        ? 'bg-primary text-white border-primary' 
-                                        : 'bg-stone-50 text-stone-300 group-hover:bg-primary/5 group-hover:text-primary border-stone-100'
-                                    }`}
-                                >
-                                    {addFeedback === food.id.toString() ? <CheckCircle2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                                </button>
+                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all border bg-stone-50 text-stone-300 group-hover:bg-primary/5 group-hover:text-primary border-stone-100">
+                                    <Plus className="w-5 h-5" />
+                                </div>
                             </div>
                         </motion.div>
                     ))}
@@ -306,12 +279,12 @@ export const NutriSearch: React.FC = () => {
 
                                 <div className="space-y-3">
                                     <button 
-                                        onClick={(e) => handleAddToPlate(selectedFood, e)}
-                                        data-cursor="Adicionar"
-                                        className="w-full py-5 bg-primary text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-primary/20"
+                                        onClick={() => setSelectedFood(null)}
+                                        data-cursor="Voltar"
+                                        className="w-full py-5 bg-stone-100 text-stone-400 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-stone-200 transition-all"
                                     >
-                                        <Plus className="w-5 h-5" />
-                                        Adicionar ao Prato
+                                        <ChevronLeft className="w-5 h-5" />
+                                        Nova Busca
                                     </button>
                                     <button disabled title="Em breve: visão detalhada de vitaminas e minerais" data-cursor="Informação" className="w-full py-4 bg-tertiary/5 text-tertiary/40 rounded-2xl font-bold flex items-center justify-center gap-3 cursor-not-allowed text-sm">
                                         <Info className="w-4 h-4" />

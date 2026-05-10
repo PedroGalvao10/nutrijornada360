@@ -58,7 +58,7 @@ export default function Sobre() {
   useTilt(bento2Ref, 15);
 
   return (
-    <div className="bg-background dark:bg-stone-950 overflow-x-hidden transition-colors duration-500 pt-12 md:pt-20">
+    <div className="bg-background dark:bg-stone-950 overflow-x-hidden transition-colors duration-500 pt-24 md:pt-32">
       <SEO 
         title="Sobre Mariana Bermudes | Nutricionista"
         description="Conheça a trajetória de Mariana Bermudes, nutricionista especializada em nutrição de precisão, emagrecimento e performance."

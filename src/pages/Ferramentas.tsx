@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Activity, BookOpen, Crown, ChevronRight } from 'lucide-react';
+import { Search, Crown } from 'lucide-react';
 import { NutriSearch } from '../components/NutriSearch';
 import { IntelligentRecipes } from '../components/IntelligentRecipes';
-import { PlateCalculatorModal } from '../components/PlateCalculatorModal';
-import { NutritionDiaryModal } from '../components/NutritionDiaryModal';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
+import { SimuladorResultados } from '../components/SimuladorResultados';
+import { TypewriterText } from '../components/TypewriterText';
+import InteractiveParticles from '../components/ui/InteractiveParticles';
 
 const Ferramentas: React.FC = () => {
-    const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
-    const [isDiaryOpen, setIsDiaryOpen] = useState(false);
     // Animation Variants
     return (
-        <div className="min-h-screen bg-[#fafaf8] text-on-background pt-8 pb-20 relative overflow-hidden font-body">
-            {/* Background Effects: More subtle and atmospheric */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-primary/3 blur-[180px] rounded-full opacity-60" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-tertiary/3 blur-[180px] rounded-full opacity-60" />
-            </div>
+        <div className="min-h-screen text-on-background pt-24 md:pt-32 pb-20 relative overflow-hidden font-body">
+            {/* Background Interativo */}
+            <InteractiveParticles />
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="w-full px-6 md:px-12 relative z-10">
                 <StaggerReveal className="max-w-4xl mx-auto text-center mb-24">
                     <StaggerItem>
                         <h1 className="text-6xl md:text-[5.5rem] font-headline font-bold tracking-[-0.03em] mb-8 text-on-surface leading-[1.05]">
@@ -30,7 +26,7 @@ const Ferramentas: React.FC = () => {
                     </StaggerItem>
                     <StaggerItem>
                         <p className="text-xl md:text-2xl text-on-surface-variant/80 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
-                            A ciência encontra a simplicidade. Ferramentas desenhadas com precisão para elevar sua saúde e bem-estar.
+                            <TypewriterText text="A ciência encontra a simplicidade. Ferramentas desenhadas com precisão para elevar sua saúde e bem-estar." speed={30} delay={1000} />
                         </p>
                     </StaggerItem>
                 </StaggerReveal>
@@ -49,7 +45,9 @@ const Ferramentas: React.FC = () => {
                             </motion.div>
                             <div>
                                 <h2 className="text-4xl font-headline font-bold text-on-surface tracking-tight">NutriSearch Pro</h2>
-                                <p className="text-on-surface-variant/70 text-lg font-light mt-1">Exploração profunda de dados nutricionais.</p>
+                                <p className="text-on-surface-variant/70 text-lg font-light mt-1">
+                                    <TypewriterText text="Exploração profunda de dados nutricionais." speed={40} delay={1500} />
+                                </p>
                             </div>
                         </div>
                         
@@ -68,59 +66,12 @@ const Ferramentas: React.FC = () => {
                         </div>
                     </StaggerItem>
 
-                    {/* Secondary Tools Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <StaggerItem
-                            onClick={() => {
-                                setIsCalculatorOpen(true);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                            className="antigravity-glass rounded-[2.5rem] p-10 border-white/40 group cursor-pointer hover:bg-white transition-all shadow-lg shadow-stone-200/40"
-                        >
-                            <div className="flex justify-between items-start mb-8">
-                                <div className="w-16 h-16 rounded-2xl bg-stone-50 flex items-center justify-center border border-stone-100 shadow-inner">
-                                    <Activity className="w-8 h-8 text-primary/70" />
-                                </div>
-                                <div className="p-3 rounded-full bg-stone-50 group-hover:bg-primary/5 transition-colors">
-                                    <ChevronRight className="w-6 h-6 text-stone-300 group-hover:text-primary transition-all" />
-                                </div>
-                            </div>
-                            <h3 className="text-2xl font-headline font-bold mb-3 text-on-surface tracking-tight">Calculadora de Prato</h3>
-                            <p className="text-on-surface-variant/70 leading-relaxed font-light">
-                                Monte sua refeição ideal item a item e acompanhe o balanço de macros em tempo real com precisão clínica.
-                            </p>
-                        </StaggerItem>
+                    {/* Tool 3: Results Simulator */}
+                    <StaggerItem>
+                        <SimuladorResultados />
+                    </StaggerItem>
 
-
-                        <StaggerItem
-                            onClick={() => setIsDiaryOpen(true)}
-                            className="antigravity-glass rounded-[2.5rem] p-10 border-white/40 group cursor-pointer hover:bg-white transition-all shadow-lg shadow-stone-200/40"
-                        >
-                            <div className="flex justify-between items-start mb-8">
-                                <div className="w-16 h-16 rounded-2xl bg-stone-50 flex items-center justify-center border border-stone-100 shadow-inner">
-                                    <BookOpen className="w-8 h-8 text-secondary/70" />
-                                </div>
-                                <div className="p-3 rounded-full bg-stone-50 group-hover:bg-secondary/5 transition-colors">
-                                    <ChevronRight className="w-6 h-6 text-stone-300 group-hover:text-secondary transition-all" />
-                                </div>
-                            </div>
-                            <h3 className="text-2xl font-headline font-bold mb-3 text-on-surface tracking-tight">Diário Inteligente</h3>
-                            <p className="text-on-surface-variant/70 leading-relaxed font-light">
-                                Registre sua evolução e receba insights biológicos personalizados sobre sua jornada metabólica.
-                            </p>
-                        </StaggerItem>
-                    </div>
                 </StaggerReveal>
-                {/* Modals */}
-                <PlateCalculatorModal 
-                    isOpen={isCalculatorOpen} 
-                    onClose={() => setIsCalculatorOpen(false)} 
-                />
-
-                <NutritionDiaryModal
-                    isOpen={isDiaryOpen}
-                    onClose={() => setIsDiaryOpen(false)}
-                />
 
                 {/* Paywall CTA with specialized animation */}
                 <motion.div

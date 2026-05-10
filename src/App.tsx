@@ -5,7 +5,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import PageTransition from './components/ui/PageTransition';
 import { AnimatePresence } from 'framer-motion';
-import { PlateProvider } from './context/PlateContext';
+
 
 // Lazy loaded pages for performance
 const Home = lazy(() => import('./pages/Home'));
@@ -69,9 +69,7 @@ function AppContent() {
 
 function App() {
   return (
-    <PlateProvider>
-      <AppContent />
-    </PlateProvider>
+    <AppContent />
   );
 }
 

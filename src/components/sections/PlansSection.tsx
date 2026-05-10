@@ -50,7 +50,7 @@ export function PlansSection() {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background dark:from-stone-950 to-transparent z-10 pointer-events-none"></div>
       </div>
 
-      <div className="relative z-20 max-w-7xl mx-auto px-6 w-full text-center md:text-left pt-10">
+      <div className="relative z-20 w-full px-6 md:px-12 text-center md:text-left pt-10">
         <StaggerReveal className="mb-16 md:mb-24 md:w-3/4">
           <StaggerItem>
             <h2 className="text-5xl md:text-[4rem] font-headline text-white tracking-tight font-medium leading-[1.05] mb-6">

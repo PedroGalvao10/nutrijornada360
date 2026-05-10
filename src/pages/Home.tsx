@@ -13,7 +13,6 @@ import { TextRotate } from '../components/ui/TextRotate';
 import ArticlesSection from '../components/ArticlesSection';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { ScrollExpandMedia } from '../components/ui/ScrollExpandMedia';
-import { SimuladorResultados } from '../components/SimuladorResultados';
 import SplineSafe from '../components/ui/SplineSafe';
 import NutritionMyths from '../components/NutritionMyths';
 import { MissionSection } from '../components/sections/MissionSection';
@@ -131,7 +130,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20 w-full pt-32 md:pt-0">
+          <div className="w-full px-6 md:px-12 grid md:grid-cols-2 gap-8 md:gap-16 items-center relative z-20 w-full pt-32 md:pt-0">
             {/* Hero text — entrada linha a linha */}
             <StaggerReveal className="space-y-5 md:space-y-8 max-w-2xl mx-auto md:mx-0 text-center md:text-left">
 
@@ -235,8 +234,6 @@ export default function Home() {
       {/* 🛠️ Ferramentas Inteligentes (Nova Seção Integrada) */}
       <HomeToolsSection />
 
-      {/* 🚀 Simulador de Resultados Interativo (Subiu: Gerador de Desejo) */}
-      <SimuladorResultados />
 
       {/* Plans Section (Seed Inspired) */}
       <PlansSection />

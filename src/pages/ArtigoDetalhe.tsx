@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { Article } from '../article_types';
+import marianaProfile from '../assets/mariana-profile.png';
 import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -96,7 +97,7 @@ export default function ArtigoDetalhe() {
                <div className="flex flex-wrap items-center gap-6 text-on-surface-variant dark:text-stone-300 font-medium text-sm">
                   <div className="flex items-center gap-2">
                      <div className="w-8 h-8 rounded-full bg-surface-container dark:bg-stone-800 border border-outline/20 dark:border-stone-700 overflow-hidden">
-                        <img src="/avatar-mariana.webp" alt="Mariana Bermudes" className="w-full h-full object-cover" />
+                        <img src={marianaProfile} alt="Mariana Bermudes" className="w-full h-full object-cover" />
                      </div>
                      <span>Mariana Bermudes</span>
                   </div>
@@ -123,7 +124,7 @@ export default function ArtigoDetalhe() {
             <footer className="pt-12 border-t border-outline/10 dark:border-stone-800 flex flex-col md:flex-row justify-between items-center gap-8">
                <div className="flex items-center gap-4 group cursor-pointer">
                   <div className="w-16 h-16 rounded-3xl bg-surface-container dark:bg-stone-800 border border-outline/20 dark:border-stone-700 overflow-hidden relative shadow-md group-hover:shadow-lg transition-all duration-300">
-                     <img src="/avatar-mariana.webp" alt="Mariana Bermudes" className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-500" />
+                     <img src={marianaProfile} alt="Mariana Bermudes" className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-500" />
                   </div>
                   <div className="text-left">
                      <p className="text-xs font-bold text-primary dark:text-emerald-400 uppercase tracking-widest mb-1">Escrito por</p>

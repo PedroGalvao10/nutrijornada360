@@ -1,13 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import type { Article } from '../article_types';
-import SplineSafe from '../components/ui/SplineSafe';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { TypewriterText } from '../components/TypewriterText';
 import { useTilt } from '../hooks/useTilt';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
 import { MagneticButton } from '../components/ui/MagneticButton';
+
 
 interface Ebook {
   id: number;
@@ -17,7 +17,7 @@ interface Ebook {
 }
 
 import ArticleCard from '../components/ui/ArticleCard';
-import ArticleChatIA from '../components/ArticleChatIA';
+import { HeroAnimatedImages } from '../components/ui/HeroAnimatedImages';
 
 function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Ebook) => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Eb
   return (
     <div 
       ref={cardRef}
-      className="bg-surface dark:bg-stone-900 border border-outline/10 dark:border-stone-800 p-6 rounded-3xl flex flex-col sm:flex-row gap-6 items-center parallax-shadow hover:shadow-lg transition-shadow duration-300 transform-style-3d"
+      className="antigravity-glass bg-white/5 dark:bg-black/20 border border-white/20 dark:border-white/5 p-6 rounded-3xl flex flex-col sm:flex-row gap-6 items-center parallax-shadow hover:shadow-lg transition-shadow duration-300 transform-style-3d"
     >
       <div className="w-40 h-52 flex-shrink-0 bg-surface-container dark:bg-stone-800 rounded-lg overflow-hidden border border-outline/20 dark:border-stone-700 relative tilt-child tz-30 shadow-md">
         <img src={ebook.imageUrl} alt={`Capa ${ebook.title}`} className="w-full h-full object-cover" />
@@ -50,27 +50,8 @@ function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Eb
 
 export default function Artigos() {
   const [posts, setPosts] = useState<Article[]>([]);
-  const splineAreaRef = useRef<HTMLDivElement>(null);
-  const [splineApp, setSplineApp] = useState<{ play?: () => void, stop?: () => void } | null>(null);
 
   useDynamicShadow();
-
-  useEffect(() => {
-    if (!splineApp || !splineAreaRef.current) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (typeof splineApp.play === 'function') splineApp.play();
-        } else {
-          if (typeof splineApp.stop === 'function') splineApp.stop();
-        }
-      });
-    }, { threshold: 0, rootMargin: '100px' });
-
-    observer.observe(splineAreaRef.current);
-    return () => observer.disconnect();
-  }, [splineApp]);
 
   // Busca os posts dinâmicos do banco
   useEffect(() => {
@@ -252,57 +233,59 @@ export default function Artigos() {
   };
 
   return (
-    <div className="animate-fade-in bg-background dark:bg-stone-950 min-h-screen relative pt-8">
+    <div className="animate-fade-in bg-background/50 dark:bg-stone-950/50 min-h-screen relative pt-24 md:pt-32">
+
       <SEO 
         title="Blog e Conteúdos | Mariana Bermudes Nutrição"
         description="Acesse artigos científicos, guias práticos e e-books gratuitos sobre nutrição comportamental, emagrecimento e saúde integral."
       />
       
-      {/* ═══ Hero Section Artigos (Spline 3D) ═══ */}
-      <section id="video-artigos-container" className="relative h-[65vh] md:h-[85vh] w-full bg-black overflow-hidden border-b border-outline/10">
-        <div ref={splineAreaRef} className="absolute inset-0 flex items-center">
-
-          {/* ── Background Spline Render ── */}
-          <div className="absolute inset-0 z-0 transform-gpu overflow-hidden bg-black flex items-center justify-center">
-            <SplineSafe 
-              scene="https://prod.spline.design/CHa5UVfCBrHzmeFt/scene.splinecode" 
-              onLoad={(spline) => {
-                if (spline && typeof spline.setBackgroundColor === 'function') {
-                  spline.setBackgroundColor('#000000');
-                }
-                setSplineApp(spline);
-              }}
-              className="w-[120%] h-[120%] scale-110 md:scale-[1.25] origin-center cursor-pointer"
-            />
-          </div>
-
-          <div className="max-w-7xl mx-auto px-6 relative z-20 w-full text-center md:text-left">
-            <StaggerReveal className="max-w-3xl md:py-12">
-              <StaggerItem>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-6 border border-white/30 text-white">
-                  <span className="material-symbols-outlined text-sm">menu_book</span>
-                  Publicações
-                </div>
-              </StaggerItem>
-              
-              <StaggerItem>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight font-headline text-white drop-shadow-2xl">
-                  Nutrição com Ciência<br /> e <span className="text-white/95 italic uppercase md:normal-case">Consciência</span>
-                </h1>
-              </StaggerItem>
-              
-              <StaggerItem>
-                <div className="text-lg md:text-xl leading-relaxed font-body font-medium text-white/90 drop-shadow-lg max-w-xl">
-                  <TypewriterText text="Explore conteúdos baseados em evidências, reflexões sobre comportamento alimentar e dicas práticas para transformar sua rotina com saúde." speed={25} delay={400} />
-                </div>
-              </StaggerItem>
-            </StaggerReveal>
+      {/* ═══ Hero Section Artigos ═══ */}
+      <section id="video-artigos-container" className="relative min-h-[60vh] md:h-[75vh] w-full overflow-hidden flex items-center border-b border-outline/10 bg-background/30 dark:bg-stone-950/30 backdrop-blur-sm">
+        {/* Subtle Gradient Overlay for legibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 dark:via-stone-950/40 to-background dark:to-stone-950 z-10 pointer-events-none"></div>
+        
+        <div className="w-full px-6 md:px-12 relative z-20 mx-auto max-w-7xl">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+            <div className="w-full lg:w-1/2 text-center lg:text-left">
+              <StaggerReveal className="md:py-12">
+                <StaggerItem>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8 border border-primary/30 dark:border-emerald-500/30 text-primary dark:text-emerald-400 bg-primary/5 dark:bg-emerald-500/5 backdrop-blur-md">
+                    <span className="material-symbols-outlined text-sm">menu_book</span>
+                    Publicações & Ciência
+                  </div>
+                </StaggerItem>
+                
+                <StaggerItem>
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-[1.1] font-headline text-on-surface dark:text-stone-100 tracking-tight">
+                    Nutrição com Ciência<br /> 
+                    <span className="relative inline-block">
+                      <span className="relative z-10">e </span>
+                      <span className="text-primary dark:text-emerald-400 italic font-serif">Consciência</span>
+                      <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/10 dark:bg-emerald-500/10 -z-10 rotate-1"></span>
+                    </span>
+                  </h1>
+                </StaggerItem>
+                
+                <StaggerItem>
+                  <div className="text-lg md:text-2xl leading-relaxed font-body font-medium text-on-surface-variant dark:text-stone-300 max-w-xl mx-auto lg:mx-0">
+                    <TypewriterText text="Explore conteúdos baseados em evidências, reflexões sobre comportamento alimentar e estratégias para uma vida equilibrada." speed={20} delay={600} />
+                  </div>
+                </StaggerItem>
+              </StaggerReveal>
+            </div>
+            
+            <div className="w-full lg:w-1/2 max-w-md mx-auto lg:max-w-full flex justify-center lg:justify-end mt-8 lg:mt-0">
+              <div className="w-full h-full max-w-[500px]">
+                <HeroAnimatedImages />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Grid de Artigos */}
-      <section className="py-20 px-6 max-w-7xl mx-auto">
+      <section className="py-20 px-6 w-full md:px-12 relative z-10">
         <StaggerReveal 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           staggerInterval={0.15}
@@ -315,18 +298,11 @@ export default function Artigos() {
         </StaggerReveal>
       </section>
 
-      {/* Chat IA com Artigos */}
-      <section className="pb-20">
-        <div className="max-w-7xl mx-auto px-6 mb-8 text-center">
-          <h2 className="text-3xl md:text-5xl font-headline font-bold text-on-surface dark:text-stone-100 mb-4">Dúvida sobre um Artigo?</h2>
-          <p className="text-on-surface-variant dark:text-stone-300 md:text-lg max-w-2xl mx-auto">Converse com nossa inteligência artificial treinada em toda a base científica da Mariana.</p>
-        </div>
-        <ArticleChatIA />
-      </section>
+
 
       {/* Seção de E-books Gratuitos */}
-      <section className="py-20 px-6 bg-surface-variant/10 dark:bg-stone-900/50 relative">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-20 px-6 bg-surface-variant/40 dark:bg-stone-900/40 relative z-10 backdrop-blur-sm">
+        <div className="w-full px-6 md:px-12">
           <StaggerReveal className="text-center mb-12">
              <StaggerItem>
                <h2 className="text-3xl md:text-5xl font-headline font-bold text-on-surface dark:text-stone-100 mb-4">E-books Gratuitos</h2>
@@ -350,7 +326,7 @@ export default function Artigos() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="bg-surface-container dark:bg-stone-900 py-20 px-6 relative overflow-hidden">
+      <section className="bg-surface-container/60 dark:bg-stone-900/60 backdrop-blur-md py-20 px-6 relative overflow-hidden z-10">
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 dark:via-emerald-500/20 to-transparent"></div>
         <StaggerReveal className="max-w-4xl mx-auto text-center">
           <StaggerItem>

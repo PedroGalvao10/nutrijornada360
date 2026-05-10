@@ -19,11 +19,12 @@ const translationCache = new NodeCache({ stdTTL: 86400, checkperiod: 3600 });
 // ── CONFIGURAÇÕES DO NOTEBOOKLM ──────────────────────────────
 const ARTICLES_NOTEBOOK_ID = '0c074a6d-3943-410e-8535-2c9500c8d03a';
 const TACO_NOTEBOOK_ID = '58532935-cd30-467c-9b7e-cf1920496423';
+const RECIPES_NOTEBOOK_ID = '49e00695-0c85-4d7a-92a8-951c290b11f8';
 
 // ── VARIÁVEIS DE AMBIENTE ─────────────────────────────────────
 const USDA_KEY = process.env.USDA_API_KEY || 'DEMO_KEY';
 const SPOONACULAR_KEY = process.env.SPOONACULAR_API_KEY || '';
-const FREE_TIER_LIMIT = 50;
+const FREE_TIER_LIMIT = 5;
 
 // ═══════════════════════════════════════════════════════════════
 //  UTILIDADES REUTILIZÁVEIS
@@ -86,25 +87,37 @@ function getCleanIP(req) {
     return userIp;
 }
 
-// STEP: Consultar NotebookLM via Proxy Determinístico (C1, C2 Fix)
+// STEP: Consultar NotebookLM via Proxy Determinístico
 async function queryNotebook(notebookId, query) {
     return new Promise((resolve) => {
-        // Path absoluto para o proxy determinístico que resolve problemas de encoding no Windows
         const proxyPath = 'c:\\Users\\soare\\.gemini\\antigravity\\scratch\\execution\\nlm_proxy.py';
+        const pythonPath = 'C:\\Users\\soare\\AppData\\Local\\Programs\\Python\\Python312\\python.exe';
+        
+        // Incluir diretório do nlm.exe no PATH para o subprocesso
+        const nlmDir = 'C:\\Users\\soare\\AppData\\Local\\Programs\\Python\\Python312\\Scripts';
+        const envPath = process.env.PATH || process.env.Path || '';
         
         const execOptions = { 
             timeout: 90000,
-            env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
+            env: { 
+                ...process.env, 
+                PYTHONIOENCODING: 'utf-8',
+                PATH: `${nlmDir};${envPath}`
+            }
         };
         
-        // Usamos python para rodar o proxy que gerencia a CLI nlm
-        execFile('python', [proxyPath, notebookId, query], execOptions, (error, stdout, stderr) => {
+        console.log(`[NotebookLM] Executando query para notebook ${notebookId}...`);
+        execFile(pythonPath, [proxyPath, notebookId, query], execOptions, (error, stdout, stderr) => {
             if (error) {
-                console.error(`[NotebookLM] Erro (code ${error.code}): ${error.message}`);
-                console.error(`[NotebookLM] Stderr: ${stderr}`);
+                console.error(`[NotebookLM] ERRO (code ${error.code}): ${error.message}`);
+                if (stderr) console.error(`[NotebookLM] Stderr: ${stderr}`);
                 return resolve(null);
             }
+            if (stderr) {
+                console.warn(`[NotebookLM] Stderr (não-fatal): ${stderr.substring(0, 200)}`);
+            }
             const cleanOutput = stdout.trim();
+            console.log(`[NotebookLM] Resposta recebida (${cleanOutput.length} chars)`);
             resolve(cleanOutput || null);
         });
     });
@@ -367,7 +380,7 @@ router.get('/search', rateLimitMiddleware, async (req, res) => {
             const data = await usdaResponse.json();
             
             if (data.foods && data.foods.length > 0) {
-                // STEP: Batch translation — traduz todos os nomes em paralelo (C4 fix)
+                // STEP: Batch translation — traduz todos os nomes em paralelo
                 const translationPromises = data.foods.map(food => 
                     translateToPortuguese(food.description)
                 );
@@ -411,12 +424,10 @@ router.get('/search', rateLimitMiddleware, async (req, res) => {
     } catch (error) {
         console.error('[API] Erro ao buscar dados nutricionais:', error);
         res.status(500).json({ 
-            error: 'Falha ao buscar dados nutricionais. Tente um alimento diferente ou busque de forma aproximada.',
-            details: error.message
+            error: 'Falha ao buscar dados nutricionais. Tente um alimento diferente ou busque de forma aproximada.'
         });
     }
 });
-
 
 // ROTA: Receitas Inteligentes (Fallback: Spoonacular → TheMealDB)
 router.get('/recipes', rateLimitMiddleware, async (req, res) => {
@@ -434,7 +445,64 @@ router.get('/recipes', rateLimitMiddleware, async (req, res) => {
     }
 
     try {
-        console.log(`[Receitas] Traduzindo "${ingredients}"...`);
+        const normalizedIngredients = ingredients.toLowerCase().trim();
+        
+        // TENTATIVA 0: NotebookLM (Receitas Oficiais Saudáveis)
+        console.log(`[Receitas] Consultando NotebookLM para: ${ingredients}...`);
+        const recipesAnswer = await queryNotebook(
+            RECIPES_NOTEBOOK_ID,
+            `${ingredients}. Retorne APENAS um JSON array [] com 1 receita (id, title, description, ingredients, instructions). Sem texto extra, sem markdown.`
+        );
+
+        if (recipesAnswer) {
+            try {
+                console.log(`[Receitas] Raw NotebookLM (primeiros 300 chars): ${recipesAnswer.substring(0, 300)}`);
+                const proxyResult = JSON.parse(recipesAnswer);
+                
+                // Extrair a resposta real — pode estar em diferentes níveis de aninhamento
+                let actualAnswer = '';
+                if (proxyResult.value && proxyResult.value.answer) {
+                    actualAnswer = proxyResult.value.answer;
+                } else if (proxyResult.answer) {
+                    actualAnswer = proxyResult.answer;
+                } else if (typeof proxyResult === 'string') {
+                    actualAnswer = proxyResult;
+                }
+                
+                console.log(`[Receitas] Answer extraído (primeiros 200 chars): ${actualAnswer.substring(0, 200)}`);
+
+                if (actualAnswer && actualAnswer.includes('[')) {
+                    const jsonMatch = actualAnswer.match(/\[[\s\S]*\]/);
+                    if (jsonMatch) {
+                        const aiRecipes = JSON.parse(jsonMatch[0]);
+                        
+                        if (Array.isArray(aiRecipes) && aiRecipes.length > 0) {
+                            const formattedRecipes = aiRecipes.map((r, idx) => ({
+                                id: `ai_${Date.now()}_${idx}`,
+                                title: r.title || 'Receita IA',
+                                image: r.image || 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=400',
+                                description: r.description || '',
+                                ingredients: Array.isArray(r.ingredients) ? r.ingredients : (r.ingredients ? [r.ingredients] : []),
+                                instructions: r.instructions || '',
+                                source: 'Guia Alimentar Oficial'
+                            }));
+
+                            const formatted = { source: 'NotebookLM (Guia Alimentar)', recipes: formattedRecipes };
+                            searchCache.set(cacheKey, formatted);
+                            console.log(`[Receitas] ✅ ${formattedRecipes.length} receitas retornadas via NotebookLM`);
+                            return res.json(formatted);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn(`[Receitas] Falha ao parsear JSON do NotebookLM: ${e.message}`);
+                console.warn(`[Receitas] Raw data: ${recipesAnswer.substring(0, 500)}`);
+            }
+        } else {
+            console.warn(`[Receitas] queryNotebook retornou null — caindo no fallback`);
+        }
+
+        console.log(`[Receitas] Traduzindo para fallback externo: "${ingredients}"...`);
         const ingredientsEn = await translateToEnglish(ingredients);
 
         // TENTATIVA 1: Spoonacular (se configurado)
@@ -555,6 +623,38 @@ router.get('/plates', (req, res) => {
     db.all(`SELECT * FROM plates WHERE user_ip = ? ORDER BY created_at DESC LIMIT 10`, [userIp], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
+    });
+});
+
+// ROTA: Buscar Prato Específico com Itens
+router.get('/plates/:id', (req, res) => {
+    const { id } = req.params;
+    const userIp = getCleanIP(req);
+
+    db.get(`SELECT * FROM plates WHERE id = ? AND user_ip = ?`, [id, userIp], (err, plate) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!plate) return res.status(404).json({ error: 'Prato não encontrado' });
+
+        db.all(`SELECT * FROM plate_items WHERE plate_id = ?`, [id], (err, items) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ ...plate, items });
+        });
+    });
+});
+
+// ROTA: Excluir Prato do Histórico
+router.delete('/plates/:id', (req, res) => {
+    const { id } = req.params;
+    const userIp = getCleanIP(req);
+
+    db.run(`DELETE FROM plates WHERE id = ? AND user_ip = ?`, [id, userIp], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        if (this.changes === 0) return res.status(404).json({ error: 'Prato não encontrado ou sem permissão' });
+        
+        db.run(`DELETE FROM plate_items WHERE plate_id = ?`, [id], (err) => {
+            if (err) console.error('[DB] Erro ao limpar plate_items:', err.message);
+            res.json({ message: 'Prato excluído com sucesso' });
+        });
     });
 });
 

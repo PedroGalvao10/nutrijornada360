@@ -36,9 +36,9 @@ const NutritionMyths: React.FC = () => {
 
   return (
     <>
-      <section className="relative z-[100] -mt-40 md:-mt-72 pb-8 pointer-events-none">
-        <div className="max-w-6xl mx-auto px-4 pointer-events-auto">
-          <div className="bg-background/90 dark:bg-stone-900/90 backdrop-blur-xl py-4 md:py-6 rounded-[2.5rem] border border-stone-200/40 dark:border-stone-800/40 overflow-hidden shadow-sm">
+      <section className="relative z-[100] -mt-48 md:-mt-80 pb-8 pointer-events-none">
+        <div className="w-full px-6 md:px-12 pointer-events-auto">
+          <div className="bg-background/90 dark:bg-stone-900/90 backdrop-blur-xl py-8 md:py-12 rounded-[3rem] border border-stone-200/40 dark:border-stone-800/40 overflow-hidden shadow-2xl">
             
             <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-8 px-6 mb-3 border-b border-stone-100/50 dark:border-stone-800/50 pb-3">
               <h2 className="text-[10px] md:text-xs font-headline font-bold text-on-background dark:text-stone-300 uppercase tracking-widest">

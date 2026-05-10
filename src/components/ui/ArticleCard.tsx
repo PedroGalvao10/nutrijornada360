@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTilt } from '../../hooks/useTilt';
 import { GlowWrapper } from './GlowWrapper';
+import marianaProfile from '../../assets/mariana-profile.png';
 
 import type { Article } from '../../article_types';
 
@@ -53,9 +54,15 @@ export default function ArticleCard({ post }: { post: Article }) {
         <div className="text-on-surface-variant dark:text-stone-400 text-sm flex-grow mb-6 leading-relaxed line-clamp-3">
           <p>{post.excerpt}</p>
         </div>
-        <footer className="mt-auto">
-          <Link to={`/blog/${post.slug}`} className="inline-flex items-center text-primary font-bold text-sm group-hover:translate-x-1 transition-transform" aria-label={`Ler mais sobre: ${post.title}`}>
-            Ler artigo completo <span className="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+        <footer className="mt-auto flex items-center justify-between border-t border-white/10 dark:border-white/5 pt-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/30 dark:border-emerald-500/30">
+              <img src={marianaProfile} alt="Mariana Bermudes" className="w-full h-full object-cover" />
+            </div>
+            <span className="text-[10px] font-bold text-on-surface-variant dark:text-stone-400 uppercase tracking-widest">Mariana B.</span>
+          </div>
+          <Link to={`/blog/${post.slug}`} className="inline-flex items-center text-primary dark:text-emerald-400 font-bold text-sm group-hover:translate-x-1 transition-transform" aria-label={`Ler mais sobre: ${post.title}`}>
+            Ler mais <span className="material-symbols-outlined text-sm ml-1">arrow_forward</span>
           </Link>
         </footer>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChefHat, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { ChefHat, Loader2, AlertCircle, Sparkles, Plus } from 'lucide-react';
 import { useQuota } from '../hooks/useQuota';
 
 
@@ -8,8 +8,12 @@ interface RecipeResult {
     id: number | string;
     title: string;
     image: string;
+    description?: string;
+    ingredients?: string[];
+    instructions?: string;
     usedIngredients?: number | string;
     missedIngredients?: number | string;
+    source?: string;
 }
 
 export const IntelligentRecipes: React.FC = () => {
@@ -18,6 +22,7 @@ export const IntelligentRecipes: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [source, setSource] = useState<string | null>(null);
+    const [selectedRecipe, setSelectedRecipe] = useState<RecipeResult | null>(null);
     
     // Hook centralizado de quota (elimina duplicação)
     const { remaining: remainingSearches, totalLimit, isUnlimited, limitWarning, setLimitWarning, clearLimitWarning, fetchQuota, usagePercentage, usageCount } = useQuota();
@@ -170,6 +175,7 @@ export const IntelligentRecipes: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
+                                onClick={() => setSelectedRecipe(recipe)}
                                 className="antigravity-glass rounded-[3rem] overflow-hidden group cursor-pointer border-white/60 hover:border-primary/20 transition-all hover:shadow-2xl hover:shadow-stone-200/40 active:scale-[0.98] flex flex-col h-full shadow-lg shadow-stone-200/20"
                             >
                                 <div className="h-64 overflow-hidden relative">
@@ -190,19 +196,14 @@ export const IntelligentRecipes: React.FC = () => {
                                                 <ChefHat className="w-5 h-5 text-primary" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold leading-none mb-1">Ingredientes</p>
-                                                <p className="text-on-background font-bold tracking-tight">{recipe.usedIngredients !== 'N/A' ? `${recipe.usedIngredients} que você tem` : 'Diversos'}</p>
+                                                <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold leading-none mb-1">Fonte</p>
+                                                <p className="text-on-background font-bold tracking-tight">{recipe.source || 'Internacional'}</p>
                                             </div>
                                         </div>
                                         
-                                        {recipe.missedIngredients !== 'N/A' && parseInt(String(recipe.missedIngredients)) > 0 && (
-                                             <div className="flex items-center gap-3 text-sm bg-white/40 p-4 rounded-2xl border border-stone-100">
-                                                 <div className="w-7 h-7 rounded-full bg-amber-400/10 flex items-center justify-center">
-                                                     <AlertCircle className="w-4 h-4 text-amber-500" />
-                                                 </div>
-                                                 <span className="text-stone-500 font-medium tracking-tight">Faltam apenas {recipe.missedIngredients} itens</span>
-                                             </div>
-                                        )}
+                                        <p className="text-sm text-stone-500 line-clamp-2 italic font-light">
+                                            {recipe.description || 'Uma opção deliciosa e equilibrada para o seu dia.'}
+                                        </p>
 
                                         <button className="mt-auto w-full py-5 bg-white border border-stone-100 text-stone-600 font-bold rounded-[1.5rem] text-sm hover:bg-primary hover:text-white hover:border-primary transition-all flex items-center justify-center gap-3 group/btn shadow-sm">
                                             Explorar Preparo
@@ -215,6 +216,112 @@ export const IntelligentRecipes: React.FC = () => {
                     </div>
                 </motion.div>
             )}
+
+            {/* Recipe Modal Detail */}
+            <AnimatePresence>
+                {selectedRecipe && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
+                        <motion.div 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedRecipe(null)}
+                            className="absolute inset-0 bg-black/40 backdrop-blur-md"
+                        />
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-4xl bg-white rounded-[3.5rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                        >
+                            <div className="flex-1 overflow-y-auto custom-scrollbar">
+                                <div className="h-80 md:h-96 relative">
+                                    <img src={selectedRecipe.image} alt={selectedRecipe.title} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+                                    <button 
+                                        onClick={() => setSelectedRecipe(null)}
+                                        title="Fechar receita"
+                                        aria-label="Fechar receita"
+                                        className="absolute top-8 right-8 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-stone-600 hover:bg-primary hover:text-white transition-all shadow-xl"
+                                    >
+                                        <Plus className="w-6 h-6 rotate-45" />
+                                    </button>
+                                </div>
+
+                                <div className="px-8 md:px-16 pb-16 -mt-20 relative z-10">
+                                    <div className="bg-white/80 backdrop-blur-xl border border-white p-8 md:p-12 rounded-[3rem] shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="px-4 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                                {selectedRecipe.source || 'Receita IA'}
+                                            </div>
+                                            {selectedRecipe.usedIngredients && (
+                                                <div className="px-4 py-1 bg-green-50 text-green-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-green-100">
+                                                    Ideal para seus itens
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        <h2 className="text-4xl md:text-5xl font-headline font-bold text-on-background mb-6 tracking-tight leading-tight">
+                                            {selectedRecipe.title}
+                                        </h2>
+                                        
+                                        <p className="text-lg text-stone-500 font-light leading-relaxed mb-12 italic border-l-4 border-primary/20 pl-6">
+                                            {selectedRecipe.description || 'Esta receita foi cuidadosamente selecionada pela nossa IA para garantir equilíbrio nutricional e sabor excepcional.'}
+                                        </p>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                            <div>
+                                                <h3 className="text-xs font-black text-stone-400 uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
+                                                    <div className="w-2 h-2 bg-primary rounded-full" />
+                                                    Ingredientes Necessários
+                                                </h3>
+                                                <ul className="space-y-4">
+                                                    {selectedRecipe.ingredients?.map((ing, i) => (
+                                                        <li key={i} className="flex items-start gap-4 text-stone-600 group">
+                                                            <div className="w-6 h-6 rounded-lg bg-stone-50 border border-stone-100 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 group-hover:border-primary/20 transition-colors">
+                                                                <div className="w-1 h-1 bg-stone-300 rounded-full group-hover:bg-primary group-hover:scale-150 transition-all" />
+                                                            </div>
+                                                            <span className="font-medium">{ing}</span>
+                                                        </li>
+                                                    )) || <li className="text-stone-400 italic">Consulte as instruções para detalhes.</li>}
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h3 className="text-xs font-black text-stone-400 uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
+                                                    <div className="w-2 h-2 bg-secondary rounded-full" />
+                                                    Modo de Preparo
+                                                </h3>
+                                                <div className="text-stone-600 leading-relaxed font-medium whitespace-pre-wrap">
+                                                    {selectedRecipe.instructions || 'Combine os ingredientes e cozinhe em fogo médio até atingir o ponto desejado. Tempere a gosto com ervas naturais.'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-8 px-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center border border-primary/10">
+                                                <Sparkles className="w-6 h-6 text-primary" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold mb-0.5">Sugestão Mariana</p>
+                                                <p className="text-on-background font-bold text-sm">Esta receita respeita o Guia Alimentar 2024</p>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => setSelectedRecipe(null)}
+                                            className="px-12 py-5 bg-stone-900 text-white font-bold rounded-2xl hover:bg-stone-800 transition-all shadow-xl shadow-stone-900/10"
+                                        >
+                                            Entendido, vamos cozinhar!
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

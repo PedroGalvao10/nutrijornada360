@@ -186,7 +186,7 @@ export function Layout() {
         </nav>
       </header>
 
-      <main id="main-content" className="flex-grow pt-24 pb-20 md:pt-32 md:pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full relative z-10">
+      <main id="main-content" className="flex-grow w-full relative z-10">
         <Outlet />
       </main>
 

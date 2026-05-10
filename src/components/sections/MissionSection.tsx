@@ -15,8 +15,8 @@ export function MissionSection() {
 
   return (
     <section className="py-16 md:py-24 bg-white/5 dark:bg-stone-950 relative overflow-hidden transition-colors duration-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <StaggerReveal className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
+      <div className="w-full px-4 sm:px-6 lg:px-12 relative z-10">
+        <StaggerReveal className="text-center mb-12 md:mb-16">
           <StaggerItem>
             <span className="text-secondary font-label font-bold tracking-widest uppercase text-sm mb-4 block">Nossa Missão</span>
           </StaggerItem>
