@@ -1,52 +1,16 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import type { Article } from '../article_types';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { TypewriterText } from '../components/TypewriterText';
-import { useTilt } from '../hooks/useTilt';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
 import { MagneticButton } from '../components/ui/MagneticButton';
-
-
-interface Ebook {
-  id: number;
-  title: string;
-  imageUrl: string;
-  pdfUrl: string;
-}
-
 import ArticleCard from '../components/ui/ArticleCard';
 import { HeroAnimatedImages } from '../components/ui/HeroAnimatedImages';
-
-function EbookCard({ ebook, onDownload }: { ebook: Ebook, onDownload: (ebook: Ebook) => void }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  useTilt(cardRef, 15);
-
-  return (
-    <div 
-      ref={cardRef}
-      className="antigravity-glass bg-white/5 dark:bg-black/20 border border-white/20 dark:border-white/5 p-6 rounded-3xl flex flex-col sm:flex-row gap-6 items-center parallax-shadow hover:shadow-lg transition-shadow duration-300 transform-style-3d"
-    >
-      <div className="w-40 h-52 flex-shrink-0 bg-surface-container dark:bg-stone-800 rounded-lg overflow-hidden border border-outline/20 dark:border-stone-700 relative tilt-child tz-30 shadow-md">
-        <img src={ebook.imageUrl} alt={`Capa ${ebook.title}`} className="w-full h-full object-cover" />
-        <div className="absolute top-2 right-2 bg-secondary dark:bg-stone-700 text-on-secondary dark:text-stone-100 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest shadow-sm">PDF</div>
-      </div>
-      <div className="flex flex-col flex-1 text-center sm:text-left tilt-child tz-10">
-        <h3 className="text-xl font-headline font-bold text-on-surface dark:text-stone-100 mb-3">{ebook.title}</h3>
-        <p className="text-sm text-on-surface-variant dark:text-stone-400 mb-6">Um guia prático com passos eficientes desenhados para a sua rotina diária.</p>
-        <MagneticButton as="div" className="self-start sm:w-auto w-full">
-          <button 
-            onClick={() => onDownload(ebook)}
-            className="bg-primary dark:bg-emerald-500 text-on-primary dark:text-stone-950 font-bold px-6 py-3 rounded-full hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-auto w-full shadow-sm active:scale-[0.98] tilt-child tz-20"
-          >
-            <span className="material-symbols-outlined text-[18px]">download</span> Baixar Grátis
-          </button>
-        </MagneticButton>
-      </div>
-    </div>
-  );
-}
+import { EbookCard } from '../components/ebooks/EbookCard';
+import { EbookLeadModal } from '../components/ebooks/EbookLeadModal';
+import { EBOOKS, EMPTY_LEAD_FORM, type Ebook } from '../components/ebooks/ebooks-data';
 
 export default function Artigos() {
   const [posts, setPosts] = useState<Article[]>([]);
@@ -65,44 +29,14 @@ export default function Artigos() {
       .catch(err => console.error("Erro ao carregar os artigos:", err));
   }, []);
 
-  const ebooks: Ebook[] = [
-    {
-      id: 1,
-      title: "Guia Completo: Nutrição Descomplicada O Ano Todo",
-      imageUrl: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&w=400&q=80",
-      pdfUrl: "#", // placeholder
-    },
-    {
-      id: 2,
-      title: "10 Receitas Rápidas e Saudáveis",
-      imageUrl: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=400&q=80",
-      pdfUrl: "#", // placeholder
-    }
-  ];
+  const ebooks = EBOOKS;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEbook, setSelectedEbook] = useState<Ebook | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    goals: [] as string[],
-    consentMarketing: false,
-    consentNewsletter: false
-  });
-
-  const GOAL_OPTIONS = [
-    "Perda de peso", 
-    "Ganho de massa muscular", 
-    "Melhora do sono", 
-    "Saúde intestinal", 
-    "Equilíbrio hormonal", 
-    "Redução do estresse", 
-    "Alimentação saudável", 
-    "Outro"
-  ];
+  const [formData, setFormData] = useState(EMPTY_LEAD_FORM);
 
   const handleGoalToggle = (goal: string) => {
     setFormData(prev => ({
@@ -130,7 +64,6 @@ export default function Artigos() {
         body: JSON.stringify(payload)
       });
       if (response.ok) {
-        console.log("[Lead] Dados registrados no servidor.");
         return true;
       }
       return false;
@@ -199,7 +132,7 @@ export default function Artigos() {
         setTimeout(() => {
             setIsModalOpen(false);
             setSuccessMessage("");
-            setFormData({ name: '', email: '', goals: [], consentMarketing: false, consentNewsletter: false });
+            setFormData(EMPTY_LEAD_FORM);
         }, 1500); 
       }, 1000);
 
@@ -366,104 +299,18 @@ export default function Artigos() {
         </StaggerReveal>
       </section>
 
-      {/* MODAL E-BOOK FORM */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => !isSubmitting && setIsModalOpen(false)}></div>
-           <div className="bg-surface dark:bg-stone-900 relative z-10 w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden border border-outline/10 dark:border-stone-800 flex flex-col max-h-[90vh]">
-              <div className="bg-primary/5 dark:bg-emerald-500/10 px-8 pt-8 pb-4 border-b border-outline/10 dark:border-stone-800 relative shrink-0">
-                 <button onClick={() => !isSubmitting && setIsModalOpen(false)} className="absolute top-6 right-6 text-on-surface-variant dark:text-stone-400 hover:text-primary dark:hover:text-emerald-400 transition-colors focus:outline-none">
-                    <span className="material-symbols-outlined">close</span>
-                 </button>
-                 <h3 className="text-2xl font-headline font-bold text-on-surface dark:text-stone-100 mb-2 leading-tight">Garantir acesso ao E-book</h3>
-                 <p className="text-on-surface-variant dark:text-stone-300 text-sm flex items-center gap-2"><span className="material-symbols-outlined text-primary dark:text-emerald-400 text-[16px]">check_circle</span> "{selectedEbook?.title}"</p>
-              </div>
-
-              <div className="p-8 overflow-y-auto custom-scrollbar">
-                 {successMessage ? (
-                     <div className="flex flex-col items-center justify-center text-center py-8">
-                        <div className="w-16 h-16 bg-primary/20 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-4">
-                           <span className="material-symbols-outlined text-3xl text-primary dark:text-emerald-400">task_alt</span>
-                        </div>
-                        <h4 className="text-xl font-bold text-on-surface dark:text-stone-100 mb-2">Quase lá!</h4>
-                        <p className="text-on-surface-variant dark:text-stone-300">{successMessage}</p>
-                     </div>
-                 ) : (
-                    <form onSubmit={handleFormSubmit} className="flex flex-col gap-6">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-semibold text-on-surface dark:text-stone-200 ml-1">Nome Completo *</label>
-                        <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-surface-container/50 border border-outline/30 px-4 py-3 rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm dark:bg-stone-950 dark:border-stone-700 dark:text-stone-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-400" placeholder="Ex: Maria de Souza" required disabled={isSubmitting} />
-                      </div>
-
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-sm font-semibold text-on-surface dark:text-stone-200 ml-1">E-mail de preferência *</label>
-                        <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-surface-container/50 border border-outline/30 px-4 py-3 rounded-xl text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm dark:bg-stone-950 dark:border-stone-700 dark:text-stone-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-400" placeholder="seu@email.com" required disabled={isSubmitting} />
-                      </div>
-
-                      <div className="flex flex-col gap-2.5">
-                        <label className="text-sm font-semibold text-on-surface dark:text-stone-200 ml-1">Quais são seus Objetivos de Saúde? *</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
-                          {GOAL_OPTIONS.map(goal => (
-                            <button
-                              key={goal}
-                              type="button"
-                              onClick={() => handleGoalToggle(goal)}
-                              disabled={isSubmitting}
-                              className={`text-left px-4 py-2.5 rounded-xl text-xs font-medium transition-all border ${
-                                formData.goals.includes(goal)
-                                  ? 'bg-primary/10 border-primary text-primary shadow-sm dark:bg-emerald-500/20 dark:border-emerald-400 dark:text-emerald-400'
-                                  : 'bg-surface-container/30 border-outline/20 text-on-surface-variant hover:border-primary/40 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-300 dark:hover:border-emerald-400/50'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-[16px]">
-                                  {formData.goals.includes(goal) ? 'check_box' : 'check_box_outline_blank'}
-                                </span>
-                                {goal}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                        <p className="text-[10px] text-on-surface-variant/70 dark:text-stone-400/70 italic ml-1">* Selecione pelo menos uma opção</p>
-                      </div>
-
-                      <div className="flex flex-col gap-3 mt-2">
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                          <div className="relative flex items-center mt-0.5">
-                             <input type="checkbox" checked={formData.consentMarketing} onChange={(e) => setFormData({...formData, consentMarketing: e.target.checked})} className="peer w-5 h-5 appearance-none border-2 border-outline rounded-md checked:bg-primary checked:border-primary transition-colors cursor-pointer dark:border-stone-600 dark:checked:bg-emerald-500 dark:checked:border-emerald-500" required disabled={isSubmitting} />
-                             <span className="material-symbols-outlined absolute inset-0 text-white dark:text-stone-900 opacity-0 peer-checked:opacity-100 pointer-events-none text-xl leading-[1.2]">check</span>
-                          </div>
-                          <span className="text-xs text-on-surface-variant dark:text-stone-300 leading-relaxed">
-                            Concordo em receber e-mails com conteúdos, novidades e comunicações de marketing. *
-                          </span>
-                        </label>
-
-                        <label className="flex items-start gap-3 cursor-pointer group">
-                          <div className="relative flex items-center mt-0.5">
-                             <input type="checkbox" checked={formData.consentNewsletter} onChange={(e) => setFormData({...formData, consentNewsletter: e.target.checked})} className="peer w-5 h-5 appearance-none border-2 border-outline rounded-md checked:bg-primary checked:border-primary transition-colors cursor-pointer dark:border-stone-600 dark:checked:bg-emerald-500 dark:checked:border-emerald-500" disabled={isSubmitting} />
-                             <span className="material-symbols-outlined absolute inset-0 text-white dark:text-stone-900 opacity-0 peer-checked:opacity-100 pointer-events-none text-xl leading-[1.2]">check</span>
-                          </div>
-                          <span className="text-xs text-on-surface-variant dark:text-stone-300 leading-relaxed">
-                            Gostaria de me inscrever na Newsletter para receber novos artigos e materiais (opcional).
-                          </span>
-                        </label>
-                      </div>
-
-                      <MagneticButton as="div" className="mt-4">
-                        <button type="submit" disabled={!isValidForm || isSubmitting} className="w-full bg-primary text-on-primary dark:bg-emerald-500 dark:text-stone-950 font-bold py-4 rounded-xl shadow-md transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                           {isSubmitting ? (
-                              <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                           ) : (
-                              <>Confirmar e Liberar Download <span className="material-symbols-outlined text-[18px]">download</span></>
-                           )}
-                        </button>
-                      </MagneticButton>
-                    </form>
-                 )}
-              </div>
-           </div>
-        </div>
-      )}
+      <EbookLeadModal
+        isOpen={isModalOpen}
+        ebook={selectedEbook}
+        formData={formData}
+        setFormData={setFormData}
+        isSubmitting={isSubmitting}
+        successMessage={successMessage}
+        isValidForm={isValidForm}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleFormSubmit}
+        onGoalToggle={handleGoalToggle}
+      />
     </div>
   );
 }

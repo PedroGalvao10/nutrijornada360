@@ -46,9 +46,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-[#faf6f0] dark:bg-stone-900 rounded-2xl shadow-xl w-full max-w-sm p-8 border border-stone-200 dark:border-stone-800">
-        <h2 className="text-2xl font-serif text-[#705c30] dark:text-amber-500 mb-6 text-center">Acesso Restrito</h2>
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-modal-title"
+        className="bg-[#faf6f0] dark:bg-stone-900 rounded-2xl shadow-xl w-full max-w-sm p-8 border border-stone-200 dark:border-stone-800"
+      >
+        <h2 id="login-modal-title" className="text-2xl font-serif text-[#705c30] dark:text-amber-500 mb-6 text-center">Acesso Restrito</h2>
         
         {error && (
           <div className="bg-red-100 text-red-700 text-sm p-3 rounded-lg mb-4 text-center">

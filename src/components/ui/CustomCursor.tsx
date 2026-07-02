@@ -84,24 +84,28 @@ export function CustomCursor() {
     <>
       {/* Dot 1:1 — mix-blend-difference inverte a cor sobre qualquer fundo */}
       <div
+        aria-hidden="true"
         ref={dotRef}
         className="fixed top-0 left-0 w-2 h-2 rounded-full bg-white pointer-events-none z-[99999]"
         style={{ mixBlendMode: 'difference', translate: '-50% -50%', willChange: 'transform', transition: 'scale 0.15s ease' }}
       />
       {/* Mid ring — lerp 0.22 */}
       <div
+        aria-hidden="true"
         ref={midRef}
         className="fixed top-0 left-0 w-5 h-5 rounded-full border border-[#4a7c59]/50 pointer-events-none z-[99998]"
         style={{ translate: '-50% -50%', willChange: 'transform' }}
       />
       {/* Outer ring — lerp 0.10, escala em hover */}
       <div
+        aria-hidden="true"
         ref={ringRef}
         className="fixed top-0 left-0 w-8 h-8 rounded-full border border-[#4a7c59]/25 pointer-events-none z-[99997]"
         style={{ translate: '-50% -50%', willChange: 'transform', transition: 'scale 0.35s cubic-bezier(0.16,1,0.3,1)' }}
       />
       {/* Label — sobre o ring, visível apenas com data-cursor */}
       <div
+        aria-hidden="true"
         ref={labelRef}
         className="fixed top-0 left-0 pointer-events-none z-[99999] opacity-0"
         style={{ translate: '-50% -150%', transition: 'opacity 0.2s ease' }}

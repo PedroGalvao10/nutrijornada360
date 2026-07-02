@@ -8,11 +8,16 @@ import { MagneticButton } from '../components/ui/MagneticButton';
 import { SimuladorResultados } from '../components/SimuladorResultados';
 import { TypewriterTextAnim, LiquidText, AnimatedUnderlineText, DotPatternQuote } from '../components/ui/text-animations';
 import InteractiveParticles from '../components/ui/InteractiveParticles';
+import SEO from '../components/SEO';
 
 const Ferramentas: React.FC = () => {
     // Animation Variants
     return (
         <div className="min-h-screen text-on-background pt-24 md:pt-32 pb-20 relative overflow-hidden font-body">
+            <SEO
+                title="Ferramentas de Nutrição Inteligente"
+                description="Busca nutricional com dados científicos, receitas inteligentes e simulador de resultados. Ferramentas gratuitas da NutriJornada 360º de Mariana Bermudes."
+            />
             {/* Background Interativo */}
             <InteractiveParticles />
 

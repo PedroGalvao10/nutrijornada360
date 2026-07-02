@@ -73,6 +73,8 @@ export default function ConciergeChat() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Fechar chat de nutrição' : 'Abrir chat de nutrição'}
+        aria-expanded={isOpen}
         className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-primary dark:bg-emerald-500 rounded-full shadow-2xl flex items-center justify-center text-white dark:text-stone-950 transition-colors"
       >
         {isOpen ? <X size={28} /> : <MessageCircle size={28} />}
@@ -91,6 +93,8 @@ export default function ConciergeChat() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            role="dialog"
+            aria-label="NutriChat Concierge"
             initial={{ opacity: 0, y: 100, scale: 0.8, transformOrigin: 'bottom right' }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.8 }}
@@ -182,11 +186,13 @@ export default function ConciergeChat() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                   placeholder={activeTab === 'SCIENTIFIC' ? "Dúvida científica..." : "Buscar na TACO..."}
+                  aria-label="Mensagem para o chat de nutrição"
                   className="w-full bg-surface-container dark:bg-stone-800/50 border border-transparent focus:border-primary dark:focus:border-emerald-500 px-6 py-4 rounded-2xl pr-14 outline-none transition-all text-on-surface dark:text-stone-200"
                 />
                 <button
                   onClick={handleSend}
                   disabled={isLoading || !input.trim()}
+                  aria-label="Enviar mensagem"
                   className="absolute right-2 p-3 text-primary dark:text-emerald-500 hover:scale-110 active:scale-95 transition-all disabled:opacity-30"
                 >
                   <Send size={20} />

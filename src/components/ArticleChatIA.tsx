@@ -111,11 +111,13 @@ export default function ArticleChatIA() {
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                 placeholder="Pergunte sobre nutrição..."
+                                aria-label="Pergunta para a Nutri-IA"
                                 className="w-full bg-surface dark:bg-stone-900 border border-outline/20 dark:border-stone-800 px-6 py-4 rounded-full pr-16 focus:outline-none focus:border-primary dark:focus:border-emerald-500 transition-all shadow-inner text-on-surface dark:text-stone-100"
                             />
-                            <button 
+                            <button
                                 onClick={handleSend}
                                 disabled={isLoading || !input.trim()}
+                                aria-label="Enviar pergunta"
                                 className="absolute right-2 p-3 bg-primary dark:bg-emerald-500 text-white dark:text-stone-950 rounded-full shadow-md hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
                             >
                                 <span className="material-symbols-outlined">send</span>

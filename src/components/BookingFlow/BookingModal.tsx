@@ -120,6 +120,9 @@ export function BookingModal() {
 
       {/* Modal Card */}
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Agendamento de consultoria"
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -133,6 +136,7 @@ export function BookingModal() {
             </span>
             <button
               onClick={closeBooking}
+              aria-label="Fechar agendamento"
               className="w-8 h-8 rounded-full bg-white/50 dark:bg-stone-800/50 backdrop-blur-sm flex items-center justify-center text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors"
             >
               <span className="material-symbols-outlined text-lg">close</span>

@@ -9,6 +9,7 @@ import db, { initDb } from './db.js';
 import config from './config.js';
 import { validate, loginSchema, leadSchema, aiChatSchema, articleSchema } from './schemas.js';
 import { leadsLimiter, aiChatLimiter } from './rate-limit.js';
+import logger from './logger.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -311,11 +312,11 @@ app.use((req, res) => {
 // retornam 500 JSON em vez de derrubar o processo ou vazar stack trace.
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-    console.error(`[Error] ${req.method} ${req.path}:`, err);
+    logger.error({ err, method: req.method, path: req.path }, 'Erro não tratado em rota');
     if (res.headersSent) return;
     res.status(err.status || 500).json({ error: 'Erro interno do servidor' });
 });
 
 // Inicialização Final do Servidor
-app.listen(PORT, () => console.log(`[API] Backend Express rodando na porta ${PORT}`));
+app.listen(PORT, () => logger.info(`[API] Backend Express rodando na porta ${PORT}`));
 

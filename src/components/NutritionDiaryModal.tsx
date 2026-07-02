@@ -69,6 +69,9 @@ export const NutritionDiaryModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-white/80 backdrop-blur-2xl"
                 >
                     <motion.div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="diary-modal-title"
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -81,12 +84,13 @@ export const NutritionDiaryModal: React.FC<Props> = ({ isOpen, onClose }) => {
                                     <BookOpen className="w-8 h-8 text-secondary" />
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl font-headline font-black text-on-surface tracking-tight">Meu Diário</h2>
+                                    <h2 id="diary-modal-title" className="text-3xl font-headline font-black text-on-surface tracking-tight">Meu Diário</h2>
                                     <p className="text-on-surface-variant/60 font-light">Histórico de nutrição e acompanhamento metabólico.</p>
                                 </div>
                             </div>
                             <button
                                 onClick={onClose}
+                                aria-label="Fechar diário"
                                 className="w-12 h-12 rounded-full hover:bg-stone-100 transition-colors flex items-center justify-center group"
                             >
                                 <X className="w-6 h-6 text-stone-400 group-hover:text-stone-600 transition-colors" />
