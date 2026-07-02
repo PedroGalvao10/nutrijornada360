@@ -7,14 +7,14 @@ interface PageTransitionProps {
 
 export default function PageTransition({ children }: PageTransitionProps) {
   return (
-    <div className="relative w-full min-h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-x-clip">
       {/* Overlay de transição - Anima na entrada */}
       <motion.div 
         initial={{ scaleY: 1, opacity: 1 }}
         animate={{ scaleY: 0, opacity: 0 }}
         exit={{ scaleY: 1, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-        style={{ transformOrigin: 'top', willChange: 'transform, opacity' }}
+        style={{ transformOrigin: 'top' }}
         className="fixed inset-0 bg-primary z-50 pointer-events-none"
       />
       
@@ -24,7 +24,6 @@ export default function PageTransition({ children }: PageTransitionProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -20, scale: 0.98 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        style={{ willChange: 'transform, opacity' }}
         className="w-full h-full"
       >
         {children}

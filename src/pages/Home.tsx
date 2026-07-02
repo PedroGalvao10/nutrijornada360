@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TypewriterText } from '../components/TypewriterText';
+import { TypewriterTextAnim, AnimatedUnderlineText, TypingEffect, TextMarquee } from '../components/ui/text-animations';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { useScrollCanvas } from '../hooks/useScrollCanvas';
 import { useViewportVisibility } from '../hooks/useViewportVisibility';
@@ -13,8 +13,8 @@ import { TextRotate } from '../components/ui/TextRotate';
 import ArticlesSection from '../components/ArticlesSection';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { ScrollExpandMedia } from '../components/ui/ScrollExpandMedia';
+import { CinematicHero } from '../components/ui/cinematic-landing-hero';
 import SplineSafe from '../components/ui/SplineSafe';
-import NutritionMyths from '../components/NutritionMyths';
 import { MissionSection } from '../components/sections/MissionSection';
 import { PlansSection } from '../components/sections/PlansSection';
 import { HomeToolsSection } from '../components/sections/HomeToolsSection';
@@ -85,13 +85,19 @@ export default function Home() {
 
   const homeContent = (
     <div className="font-body text-on-background dark:text-stone-300 bg-background dark:bg-stone-950 selection:bg-primary-container selection:text-on-primary-container transition-colors duration-500">
-      <ScrollExpandMedia onComplete={() => {
+      {/* <ScrollExpandMedia onComplete={() => {
         window.dispatchEvent(new CustomEvent('portal-complete'));
-      }} />
+      }} /> */}
       <SEO 
         title="Início | Mariana Bermudes Nutrição"
         description="Nutrição de precisão e emagrecimento consciente com Mariana Bermudes. Transforme sua saúde com estratégias personalizadas."
       />
+
+      {/* ═══ Cinematic Landing Hero ═══ */}
+      <section className="relative z-[60]" id="cinematic-section-wrapper">
+        <CinematicHero />
+      </section>
+
       {/* ═══ Hero Section (Parallax Video) ═══ */}
       <section id="video-hero-container" className="relative h-[160vh] md:h-[160vh] bg-background dark:bg-stone-950 transition-colors duration-1000">
         <div className="sticky top-0 h-screen overflow-hidden flex items-center">
@@ -137,7 +143,7 @@ export default function Home() {
               <StaggerItem>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-secondary-container text-on-secondary-container font-medium text-xs md:text-sm border border-secondary/20 shadow-sm">
                   <span className="material-symbols-outlined text-sm">spa</span>
-                  <span>Abordagem Comportamental &amp; Estética</span>
+                  <TypingEffect text="Abordagem Comportamental & Estética" delay={0.2} />
                 </div>
               </StaggerItem>
 
@@ -167,7 +173,7 @@ export default function Home() {
 
               <StaggerItem>
                 <div className="text-base sm:text-lg md:text-xl text-on-surface-variant dark:text-stone-400 leading-relaxed opacity-90 drop-shadow-md md:drop-shadow-none max-w-lg mx-auto md:mx-0 font-body">
-                  <TypewriterText text="Um convite ao respeito profundo pelo próprio corpo e à nutrição que acolhe. Chega de restrições que ferem a sua essência." speed={35} delay={800} />
+                  <TypewriterTextAnim text="Um convite ao respeito profundo pelo próprio corpo e à nutrição que acolhe. Chega de restrições que ferem a sua essência." speed={35} delay={800} />
                 </div>
               </StaggerItem>
 
@@ -180,7 +186,7 @@ export default function Home() {
                       className="justify-center bg-tertiary text-white px-6 py-3 md:px-8 md:py-4 rounded-full text-base md:text-lg font-semibold transition-all duration-300 flex items-center gap-2 w-full sm:w-auto hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                       data-cursor="Ver Planos"
                     >
-                      {ctaText} <span className="material-symbols-outlined">arrow_forward</span>
+                      <AnimatedUnderlineText text={ctaText} underlineColor="bg-white/50" /> <span className="material-symbols-outlined">arrow_forward</span>
                     </Link>
                   </MagneticButton>
                   <MagneticButton as="div" className="w-full sm:w-auto">
@@ -189,7 +195,7 @@ export default function Home() {
                       className="justify-center flex items-center text-center bg-white/80 backdrop-blur-md border border-primary/20 text-primary px-6 py-3 md:px-8 md:py-4 rounded-full text-base md:text-lg font-semibold hover:bg-white hover:shadow-md transition-all duration-300 w-full sm:w-auto mt-0 h-full hover:scale-[1.02] active:scale-[0.98]"
                       data-cursor="Conhecer Método"
                     >
-                      Conhecer o método
+                      <AnimatedUnderlineText text="Conhecer o método" underlineColor="bg-primary/30" />
                     </Link>
                   </MagneticButton>
                 </div>
@@ -203,7 +209,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <NutritionMyths />
 
       {/* ═══ 3D Transition Section (NutriJornada 360º Creative Experience) ═══ */}
       <section className="w-full min-h-[600px] md:min-h-[750px] relative z-10 flex flex-col items-center justify-center overflow-visible bg-background dark:bg-stone-950 transition-colors duration-500 py-6 md:py-12">
@@ -228,6 +233,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Marquee Transition */}
+      <section className="py-6 border-y border-outline/10 dark:border-stone-800/40 bg-background dark:bg-stone-950">
+        <TextMarquee text="SAÚDE INTEGRAL • EMAGRECIMENTO CONSCIENTE • COMPORTAMENTO ALIMENTAR • NUTRIÇÃO DE PRECISÃO • BEM-ESTAR • CIÊNCIA • EMPATIA •" className="text-xl md:text-3xl font-headline font-bold text-outline dark:text-stone-800 opacity-50" speed={40} />
+      </section>
+
       {/* Mission Section (Ruixen Style) */}
       <MissionSection />
 
@@ -239,7 +249,7 @@ export default function Home() {
       <PlansSection />
 
       {/* 📦 Agendamento / Logística Tablet Viewer (Desceu: Resolvido o Desejo e Planos, agora a Logística) */}
-      <section className="bg-background dark:bg-stone-950 relative z-30 transition-colors duration-500 pt-20 md:pt-40">
+      <section className="bg-background dark:bg-stone-950 relative z-30 transition-colors duration-500 pt-10 md:pt-20 pb-40 md:pb-[25rem]">
         <ContainerScroll
           titleComponent={
             <>

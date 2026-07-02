@@ -6,6 +6,8 @@ interface FoodItem {
   id: string;
   clipId: string;
   image: string;
+  rotation?: number;
+  imageOffset?: string; // translateY extra para ajustar posição da imagem
 }
 
 // Alimentos com silhuetas icônicas e inconfundíveis
@@ -14,7 +16,9 @@ const foodItems: FoodItem[] = [
   {
     id: "banana",
     clipId: "clip-banana",
-    image: "/banana.png"
+    image: "/banana.png",
+    rotation: 40,
+    imageOffset: "translateY(7%)",
   },
   {
     id: "apple",
@@ -87,7 +91,7 @@ export const HeroAnimatedImages = ({
       {/* ═══ SVG Clip Paths — silhuetas icônicas de cada alimento ═══ */}
       <svg width="0" height="0" className="absolute">
         <defs>
-          {/* Banana — crescente fino e curvado, silhueta icônica */}
+          {/* Banana — crescente original, rotação aplicada via CSS */}
           <clipPath id="clip-banana" clipPathUnits="objectBoundingBox">
             <path d="
               M 0.85 0.05
@@ -160,12 +164,18 @@ export const HeroAnimatedImages = ({
           style={{
             clipPath: `url(#${item.clipId})`,
             WebkitClipPath: `url(#${item.clipId})`,
+            transform: item.rotation ? `rotate(${item.rotation}deg)` : undefined,
           }}
         >
           <img
             src={item.image}
             alt={item.id}
             className="w-full h-full object-cover"
+            style={{
+              transform: item.rotation
+                ? `rotate(-${item.rotation}deg) scale(1.3) ${item.imageOffset || ''}`
+                : item.imageOffset || undefined,
+            }}
             loading="eager"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent mix-blend-overlay"></div>

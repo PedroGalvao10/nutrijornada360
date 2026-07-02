@@ -5,6 +5,7 @@ import marianaProfile from '../assets/mariana-profile.png';
 import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
+import { ShareButton } from '../components/ui/share-button';
 
 
 export default function ArtigoDetalhe() {
@@ -133,33 +134,7 @@ export default function ArtigoDetalhe() {
                   </div>
                </div>
 
-               <div className="flex items-center gap-3">
-                  <p className="text-sm font-bold text-on-surface-variant dark:text-stone-300 uppercase tracking-tighter mr-2">Compartilhar:</p>
-                  <button 
-                    onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title} - ${window.location.href}`)}`, '_blank')}
-                    className="w-12 h-12 rounded-full border border-outline/20 dark:border-stone-700 dark:text-stone-300 flex items-center justify-center hover:bg-surface-container dark:hover:bg-stone-800 hover:text-primary dark:hover:text-emerald-400 transition-all active:scale-95 shadow-sm"
-                    aria-label="Compartilhar no WhatsApp"
-                  >
-                    <i className="fa-brands fa-whatsapp text-lg"></i>
-                  </button>
-                  <button 
-                    onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
-                    className="w-12 h-12 rounded-full border border-outline/20 dark:border-stone-700 dark:text-stone-300 flex items-center justify-center hover:bg-surface-container dark:hover:bg-stone-800 hover:text-primary dark:hover:text-emerald-400 transition-all active:scale-95 shadow-sm"
-                    aria-label="Compartilhar no LinkedIn"
-                  >
-                    <i className="fa-brands fa-linkedin-in text-lg"></i>
-                  </button>
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert("Link copiado para a área de transferência!");
-                    }}
-                    className="w-12 h-12 rounded-full border border-outline/20 dark:border-stone-700 dark:text-stone-300 flex items-center justify-center hover:bg-surface-container dark:hover:bg-stone-800 hover:text-primary dark:hover:text-emerald-400 transition-all active:scale-95 shadow-sm"
-                    aria-label="Copiar link"
-                  >
-                    <span className="material-symbols-outlined text-lg">link</span>
-                  </button>
-               </div>
+               <ShareButton title={post.title} />
             </footer>
           </StaggerItem>
 

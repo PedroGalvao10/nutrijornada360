@@ -1,74 +1,67 @@
 /* cspell:disable-file */
 import { useEffect, type RefObject } from 'react';
-import { gsap } from 'gsap';
 
+/**
+ * useTilt — inclinação 3D de cards via rAF puro (sem GSAP).
+ * Lerp 0.12 para suavização; perspective(800px) dá profundidade real.
+ * O loop só roda enquanto o card está ativo ou ainda desacelerando.
+ */
 export function useTilt(ref: RefObject<HTMLElement | null>, intensity: number = 10) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const onMouseEnter = () => {
-      gsap.to(el, {
-        duration: 0.5,
-        ease: 'power2.out',
-        overwrite: 'auto'
-      });
-    };
+    let targetRx = 0, targetRy = 0;
+    let currentRx = 0, currentRy = 0;
+    let rafId: number;
+    let active = false;
 
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      const px = x / rect.width;
-      const py = y / rect.height;
-      
-      const tiltX = (py - 0.5) * intensity;
-      const tiltY = (px - 0.5) * -intensity;
-      
-      // Cálculo das sombras sincronizadas (oposto à inclinação)
-      const shadowX = tiltY * 1.2;
-      const shadowY = -tiltX * 1.2;
+    const tick = () => {
+      currentRx += (targetRx - currentRx) * 0.12;
+      currentRy += (targetRy - currentRy) * 0.12;
 
-      gsap.to(el, {
-        rotateX: tiltX,
-        rotateY: tiltY,
-        duration: 0.5,
-        ease: 'power2.out',
-        overwrite: 'auto'
-      });
+      el.style.transform = `perspective(800px) rotateX(${currentRx.toFixed(2)}deg) rotateY(${currentRy.toFixed(2)}deg)`;
 
-      // Atualiza variáveis de sombra para elementos com .parallax-shadow
+      // Sombra sincronizada (oposta à inclinação) para elementos .parallax-shadow
       if (el.classList.contains('parallax-shadow')) {
-        el.style.setProperty('--shadow-x', `${shadowX.toFixed(2)}px`);
-        el.style.setProperty('--shadow-y', `${(10 + shadowY).toFixed(2)}px`);
+        el.style.setProperty('--shadow-x', `${(-currentRy * 1.2).toFixed(2)}px`);
+        el.style.setProperty('--shadow-y', `${(10 + currentRx * 1.2).toFixed(2)}px`);
+      }
+
+      // Continua o loop enquanto há interação ou movimento residual
+      if (active || Math.abs(currentRx) > 0.01 || Math.abs(currentRy) > 0.01) {
+        rafId = requestAnimationFrame(tick);
       }
     };
 
-    const onMouseLeave = () => {
-      gsap.to(el, {
-        rotateX: 0,
-        rotateY: 0,
-        duration: 0.5,
-        ease: 'power2.out',
-        overwrite: 'auto'
-      });
-
-      // Resetar sombras
-      if (el.classList.contains('parallax-shadow')) {
-        el.style.setProperty('--shadow-x', '0px');
-        el.style.setProperty('--shadow-y', '10px');
-      }
+    const onMove = (e: MouseEvent) => {
+      const { left, top, width, height } = el.getBoundingClientRect();
+      targetRx = -((e.clientY - top) / height - 0.5) * intensity;
+      targetRy = ((e.clientX - left) / width - 0.5) * intensity;
     };
 
-    el.addEventListener('mouseenter', onMouseEnter);
-    el.addEventListener('mousemove', onMouseMove);
-    el.addEventListener('mouseleave', onMouseLeave);
+    const onEnter = () => {
+      active = true;
+      cancelAnimationFrame(rafId);
+      tick();
+    };
+
+    const onLeave = () => {
+      active = false;
+      targetRx = 0;
+      targetRy = 0;
+      tick(); // mantém o loop até desacelerar a ~0
+    };
+
+    el.addEventListener('mouseenter', onEnter);
+    el.addEventListener('mousemove', onMove);
+    el.addEventListener('mouseleave', onLeave);
 
     return () => {
-      el.removeEventListener('mouseenter', onMouseEnter);
-      el.removeEventListener('mousemove', onMouseMove);
-      el.removeEventListener('mouseleave', onMouseLeave);
+      el.removeEventListener('mouseenter', onEnter);
+      el.removeEventListener('mousemove', onMove);
+      el.removeEventListener('mouseleave', onLeave);
+      cancelAnimationFrame(rafId);
     };
   }, [ref, intensity]);
 }

@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContextCore';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleForm from '../../components/ArticleForm';
+import { AdminBookingDashboard } from '../../components/admin/AdminBookingDashboard';
 import type { Article } from '../../article_types';
 
 export default function Dashboard() {
@@ -111,6 +112,12 @@ export default function Dashboard() {
           >
             Gestão de E-books
           </button>
+          <button 
+            className={`pb-3 px-2 font-semibold transition-colors border-b-2 ${activeTab === 'contratos' ? 'border-[#705c30] text-[#705c30] dark:text-amber-500' : 'border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'}`}
+            onClick={() => setActiveTab('contratos')}
+          >
+            Contratos & Bookings
+          </button>
         </div>
 
         {/* Content Area */}
@@ -198,6 +205,12 @@ export default function Dashboard() {
                 <span className="material-symbols-outlined text-5xl text-stone-300 mb-3">auto_stories</span>
                 <p className="text-stone-500">Nenhum e-book cadastrado para download no site.</p>
               </div>
+            </section>
+          )}
+
+          {activeTab === 'contratos' && (
+            <section className="animate-fade-in-up">
+              <AdminBookingDashboard />
             </section>
           )}
 

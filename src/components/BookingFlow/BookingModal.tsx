@@ -1,27 +1,98 @@
-import { useState, useEffect } from 'react';
-import { useBooking } from '../../context/BookingContext';
+import { useState, useEffect, useCallback } from 'react';
+import { useBooking, INITIAL_FORM_DATA } from '../../context/BookingContext';
+import type { BookingFormData } from '../../context/BookingContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { StepPreview } from './StepPreview';
 import { StepSelection } from './StepSelection';
 import { StepForm } from './StepForm';
-import { StepConfirmation } from './StepConfirmation';
-import { StepPreview } from './StepPreview';
+import { StepTriage } from './StepTriage';
+import { StepCheckout } from './StepCheckout';
+import { StepContract } from './StepContract';
+import { StepWaiting } from './StepWaiting';
+import { StepPayment } from './StepPayment';
+import { StepComplete } from './StepComplete';
+
+// ============================================================
+// STEP: Orquestrador principal do fluxo de booking
+// Gerencia steps, form data local e transições
+// ============================================================
+
+type BookingStep =
+  | 'preview'
+  | 'selection'
+  | 'form'
+  | 'triage'
+  | 'checkout'
+  | 'contract'
+  | 'waiting'
+  | 'rejected'
+  | 'payment'
+  | 'complete';
+
+// STEP: Labels para a progress bar
+const STEP_LABELS: Record<BookingStep, string> = {
+  preview: 'Agenda',
+  selection: 'Plano',
+  form: 'Dados',
+  triage: 'Triagem',
+  checkout: 'Checkout',
+  contract: 'Contrato',
+  waiting: 'Verificação',
+  rejected: 'Ajuste',
+  payment: 'Pagamento',
+  complete: 'Concluído',
+};
+
+const STEP_ORDER: BookingStep[] = [
+  'preview', 'selection', 'form', 'triage', 'checkout', 'contract', 'waiting', 'payment', 'complete'
+];
 
 export function BookingModal() {
-  const { isOpen, closeBooking, isQualified, selectedPlan } = useBooking();
-  const [step, setStep] = useState<'preview' | 'selection' | 'form' | 'confirmation' | 'real'>('preview');
+  const {
+    isOpen, closeBooking, selectedPlan,
+    activeBookingToken, activeBookingStatus,
+    rejectionReason,
+  } = useBooking();
 
-  // Reset step when modal opens
+  const [step, setStep] = useState<BookingStep>('preview');
+  const [formData, setFormData] = useState<BookingFormData>({ ...INITIAL_FORM_DATA });
+
+  // STEP: Determina step inicial ao abrir com base no estado ativo
   useEffect(() => {
-    if (isOpen) {
-      if (isQualified) {
-        setStep('real');
-      } else {
-        // Sempre começa no preview conforme solicitado: "antes da etapa de escolher o plano"
-        setStep('preview');
-      }
-    }
-  }, [isOpen, isQualified]);
+    if (!isOpen) return;
 
+    if (activeBookingToken) {
+      // Tem booking ativo — retoma do ponto onde parou
+      switch (activeBookingStatus) {
+        case 'pending_review':
+          setStep('waiting');
+          break;
+        case 'approved':
+          setStep('payment');
+          break;
+        case 'rejected':
+          setStep('rejected');
+          break;
+        case 'paid':
+          setStep('complete');
+          break;
+        default:
+          setStep('waiting');
+      }
+    } else if (selectedPlan) {
+      // Tem plano pré-selecionado — pula direto para form
+      setStep('form');
+    } else {
+      setStep('preview');
+    }
+  }, [isOpen, activeBookingToken, activeBookingStatus, selectedPlan]);
+
+  // STEP: Handler de atualização parcial do form data
+  const updateFormData = useCallback((partial: Partial<BookingFormData>) => {
+    setFormData(prev => ({ ...prev, ...partial }));
+  }, []);
+
+  // STEP: Navegação do preview baseada na existência de plano
   const handlePreviewNext = () => {
     if (selectedPlan) {
       setStep('form');
@@ -31,6 +102,10 @@ export function BookingModal() {
   };
 
   if (!isOpen) return null;
+
+  // STEP: Calcula progresso para a barra
+  const currentIndex = STEP_ORDER.indexOf(step === 'rejected' ? 'waiting' : step);
+  const progress = Math.max(0, ((currentIndex + 1) / STEP_ORDER.length) * 100);
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -48,98 +123,145 @@ export function BookingModal() {
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative antigravity-glass bg-white/10 dark:bg-black/60 w-full max-w-2xl h-[90vh] max-h-[750px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-white/20 dark:border-white/5"
+        className="relative antigravity-glass bg-white/10 dark:bg-black/60 w-full max-w-2xl h-[92vh] max-h-[800px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-white/20 dark:border-white/5"
       >
-        {/* Header with Close Button */}
-        <div className="absolute top-6 right-6 z-50">
-          <button
-            onClick={closeBooking}
-            className="w-10 h-10 rounded-full bg-white/50 dark:bg-stone-800/50 backdrop-blur-sm flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors"
-          >
-            <span className="material-symbols-outlined">close</span>
-          </button>
+        {/* Header: Progress Bar + Close */}
+        <div className="flex-shrink-0 px-8 pt-6 pb-2">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest">
+              {STEP_LABELS[step]}
+            </span>
+            <button
+              onClick={closeBooking}
+              className="w-8 h-8 rounded-full bg-white/50 dark:bg-stone-800/50 backdrop-blur-sm flex items-center justify-center text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+          {/* Progress bar */}
+          <div className="w-full h-1 bg-stone-200/50 dark:bg-stone-700/30 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-primary dark:bg-emerald-500 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            />
+          </div>
         </div>
 
         {/* Content Area */}
-        <div className="flex-grow p-8 md:p-12 overflow-hidden relative">
+        <div className="flex-grow px-8 pb-2 overflow-hidden relative">
           <AnimatePresence mode="wait">
             {step === 'preview' && (
-              <motion.div
-                key="preview"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="h-full"
-              >
+              <motion.div key="preview" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
                 <StepPreview onNext={handlePreviewNext} />
               </motion.div>
             )}
 
             {step === 'selection' && (
-              <motion.div
-                key="selection"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="h-full"
-              >
+              <motion.div key="selection" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
                 <StepSelection onNext={() => setStep('form')} />
               </motion.div>
             )}
 
             {step === 'form' && (
-              <motion.div
-                key="form"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="h-full"
-              >
-                <StepForm onNext={() => setStep('confirmation')} onBack={() => setStep('selection')} />
+              <motion.div key="form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
+                <StepForm
+                  data={formData}
+                  onChange={updateFormData}
+                  onNext={() => setStep('triage')}
+                  onBack={() => setStep('selection')}
+                />
               </motion.div>
             )}
 
-            {step === 'confirmation' && (
-              <motion.div
-                key="confirmation"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
-                className="h-full"
-              >
-                <StepConfirmation />
+            {step === 'triage' && (
+              <motion.div key="triage" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
+                <StepTriage
+                  data={formData}
+                  onChange={updateFormData}
+                  onNext={() => setStep('checkout')}
+                  onBack={() => setStep('form')}
+                />
               </motion.div>
             )}
 
-            {step === 'real' && (
-              <motion.div
-                key="real"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="h-full flex flex-col"
-              >
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold font-headline text-on-surface dark:text-stone-100 mb-2">Seu Agendamento</h2>
-                  <p className="text-on-surface-variant dark:text-stone-400 text-sm">Escolha o melhor horário para sua consulta.</p>
+            {step === 'checkout' && (
+              <motion.div key="checkout" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
+                <StepCheckout
+                  data={formData}
+                  onChange={updateFormData}
+                  onNext={() => setStep('contract')}
+                  onBack={() => setStep('triage')}
+                />
+              </motion.div>
+            )}
+
+            {step === 'contract' && (
+              <motion.div key="contract" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
+                <StepContract
+                  data={formData}
+                  onChange={updateFormData}
+                  onNext={() => setStep('waiting')}
+                  onBack={() => setStep('checkout')}
+                />
+              </motion.div>
+            )}
+
+            {step === 'waiting' && (
+              <motion.div key="waiting" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="h-full">
+                <StepWaiting
+                  onApproved={() => setStep('payment')}
+                  onRejected={() => setStep('rejected')}
+                />
+              </motion.div>
+            )}
+
+            {step === 'rejected' && (
+              <motion.div key="rejected" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col items-center justify-center text-center px-4">
+                <div className="w-16 h-16 bg-amber-100 dark:bg-amber-500/10 rounded-full flex items-center justify-center mb-4">
+                  <span className="material-symbols-outlined text-3xl text-amber-600 dark:text-amber-400">info</span>
                 </div>
-                <div className="flex-grow rounded-2xl overflow-hidden border border-outline/10 dark:border-stone-700/30">
-                  <iframe
-                    src="https://calendly.com/marianabermudesnutri/30min?embed_domain=mariana-nutri.vercel.app&embed_type=inline"
-                    width="100%"
-                    height="100%"
-                    frameBorder="0"
-                    className="bg-white"
-                    title="Calendly Real"
-                  ></iframe>
-                </div>
+                <h2 className="text-xl font-bold text-on-surface dark:text-stone-100 mb-3">Ajuste Necessário</h2>
+                <p className="text-sm text-on-surface-variant dark:text-stone-400 mb-2">
+                  A nutricionista sugeriu um ajuste no seu plano:
+                </p>
+                {rejectionReason && (
+                  <div className="bg-amber-50 dark:bg-amber-500/10 p-4 rounded-xl border border-amber-200 dark:border-amber-500/20 mb-6 max-w-sm">
+                    <p className="text-sm text-amber-800 dark:text-amber-300 italic">"{rejectionReason}"</p>
+                  </div>
+                )}
+                <a
+                  href="https://wa.me/5511956007142?text=Ol%C3%A1%20Mariana!%20Recebi%20o%20ajuste%20no%20meu%20contrato%20e%20gostaria%20de%20conversar."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-bold hover:bg-[#20BD5A] transition-all"
+                >
+                  <span className="material-symbols-outlined">chat</span>
+                  Conversar com Mariana
+                </a>
+              </motion.div>
+            )}
+
+            {step === 'payment' && (
+              <motion.div key="payment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="h-full">
+                <StepPayment onComplete={() => setStep('complete')} />
+              </motion.div>
+            )}
+
+            {step === 'complete' && (
+              <motion.div key="complete" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.1 }} className="h-full">
+                <StepComplete />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Brand Subtle Footer */}
-        <div className="p-6 bg-stone-100/50 dark:bg-stone-800/30 flex justify-center border-t border-outline/5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">NutriJornada 360º — Mariana Bermudes</span>
+        {/* Brand Footer */}
+        <div className="flex-shrink-0 p-4 bg-stone-100/50 dark:bg-stone-800/30 flex justify-center border-t border-outline/5">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            NutriJornada 360º — Mariana Bermudes
+          </span>
         </div>
       </motion.div>
     </div>

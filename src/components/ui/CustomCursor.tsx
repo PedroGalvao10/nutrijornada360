@@ -1,156 +1,116 @@
-import { useEffect, useState, useRef } from 'react';
-import { gsap } from 'gsap';
+import { useEffect, useRef } from 'react';
 
+/**
+ * CustomCursor — cursor de 3 camadas via rAF puro (sem GSAP, sem useState).
+ * - dot: 1:1, mix-blend-difference (sempre visível em creme ou escuro)
+ * - mid: lerp 0.22
+ * - ring: lerp 0.10, escala 2.4x em hover de a/button/[data-cursor]
+ * - label: aparece sobre o ring quando o alvo tem data-cursor
+ * Event delegation (1 listener no document) — zero MutationObserver.
+ */
 export function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const followerRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const midRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [cursorLabel, setCursorLabel] = useState('');
+  const labelTextRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    // Dispositivos sem hover (touch) não recebem cursor custom
+    if (!window.matchMedia('(hover: hover)').matches) return;
 
-    if (isMobile) return;
+    let mx = 0, my = 0;   // posição alvo (mouse)
+    let cx = 0, cy = 0;   // mid (lerp 0.22)
+    let rx = 0, ry = 0;   // ring (lerp 0.10)
 
-    const cursor = cursorRef.current;
-    const follower = followerRef.current;
-    const label = labelRef.current;
-
-    const onMouseMove = (e: MouseEvent) => {
-      gsap.to(cursor, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.1,
-        ease: 'none'
-      });
-      gsap.to(follower, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-      gsap.to(label, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.35,
-        ease: 'power3.out'
-      });
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (dotRef.current) dotRef.current.style.transform = `translate(${mx}px,${my}px)`;
     };
 
-    const onMouseDown = () => {
-      gsap.to([cursor, follower], { scale: 0.7, duration: 0.2 });
+    const tick = () => {
+      cx += (mx - cx) * 0.22;
+      cy += (my - cy) * 0.22;
+      rx += (mx - rx) * 0.10;
+      ry += (my - ry) * 0.10;
+      if (midRef.current) midRef.current.style.transform = `translate(${cx}px,${cy}px)`;
+      if (ringRef.current) ringRef.current.style.transform = `translate(${rx}px,${ry}px)`;
+      if (labelRef.current) labelRef.current.style.transform = `translate(${rx}px,${ry}px)`;
+      requestAnimationFrame(tick);
     };
 
-    const onMouseUp = () => {
-      gsap.to([cursor, follower], { scale: 1, duration: 0.2 });
-    };
-
-    const onMouseEnterTarget = (e: Event) => {
-      const target = e.currentTarget as HTMLElement;
-      const labelText = target.getAttribute('data-cursor');
-      const isMagnetic = target.hasAttribute('data-magnetic');
-
-      if (labelText) {
-        setCursorLabel(labelText);
-        gsap.to(follower, { 
-          scale: 4, 
-          backgroundColor: 'rgba(74, 124, 89, 0.15)', 
-          border: 'none',
-          duration: 0.4,
-          ease: 'back.out(1.7)'
-        });
-        gsap.to(label, { opacity: 1, scale: 1, duration: 0.3 });
-      } else {
-        gsap.to(follower, { 
-          scale: 2.2, 
-          backgroundColor: 'rgba(74, 124, 89, 0.1)', 
-          border: '1px solid rgba(74, 124, 89, 0.3)',
-          duration: 0.3 
-        });
-      }
-
-      if (isMagnetic) {
-        // Magnetic effect logic placeholder - removed unused variables to pass TSC
+    // Event delegation — resolve o alvo via closest(), cobre conteúdo dinâmico
+    const onOver = (e: MouseEvent) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('a,button,[data-cursor]');
+      if (!t) return;
+      if (ringRef.current) ringRef.current.style.scale = '2.4';
+      const label = t.getAttribute('data-cursor');
+      if (label && labelTextRef.current && labelRef.current) {
+        labelTextRef.current.textContent = label;
+        labelRef.current.style.opacity = '1';
       }
     };
-
-    const onMouseLeaveTarget = () => {
-      setCursorLabel('');
-      gsap.to(follower, { 
-        scale: 1, 
-        backgroundColor: 'transparent', 
-        border: '1px solid rgba(74, 124, 89, 0.5)',
-        duration: 0.3 
-      });
-      gsap.to(label, { opacity: 0, scale: 0.5, duration: 0.2 });
+    const onOut = (e: MouseEvent) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('a,button,[data-cursor]');
+      if (!t) return;
+      if (ringRef.current) ringRef.current.style.scale = '1';
+      if (labelRef.current) labelRef.current.style.opacity = '0';
     };
+    const onDown = () => { if (dotRef.current) dotRef.current.style.scale = '0.6'; };
+    const onUp = () => { if (dotRef.current) dotRef.current.style.scale = '1'; };
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-
-    // Initial setup for existing targets
-    const updateTargets = () => {
-      const targets = document.querySelectorAll('a, button, [data-cursor], .interactive-target');
-      targets.forEach(target => {
-        target.addEventListener('mouseenter', onMouseEnterTarget);
-        target.addEventListener('mouseleave', onMouseLeaveTarget);
-      });
-      return targets;
-    };
-
-    let targets = updateTargets();
-
-    // Mutation Observer to handle dynamic content
-    const observer = new MutationObserver(() => {
-      // Remove old listeners to avoid duplicates
-      targets.forEach(target => {
-        target.removeEventListener('mouseenter', onMouseEnterTarget);
-        target.removeEventListener('mouseleave', onMouseLeaveTarget);
-      });
-      targets = updateTargets();
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
+    document.body.style.cursor = 'none';
     document.body.classList.add('custom-cursor-active');
+    const raf = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseout', onOut);
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
       document.body.classList.remove('custom-cursor-active');
-      targets.forEach(target => {
-        target.removeEventListener('mouseenter', onMouseEnterTarget);
-        target.removeEventListener('mouseleave', onMouseLeaveTarget);
-      });
-      observer.disconnect();
+      cancelAnimationFrame(raf);
     };
-  }, [isMobile]);
-
-  if (isMobile) return null;
+  }, []);
 
   return (
     <>
-      <div 
-        ref={cursorRef} 
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-[#4a7c59] rounded-full pointer-events-none z-[99999] -translate-x-1/2 -translate-y-1/2 shadow-sm"
+      {/* Dot 1:1 — mix-blend-difference inverte a cor sobre qualquer fundo */}
+      <div
+        ref={dotRef}
+        className="fixed top-0 left-0 w-2 h-2 rounded-full bg-white pointer-events-none z-[99999]"
+        style={{ mixBlendMode: 'difference', translate: '-50% -50%', willChange: 'transform', transition: 'scale 0.15s ease' }}
       />
-      <div 
-        ref={followerRef} 
-        className="fixed top-0 left-0 w-8 h-8 border border-[#4a7c59]/40 rounded-full pointer-events-none z-[99998] -translate-x-1/2 -translate-y-1/2"
+      {/* Mid ring — lerp 0.22 */}
+      <div
+        ref={midRef}
+        className="fixed top-0 left-0 w-5 h-5 rounded-full border border-[#4a7c59]/50 pointer-events-none z-[99998]"
+        style={{ translate: '-50% -50%', willChange: 'transform' }}
       />
-      <div 
+      {/* Outer ring — lerp 0.10, escala em hover */}
+      <div
+        ref={ringRef}
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-[#4a7c59]/25 pointer-events-none z-[99997]"
+        style={{ translate: '-50% -50%', willChange: 'transform', transition: 'scale 0.35s cubic-bezier(0.16,1,0.3,1)' }}
+      />
+      {/* Label — sobre o ring, visível apenas com data-cursor */}
+      <div
         ref={labelRef}
-        className="fixed top-0 left-0 pointer-events-none z-[99999] -translate-x-1/2 -translate-y-1/2 opacity-0 scale-50 origin-center flex items-center justify-center pointer-events-none"
+        className="fixed top-0 left-0 pointer-events-none z-[99999] opacity-0"
+        style={{ translate: '-50% -150%', transition: 'opacity 0.2s ease' }}
       >
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[#4a7c59] whitespace-nowrap bg-white/80 backdrop-blur-md px-2 py-1 rounded-full shadow-lg border border-[#4a7c59]/20">
-          {cursorLabel}
-        </span>
+        <span
+          ref={labelTextRef}
+          className="text-[10px] font-bold uppercase tracking-widest text-[#4a7c59] whitespace-nowrap bg-white/80 backdrop-blur-md px-2 py-1 rounded-full shadow border border-[#4a7c59]/20"
+        />
       </div>
     </>
   );

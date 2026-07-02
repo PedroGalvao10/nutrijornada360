@@ -67,6 +67,49 @@ export const initDb = () => {
             FOREIGN KEY(plate_id) REFERENCES plates(id)
         )`);
 
+        // BOOKING FLOW: Tabela de agendamentos/contratos
+        db.run(`CREATE TABLE IF NOT EXISTS bookings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            booking_token TEXT UNIQUE NOT NULL,
+            nome TEXT NOT NULL,
+            email TEXT NOT NULL,
+            whatsapp TEXT NOT NULL,
+            cpf TEXT,
+            data_nascimento TEXT,
+            objetivo TEXT,
+            descricao_objetivo TEXT,
+            condicoes_saude TEXT,
+            medicamentos TEXT,
+            rotina_alimentar TEXT,
+            pratica_exercicio TEXT,
+            detalhes_exercicio TEXT,
+            plan_id TEXT NOT NULL,
+            plan_title TEXT NOT NULL,
+            plan_price_cents INTEGER NOT NULL,
+            parcelas INTEGER DEFAULT 1,
+            valor_parcela_cents INTEGER,
+            contrato_html TEXT,
+            assinatura_usuario TEXT,
+            assinatura_admin TEXT,
+            assinado_em DATETIME,
+            status TEXT DEFAULT 'pending_review',
+            rejection_reason TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            reviewed_at DATETIME,
+            approved_at DATETIME,
+            paid_at DATETIME,
+            payment_deadline DATETIME,
+            ip_address TEXT,
+            user_agent TEXT
+        )`);
+
+        // BOOKING FLOW: Configurações admin (assinatura da Mariana, etc.)
+        db.run(`CREATE TABLE IF NOT EXISTS admin_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
         console.log("-> Tabelas SQLite prontas.")
     });
 };

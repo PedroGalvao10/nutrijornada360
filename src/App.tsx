@@ -1,12 +1,10 @@
-import { useEffect, Suspense, lazy } from 'react';
+import { useEffect, Suspense, lazy, useState } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import PageTransition from './components/ui/PageTransition';
 import { AnimatePresence } from 'framer-motion';
-
-
 // Lazy loaded pages for performance
 const Home = lazy(() => import('./pages/Home'));
 const Planos = lazy(() => import('./pages/Planos'));
@@ -67,10 +65,10 @@ function AppContent() {
   );
 }
 
+
+
 function App() {
-  return (
-    <AppContent />
-  );
+  return <AppContent />;
 }
 
 export default App;

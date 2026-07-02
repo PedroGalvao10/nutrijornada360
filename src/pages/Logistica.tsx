@@ -6,6 +6,7 @@ import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useBooking } from '../context/BookingContext';
 import posthog from 'posthog-js';
+import { LiquidText, TextReveal, AnimatedUnderlineText } from '../components/ui/text-animations';
 export default function Logistica() {
   const onlineRef = useRef<HTMLDivElement>(null);
   const prepRef = useRef<HTMLElement>(null);
@@ -28,10 +29,14 @@ export default function Logistica() {
       <StaggerReveal>
         <header className="mb-20 text-center max-w-3xl mx-auto">
           <StaggerItem>
-            <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-emerald-400 mb-6 leading-tight font-headline">Logística e Agendamento</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-primary dark:text-emerald-400 mb-6 leading-tight font-headline">
+              <LiquidText text="Logística e Agendamento" />
+            </h1>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-lg text-secondary dark:text-stone-400 leading-relaxed font-body">Sua jornada rumo ao bem-estar começa aqui. Entenda como funcionam nossos atendimentos e prepare-se para uma transformação completa.</p>
+            <p className="text-lg text-secondary dark:text-stone-400 leading-relaxed font-body">
+              <TextReveal text="Sua jornada rumo ao bem-estar começa aqui. Entenda como funcionam nossos atendimentos e prepare-se para uma transformação completa." />
+            </p>
           </StaggerItem>
         </header>
       </StaggerReveal>
@@ -157,7 +162,7 @@ export default function Logistica() {
                     }}
                   >
                     <span className="material-symbols-outlined text-xl">calendar_month</span>
-                    Agendar Horário
+                    <AnimatedUnderlineText text="Agendar Horário" underlineColor="bg-primary/20" />
                   </button>
                 </MagneticButton>
               </StaggerItem>

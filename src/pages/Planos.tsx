@@ -5,7 +5,8 @@ import { FloatingAsset } from '../components/ui/FloatingAsset';
 import { useBooking } from '../context/BookingContext';
 import { PricingCard } from '../components/ui/animated-glassy-pricing';
 import { motion } from 'framer-motion';
-import { Apple, Zap, Target, Star, Users, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Apple, Zap, Target, Star } from 'lucide-react';
+import { TextEffect, TypewriterTextAnim, TextMarquee, LiquidText } from '../components/ui/text-animations';
 
 export default function Planos() {
   const { openBooking } = useBooking();
@@ -51,13 +52,13 @@ export default function Planos() {
         </StaggerItem>
         <StaggerItem>
           <h1 className="font-headline text-5xl md:text-7xl text-on-surface dark:text-stone-100 font-bold mb-8 leading-[1.1]">
-            Escolha o seu caminho para a <br/>
-            <span className="italic text-primary dark:text-emerald-400 bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent">transformação.</span>
+            <TextEffect text="Escolha o seu caminho para a" preset="slide" /> <br/>
+            <span className="italic text-primary dark:text-emerald-400 bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent"><TextEffect text="transformação." preset="fade" delay={0.4} /></span>
           </h1>
         </StaggerItem>
         <StaggerItem>
-          <p className="text-xl text-on-surface-variant dark:text-stone-400 font-light max-w-2xl mx-auto leading-relaxed">
-            Transforme sua relação com a comida e potencialize seus resultados com suporte profissional contínuo e estratégias de alta performance.
+          <p className="text-xl text-on-surface-variant dark:text-stone-400 font-light max-w-2xl mx-auto leading-relaxed h-[80px]">
+            <TypewriterTextAnim text="Transforme sua relação com a comida e potencialize seus resultados com suporte profissional contínuo e estratégias de alta performance." speed={35} delay={800} />
           </p>
         </StaggerItem>
       </StaggerReveal>
@@ -148,6 +149,11 @@ export default function Planos() {
         </StaggerItem>
       </StaggerReveal>
 
+      {/* Marquee Banner adicionado criativamente */}
+      <div className="w-full mb-24 overflow-hidden opacity-50">
+        <TextMarquee text="ACOMPANHAMENTO 360º • BIOIMPEDÂNCIA • BEM-ESTAR • HIPERTROFIA • " speed={50} className="text-4xl md:text-7xl font-headline font-bold text-primary/10 dark:text-emerald-500/10 whitespace-nowrap" />
+      </div>
+
       <section className="w-full max-w-6xl mx-auto mb-32 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div 
@@ -157,7 +163,7 @@ export default function Planos() {
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
                     <Target className="w-6 h-6" />
                 </div>
-                <h4 className="font-bold text-lg mb-3">Diagnóstico Preciso</h4>
+                <h4 className="font-bold text-lg mb-3"><LiquidText text="Diagnóstico Preciso" /></h4>
                 <p className="text-sm text-stone-500 leading-relaxed">Análise profunda da sua fisiologia e rotina para criar o plano perfeito.</p>
             </motion.div>
             <motion.div 
@@ -167,7 +173,7 @@ export default function Planos() {
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
                     <Apple className="w-6 h-6" />
                 </div>
-                <h4 className="font-bold text-lg mb-3">Nutrição Consciente</h4>
+                <h4 className="font-bold text-lg mb-3"><LiquidText text="Nutrição Consciente" /></h4>
                 <p className="text-sm text-stone-500 leading-relaxed">Cardápios que respeitam seu paladar e promovem saciedade real.</p>
             </motion.div>
             <motion.div 
@@ -177,7 +183,7 @@ export default function Planos() {
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
                     <Star className="w-6 h-6" />
                 </div>
-                <h4 className="font-bold text-lg mb-3">Acompanhamento Premium</h4>
+                <h4 className="font-bold text-lg mb-3"><LiquidText text="Acompanhamento Premium" /></h4>
                 <p className="text-sm text-stone-500 leading-relaxed">Suporte contínuo para garantir que cada obstáculo seja superado.</p>
             </motion.div>
         </div>
@@ -192,7 +198,9 @@ export default function Planos() {
             <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface dark:text-stone-100 mb-6 italic">Pronto para começar?</h2>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-on-surface-variant dark:text-stone-400 text-lg leading-relaxed max-w-2xl">Escolha o seu plano acima para iniciar o processo de qualificação e agendamento NutriJornada 360º.</p>
+            <p className="text-on-surface-variant dark:text-stone-400 text-lg leading-relaxed max-w-2xl h-[60px]">
+              <TypewriterTextAnim text="Escolha o seu plano acima para iniciar o processo de qualificação e agendamento NutriJornada 360º." speed={35} delay={500} />
+            </p>
           </StaggerItem>
         </div>
         <StaggerItem 

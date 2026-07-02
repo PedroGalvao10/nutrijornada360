@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Loader2, AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, BookOpen } from 'lucide-react';
+import { AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, BookOpen } from 'lucide-react';
 import { useQuota } from '../hooks/useQuota';
+import { NutriChatInput } from './ui/nutri-chat-input';
 
 interface FoodResult {
     id: string;
@@ -120,28 +121,14 @@ export const NutriSearch: React.FC = () => {
     return (
         <div className="w-full">
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto mb-16 group">
-                <label htmlFor="food-search" className="sr-only">Buscar alimentos</label>
-                <input
-                    id="food-search"
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Busque alimentos, marcas ou nutrientes..."
-                    aria-label="Campo de busca de alimentos"
-                    data-cursor="Buscar"
-                    className="w-full bg-white/40 backdrop-blur-2xl border border-white/40 rounded-3xl py-6 pl-8 pr-16 text-on-background placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-xl shadow-stone-200/20 group-hover:shadow-stone-200/40 text-lg font-light tracking-tight"
-                />
-                <button 
-                    type="submit" 
-                    disabled={isLoading}
-                    aria-label="Pesquisar"
-                    data-cursor="Buscar"
-                    className="absolute right-3 top-3 bottom-3 aspect-square bg-primary text-white rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
-                >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" /> : <Search className="w-5 h-5" aria-hidden="true" />}
-                </button>
-            </form>
+            <NutriChatInput 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onSubmit={handleSearch}
+                isLoading={isLoading}
+                placeholder="Busque alimentos, marcas ou nutrientes..."
+                className="max-w-3xl mx-auto mb-16"
+            />
 
             {/* Quota Progress Indicator */}
             <AnimatePresence>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChefHat, Loader2, AlertCircle, Sparkles, Plus } from 'lucide-react';
+import { ChefHat, AlertCircle, Sparkles, Plus } from 'lucide-react';
 import { useQuota } from '../hooks/useQuota';
+import { NutriChatInput } from './ui/nutri-chat-input';
 
 
 interface RecipeResult {
@@ -78,26 +79,14 @@ export const IntelligentRecipes: React.FC = () => {
                 </div>
             </div>
 
-            <form onSubmit={handleSearch} className="relative w-full max-w-3xl mx-auto mb-16">
-                <div className="relative group">
-                    <input
-                        type="text"
-                        value={ingredients}
-                        onChange={(e) => setIngredients(e.target.value)}
-                        placeholder="Ex: frango, tomate, cebola, manjericão..."
-                        className="w-full bg-white/40 backdrop-blur-2xl border border-white/40 rounded-3xl py-6 pl-8 pr-40 text-on-background placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-xl shadow-stone-200/20 group-hover:shadow-stone-200/40 text-lg font-light tracking-tight"
-                    />
-                    <button 
-                        type="submit" 
-                        disabled={isLoading}
-                        className="absolute right-3 top-3 bottom-3 px-10 bg-primary text-white rounded-2xl flex items-center justify-center gap-3 font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:hover:scale-100"
-                    >
-                        {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                        <span className="tracking-tight">Criar</span>
-                    </button>
-                </div>
-                <p className="text-[10px] text-stone-400 mt-4 px-8 uppercase tracking-[0.2em] font-bold">Separe os ingredientes por vírgula para melhores resultados</p>
-            </form>
+            <NutriChatInput 
+                value={ingredients}
+                onChange={(e) => setIngredients(e.target.value)}
+                onSubmit={handleSearch}
+                isLoading={isLoading}
+                placeholder="Ex: frango, tomate, cebola, manjericão..."
+                className="max-w-3xl mx-auto mb-16"
+            />
 
              {/* Quota Progress Indicator */}
              <AnimatePresence>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Crown } from 'lucide-react';
 import { NutriSearch } from '../components/NutriSearch';
@@ -6,7 +6,7 @@ import { IntelligentRecipes } from '../components/IntelligentRecipes';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { SimuladorResultados } from '../components/SimuladorResultados';
-import { TypewriterText } from '../components/TypewriterText';
+import { TypewriterTextAnim, LiquidText, AnimatedUnderlineText, DotPatternQuote } from '../components/ui/text-animations';
 import InteractiveParticles from '../components/ui/InteractiveParticles';
 
 const Ferramentas: React.FC = () => {
@@ -20,13 +20,13 @@ const Ferramentas: React.FC = () => {
                 <StaggerReveal className="max-w-4xl mx-auto text-center mb-24">
                     <StaggerItem>
                         <h1 className="text-6xl md:text-[5.5rem] font-headline font-bold tracking-[-0.03em] mb-8 text-on-surface leading-[1.05]">
-                            Inteligência <br />
-                            <span className="text-primary italic font-serif">Nutricional</span>
+                            <LiquidText text="Inteligência" /> <br />
+                            <span className="text-primary italic font-serif"><LiquidText text="Nutricional" /></span>
                         </h1>
                     </StaggerItem>
                     <StaggerItem>
                         <p className="text-xl md:text-2xl text-on-surface-variant/80 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
-                            <TypewriterText text="A ciência encontra a simplicidade. Ferramentas desenhadas com precisão para elevar sua saúde e bem-estar." speed={30} delay={1000} />
+                            <TypewriterTextAnim text="A ciência encontra a simplicidade. Ferramentas desenhadas com precisão para elevar sua saúde e bem-estar." speed={30} delay={1000} />
                         </p>
                     </StaggerItem>
                 </StaggerReveal>
@@ -46,7 +46,7 @@ const Ferramentas: React.FC = () => {
                             <div>
                                 <h2 className="text-4xl font-headline font-bold text-on-surface tracking-tight">NutriSearch Pro</h2>
                                 <p className="text-on-surface-variant/70 text-lg font-light mt-1">
-                                    <TypewriterText text="Exploração profunda de dados nutricionais." speed={40} delay={1500} />
+                                    <TypewriterTextAnim text="Exploração profunda de dados nutricionais." speed={40} delay={1500} />
                                 </p>
                             </div>
                         </div>
@@ -91,15 +91,16 @@ const Ferramentas: React.FC = () => {
                     </p>
                     <MagneticButton as="div" className="inline-block">
                         <a href="/planos" className="inline-block px-12 py-5 rounded-2xl bg-primary text-white font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/30">
-                            Conhecer Pacotes Premium
+                            <AnimatedUnderlineText text="Conhecer Pacotes Premium" underlineColor="bg-white/50" />
                         </a>
                     </MagneticButton>
 
                     {/* Disclaimer */}
-                    <div className="mt-20 max-w-3xl mx-auto px-8 py-6 bg-white/50 border border-tertiary/10 rounded-[2rem] text-left">
-                        <p className="text-xs text-tertiary/60 leading-relaxed italic">
-                            * Nota de Transparência: As informações nutricionais apresentadas são médias aproximadas baseadas em bancos de dados internacionais e podem variar significativamente. Estes dados devem ser usados apenas como referência e não substituem a orientação personalizada de um profissional de saúde.
-                        </p>
+                    <div className="mt-20 max-w-4xl mx-auto text-left">
+                        <DotPatternQuote 
+                          text="Nota de Transparência: As informações nutricionais apresentadas são médias aproximadas baseadas em bancos de dados internacionais e podem variar significativamente. Estes dados devem ser usados apenas como referência e não substituem a orientação personalizada de um profissional de saúde."
+                          className="!p-6 !rounded-[1.5rem]"
+                        />
                     </div>
                 </motion.div>
 

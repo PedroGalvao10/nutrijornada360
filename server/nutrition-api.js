@@ -380,8 +380,9 @@ router.get('/search', rateLimitMiddleware, async (req, res) => {
             const data = await usdaResponse.json();
             
             if (data.foods && data.foods.length > 0) {
-                // STEP: Batch translation — traduz todos os nomes em paralelo
-                const translationPromises = data.foods.map(food => 
+                // STEP: Batch translation — traduz apenas os 3 primeiros alimentos mais relevantes para evitar 429 rate limits
+                const foodsToTranslate = data.foods.slice(0, 3);
+                const translationPromises = foodsToTranslate.map(food => 
                     translateToPortuguese(food.description)
                 );
                 const translatedNames = await Promise.allSettled(translationPromises);
@@ -392,13 +393,21 @@ router.get('/search', rateLimitMiddleware, async (req, res) => {
                         return nut ? nut.value : 0;
                     };
                     
-                    const namePt = translatedNames[idx].status === 'fulfilled' 
-                        ? translatedNames[idx].value 
-                        : food.description;
+                    let namePt = food.description;
+                    let namePrefix = '';
+                    
+                    if (idx < 3) {
+                        namePt = translatedNames[idx].status === 'fulfilled' 
+                            ? translatedNames[idx].value 
+                            : food.description;
+                        namePrefix = '(Aproximado) ';
+                    } else {
+                        namePrefix = '(English) ';
+                    }
                     
                     return {
                         id: `usda_${food.fdcId}`,
-                        name: `(Aproximado) ${namePt}`,
+                        name: `${namePrefix}${namePt}`,
                         brand: food.brandOwner || 'Genérico',
                         calories: getNutrient(1008),
                         protein: getNutrient(1003),
@@ -457,42 +466,61 @@ router.get('/recipes', rateLimitMiddleware, async (req, res) => {
         if (recipesAnswer) {
             try {
                 console.log(`[Receitas] Raw NotebookLM (primeiros 300 chars): ${recipesAnswer.substring(0, 300)}`);
-                const proxyResult = JSON.parse(recipesAnswer);
                 
-                // Extrair a resposta real — pode estar em diferentes níveis de aninhamento
+                let cleanedAnswer = recipesAnswer.trim();
+                // Tenta extrair o bloco JSON da string se houver texto envolvente
+                if (!cleanedAnswer.startsWith('{') && !cleanedAnswer.startsWith('[')) {
+                    const jsonBlockMatch = cleanedAnswer.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+                    if (jsonBlockMatch) {
+                        cleanedAnswer = jsonBlockMatch[0];
+                    }
+                }
+
+                const proxyResult = JSON.parse(cleanedAnswer);
+                
+                // Extrair a resposta real — pode estar em diferentes níveis de aninhamento ou ser o próprio JSON
                 let actualAnswer = '';
-                if (proxyResult.value && proxyResult.value.answer) {
+                if (proxyResult && proxyResult.value && proxyResult.value.answer) {
                     actualAnswer = proxyResult.value.answer;
-                } else if (proxyResult.answer) {
+                } else if (proxyResult && proxyResult.answer) {
                     actualAnswer = proxyResult.answer;
                 } else if (typeof proxyResult === 'string') {
                     actualAnswer = proxyResult;
+                } else {
+                    actualAnswer = cleanedAnswer;
                 }
                 
                 console.log(`[Receitas] Answer extraído (primeiros 200 chars): ${actualAnswer.substring(0, 200)}`);
 
-                if (actualAnswer && actualAnswer.includes('[')) {
+                let aiRecipes = null;
+                if (actualAnswer && (actualAnswer.trim().startsWith('[') || actualAnswer.includes('['))) {
                     const jsonMatch = actualAnswer.match(/\[[\s\S]*\]/);
                     if (jsonMatch) {
-                        const aiRecipes = JSON.parse(jsonMatch[0]);
-                        
-                        if (Array.isArray(aiRecipes) && aiRecipes.length > 0) {
-                            const formattedRecipes = aiRecipes.map((r, idx) => ({
-                                id: `ai_${Date.now()}_${idx}`,
-                                title: r.title || 'Receita IA',
-                                image: r.image || 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=400',
-                                description: r.description || '',
-                                ingredients: Array.isArray(r.ingredients) ? r.ingredients : (r.ingredients ? [r.ingredients] : []),
-                                instructions: r.instructions || '',
-                                source: 'Guia Alimentar Oficial'
-                            }));
-
-                            const formatted = { source: 'NotebookLM (Guia Alimentar)', recipes: formattedRecipes };
-                            searchCache.set(cacheKey, formatted);
-                            console.log(`[Receitas] ✅ ${formattedRecipes.length} receitas retornadas via NotebookLM`);
-                            return res.json(formatted);
-                        }
+                        aiRecipes = JSON.parse(jsonMatch[0]);
                     }
+                } else if (actualAnswer && (actualAnswer.trim().startsWith('{') || actualAnswer.includes('{'))) {
+                    const jsonMatch = actualAnswer.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const singleRecipe = JSON.parse(jsonMatch[0]);
+                        aiRecipes = [singleRecipe];
+                    }
+                }
+
+                if (Array.isArray(aiRecipes) && aiRecipes.length > 0) {
+                    const formattedRecipes = aiRecipes.map((r, idx) => ({
+                        id: `ai_${Date.now()}_${idx}`,
+                        title: r.title || 'Receita IA',
+                        image: r.image || 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=400',
+                        description: r.description || '',
+                        ingredients: Array.isArray(r.ingredients) ? r.ingredients : (r.ingredients ? [r.ingredients] : []),
+                        instructions: r.instructions || '',
+                        source: 'Guia Alimentar Oficial'
+                    }));
+
+                    const formatted = { source: 'NotebookLM (Guia Alimentar)', recipes: formattedRecipes };
+                    searchCache.set(cacheKey, formatted);
+                    console.log(`[Receitas] ✅ ${formattedRecipes.length} receitas retornadas via NotebookLM`);
+                    return res.json(formatted);
                 }
             } catch (e) {
                 console.warn(`[Receitas] Falha ao parsear JSON do NotebookLM: ${e.message}`);

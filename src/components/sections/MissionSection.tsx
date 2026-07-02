@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useTilt } from '../../hooks/useTilt';
 import { StaggerReveal, StaggerItem } from '../ui/StaggerReveal';
 import { GlowWrapper } from '../ui/GlowWrapper';
+import { LiquidText, TextReveal, RevealText } from '../ui/text-animations';
 
 export function MissionSection() {
   // Refs para 3D Tilt - Missão
@@ -21,11 +22,13 @@ export function MissionSection() {
             <span className="text-secondary font-label font-bold tracking-widest uppercase text-sm mb-4 block">Nossa Missão</span>
           </StaggerItem>
           <StaggerItem>
-            <h2 className="text-3xl md:text-5xl font-headline text-on-background dark:text-stone-100 mb-6 leading-tight font-semibold">O ser humano não é uma ilha isolada.</h2>
+            <h2 className="text-3xl md:text-5xl font-headline text-on-background dark:text-stone-100 mb-6 leading-tight font-semibold">
+              <LiquidText text="O ser humano não é uma ilha isolada." />
+            </h2>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-base md:text-lg text-on-surface-variant dark:text-stone-400 leading-relaxed">
-              Acreditamos que a nutrição deve promover o bem-estar pleno, integrando mente, corpo e ambiente. Olhamos para a sua história, suas emoções e o contexto da sua vida.
+            <p className="text-base md:text-lg text-on-surface-variant dark:text-stone-400 leading-relaxed font-body">
+              <TextReveal text="Acreditamos que a nutrição deve promover o bem-estar pleno, integrando mente, corpo e ambiente. Olhamos para a sua história, suas emoções e o contexto da sua vida." />
             </p>
           </StaggerItem>
         </StaggerReveal>
@@ -81,8 +84,15 @@ export function MissionSection() {
               <h3 className="text-lg sm:text-xl lg:text-2xl font-normal text-on-surface dark:text-stone-100 leading-relaxed font-headline">
                 Nutrição com Propósito{' '}
                 <span className="text-primary dark:text-emerald-400 font-semibold">NutriJornada</span>{' '}
-                <span className="text-on-surface-variant dark:text-stone-400 text-sm sm:text-base lg:text-lg font-body">
-                  Cada plano é desenhado para integrar ciência, comportamento e rotina — porque saúde de verdade é sustentável.
+                <span className="text-on-surface-variant dark:text-stone-400 text-sm sm:text-base lg:text-lg font-body block mt-2">
+                  <RevealText 
+                    text="Cada plano é desenhado para integrar ciência, comportamento e rotina — porque saúde de verdade é sustentável." 
+                    triggerWords={[
+                      { word: 'ciência', imageSrc: '/fruits/Kiwi 1.webp' },
+                      { word: 'comportamento', imageSrc: '/fruits/Castanhas.webp' },
+                      { word: 'rotina', imageSrc: '/apple.png' }
+                    ]}
+                  />
                 </span>
               </h3>
             </StaggerItem>

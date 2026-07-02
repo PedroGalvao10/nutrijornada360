@@ -1,99 +1,51 @@
 /* cspell:disable-file */
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSiteProgress } from '../context/SiteProgressContext';
 import { LoginModal } from './LoginModal';
-import { CustomCursor } from './ui/CustomCursor';
 import { FloatingShapes } from './ui/FloatingShapes';
 import { ThemeToggle } from './ui/ThemeToggle';
 import { MagneticButton } from './ui/MagneticButton';
 import { useBooking } from '../context/BookingContext';
 import { BookingModal } from './BookingFlow/BookingModal';
 import { PremiumGrain } from './ui/PremiumGrain';
+import { CustomCursor } from './ui/CustomCursor';
 
 export function Layout() {
   const location = useLocation();
   const { openBooking } = useBooking();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [hasPortalCompleted, setHasPortalCompleted] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const isNavbarVisible = location.pathname !== '/' || hasPortalCompleted;
+  const isNavbarVisible = true;
+
+  // STEP: Barra de progresso lê progressRef do provider — zero re-render do Layout.
+  // scaleX (GPU) em vez de width % (layout reflow).
+  const { progressRef } = useSiteProgress();
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      setScrollProgress(scrolled);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handlePortalComplete = () => setHasPortalCompleted(true);
-    window.addEventListener('portal-complete', handlePortalComplete);
-    return () => window.removeEventListener('portal-complete', handlePortalComplete);
-  }, []);
-
-  const [isDarkBg, setIsDarkBg] = useState(false);
-
-  useEffect(() => {
-    const checkBg = () => {
-      const nav = document.querySelector('nav');
-      if (!nav) return;
-      
-      const rect = nav.getBoundingClientRect();
-      const x = rect.left + rect.width / 2;
-      const y = rect.top + rect.height / 2;
-      
-      const elements = document.elementsFromPoint(x, y);
-      const target = elements.find(el => el !== nav && !nav.contains(el));
-      
-      if (target) {
-        let current: HTMLElement | null = target as HTMLElement;
-        while (current && current !== document.body) {
-          const style = window.getComputedStyle(current);
-          const bg = style.backgroundColor;
-          
-          if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
-            const rgb = bg.match(/\d+/g);
-            if (rgb) {
-              const r = parseInt(rgb[0]);
-              const g = parseInt(rgb[1]);
-              const b = parseInt(rgb[2]);
-              const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-              setIsDarkBg(brightness < 128);
-              return;
-            }
-          }
-          current = current.parentElement;
-        }
+    let raf: number;
+    const tick = () => {
+      if (progressBarRef.current) {
+        progressBarRef.current.style.transform = `scaleX(${progressRef.current})`;
       }
+      raf = requestAnimationFrame(tick);
     };
-
-    window.addEventListener('scroll', checkBg, { passive: true });
-    const timer = setTimeout(checkBg, 100);
-    return () => {
-      window.removeEventListener('scroll', checkBg);
-      clearTimeout(timer);
-    };
-  }, [location.pathname, hasPortalCompleted]);
-
-
-
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [progressRef]);
 
   const getLinkClass = (path: string) => {
     const isActive = location.pathname === path;
     const baseClass = "font-medium transition-all duration-300 relative group";
     
-    const activeColor = isDarkBg ? 'text-white' : 'text-[#4a7c59]';
-    const inactiveColor = isDarkBg ? 'text-stone-300/80 hover:text-white' : 'text-stone-600 hover:text-[#4a7c59]';
+    const activeClass = "text-[#4a7c59] dark:text-white";
+    const inactiveClass = "text-stone-600 hover:text-[#4a7c59] dark:text-stone-300/80 dark:hover:text-white";
 
-    return `${isActive ? activeColor : inactiveColor} ${baseClass}`;
+    return `${isActive ? activeClass : inactiveClass} ${baseClass}`;
   };
 
-  /* ���� Classe para os links da tab-bar mobile ���� */
+  /* 🧭 Class para os links da tab-bar mobile 🧭 */
   const getMobileTabClass = (path: string) => {
     const isActive = location.pathname === path;
     if (isActive) {
@@ -108,11 +60,12 @@ export function Layout() {
       <FloatingShapes />
       <PremiumGrain />
 
-      {/* Scroll Progress Bar */}
+      {/* Scroll Progress Bar — scaleX via progressRef (Sprint 1) */}
       <div className="fixed top-0 left-0 w-full h-[2px] z-[120] pointer-events-none">
-        <div 
-          className="h-full bg-[#4a7c59] transition-all duration-150 ease-out shadow-[0_0_8px_rgba(74,124,89,0.5)]"
-          style={{ width: `${scrollProgress}%` }}
+        <div
+          ref={progressBarRef}
+          className="h-full w-full bg-[#4a7c59] shadow-[0_0_8px_rgba(74,124,89,0.5)]"
+          style={{ transformOrigin: 'left', transform: 'scaleX(0)', willChange: 'transform' }}
         />
       </div>
       
@@ -121,19 +74,28 @@ export function Layout() {
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-[#4a7c59] blur-[150px] animate-pulse" />
         <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-[#705c30] blur-[120px] animate-pulse-delayed" />
       </div>
-      <header className={`fixed top-4 left-0 right-0 z-[110] mx-auto w-[96%] max-w-[1600px] flex justify-center pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      <header className={`fixed top-4 left-0 right-0 z-[110] mx-auto w-[96%] max-w-[1600px] flex justify-center items-center pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
       }`}>
-        <nav className="pointer-events-auto flex justify-between items-center w-full px-6 md:px-10 py-3 rounded-full antigravity-glass bg-white/5 dark:bg-black/10 shadow-[0_8px_32px_rgba(0,0,0,0.1)] border-white/20 dark:border-white/5 transition-all duration-300">
+        
+        {/* Logotipo Fixo Flutuante (Perfeitamente alinhado com o centro vertical da barra de navegação) */}
+        <div className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-[120] pointer-events-auto">
           <Link 
             to="/" 
-            className={`text-lg md:text-xl font-bold italic font-headline truncate mr-4 lg:mr-8 hover:opacity-80 transition-all duration-300 ${
-              isDarkBg ? 'text-white' : 'text-[#4a7c59]'
-            }`}
+            className="hover:opacity-80 transition-all duration-300 block"
             data-cursor="Início"
           >
-            NutriJornada 360º
+            <img 
+              src="/logo.svg" 
+              alt="NutriJornada 360º" 
+              className="h-24 sm:h-34 md:h-48 w-auto object-contain transition-all duration-300 dark:filter dark:invert dark:brightness-200"
+            />
           </Link>
+        </div>
+
+        {/* Nav modificada para ser uma cápsula flutuante compacta (largura exata dos itens) */}
+        <nav className="pointer-events-auto flex items-center gap-6 xl:gap-12 px-6 md:px-8 py-2.5 rounded-full antigravity-glass bg-white/5 dark:bg-black/10 shadow-[0_8px_32px_rgba(0,0,0,0.1)] border-white/20 dark:border-white/5 transition-all duration-300">
+
           <div className="hidden lg:flex items-center gap-4 xl:gap-8 text-[14px] xl:text-[15px]">
             <Link to="/" className={getLinkClass('/')} data-cursor="Ir para Início">
               Página Inicial
@@ -161,9 +123,7 @@ export function Layout() {
             <ThemeToggle />
             <button 
               onClick={() => setIsLoginOpen(true)} 
-              className={`text-sm font-bold flex items-center gap-1 transition-all duration-300 bg-white/5 dark:bg-white/5 px-3 py-2 rounded-full ${
-                isDarkBg ? 'text-white hover:bg-white/10' : 'text-[#705c30] hover:text-[#4a7c59] bg-stone-100/50'
-              }`}
+              className="text-sm font-bold flex items-center gap-1 transition-all duration-300 bg-white/5 dark:bg-white/5 px-3 py-2 rounded-full text-[#705c30] hover:text-[#4a7c59] bg-stone-100/50 dark:text-white dark:hover:bg-white/10"
               data-cursor="Login"
             >
               <span className="material-symbols-outlined text-base">login</span>
@@ -172,11 +132,7 @@ export function Layout() {
             <MagneticButton as="div">
               <button 
                 onClick={() => openBooking()} 
-                className={`px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 whitespace-nowrap shadow-md block ${
-                  isDarkBg 
-                    ? 'bg-[#4a7c59] text-white hover:bg-[#3d664a] hover:scale-105'
-                    : 'bg-white text-[#4a7c59] hover:bg-stone-50 hover:shadow-lg'
-                }`}
+                className="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 whitespace-nowrap shadow-md block bg-white text-[#4a7c59] hover:bg-stone-50 hover:shadow-lg dark:bg-[#4a7c59] dark:text-white dark:hover:bg-[#3d664a] dark:hover:scale-105"
                 data-cursor="Agendar Agora"
               >
                 Agendar Consulta

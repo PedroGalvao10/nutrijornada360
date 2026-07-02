@@ -43,7 +43,6 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
 }
 
 /* ───────────────────────────────────────────────────
@@ -324,7 +323,7 @@ body {
 
 :root {
   --primary-rgb: 74, 124, 89;
-  --tertiary-rgb: 112, 92, 48;
+  --tertiary-rgb: 234, 140, 95;
   --glass-bg: rgba(255, 255, 255, 0.5);
   --glass-border: rgba(255, 255, 255, 0.4);
   --glass-blur: 40px;
@@ -560,6 +559,17 @@ button:not(.no-glass):active {
   width: fit-content;
   animation: marquee-slower 50s linear infinite;
   will-change: transform;
+}
+
+/* ── Scroll cue (hero) — barra que desce e sobe via scaleY (GPU) ── */
+@keyframes scroll-cue {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  45%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  55%  { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.3; }
+}
+.animate-scroll-cue {
+  animation: scroll-cue 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
 /* ── Common Generic Animations ── */

@@ -10,14 +10,14 @@ import { HulyTextHighlight } from '../HulyTextHighlight';
 export function PlansSection() {
   const plansVideoRef = useRef<HTMLVideoElement>(null);
   
-  // Refs para 3D Tilt - Planos
+  // Refs para 3D Tilt - Planos (Desativados temporariamente para permitir o backdrop-blur perfeito sem bugs de Stacking Context do Chrome)
   const plano1Ref = useRef<HTMLDivElement>(null);
   const plano2Ref = useRef<HTMLDivElement>(null);
   const plano3Ref = useRef<HTMLDivElement>(null);
 
-  useTilt(plano1Ref, 10);
-  useTilt(plano2Ref, 10);
-  useTilt(plano3Ref, 10);
+  // useTilt(plano1Ref, 10);
+  // useTilt(plano2Ref, 10);
+  // useTilt(plano3Ref, 10);
 
   const isPlansVideoVisible = useViewportVisibility(plansVideoRef);
 
@@ -74,7 +74,12 @@ export function PlansSection() {
           <StaggerItem>
             <GlowWrapper 
               ref={plano1Ref}
-              className="parallax-shadow group antigravity-glass bg-white/5 dark:bg-black/20 border-white/20 rounded-[2.25rem] p-8 md:p-10 hover:bg-white/10 hover:border-white/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
+              className="no-glass parallax-shadow group border border-white/20 rounded-[2.25rem] p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(30px) saturate(200%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+              }}
               data-cursor="Foco Individual"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -99,7 +104,12 @@ export function PlansSection() {
           <StaggerItem>
             <GlowWrapper 
               ref={plano2Ref}
-              className="parallax-shadow group antigravity-glass bg-white/10 dark:bg-black/40 border-white/30 rounded-[2.25rem] p-8 md:p-10 hover:bg-white/20 hover:border-white/40 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
+              className="no-glass parallax-shadow group border border-white/30 rounded-[2.25rem] p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
+              style={{
+                background: 'rgba(255, 255, 255, 0.16)',
+                backdropFilter: 'blur(45px) saturate(220%)',
+                WebkitBackdropFilter: 'blur(45px) saturate(220%)',
+              }}
               data-cursor="Mais Popular"
             >
               <div className="absolute top-0 right-0 p-8">
@@ -110,7 +120,7 @@ export function PlansSection() {
               </div>
               <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Premium 360º</h3>
               <div className="flex-grow">
-                <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com foco integrativo.</p>
+                <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com focus integrativo.</p>
               </div>
               <div className="w-full tilt-child tz-20">
                 <MagneticButton as="div" className="w-full">
@@ -130,7 +140,12 @@ export function PlansSection() {
           <StaggerItem>
             <GlowWrapper 
               ref={plano3Ref}
-              className="parallax-shadow group antigravity-glass bg-white/5 dark:bg-black/20 border-white/20 rounded-[2.25rem] p-8 md:p-10 hover:bg-white/10 hover:border-white/30 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
+              className="no-glass parallax-shadow group border border-white/20 rounded-[2.25rem] p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(30px) saturate(200%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+              }}
               data-cursor="Conforto Digital"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>

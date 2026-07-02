@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Search, ChefHat, ChevronRight, X } from 'lucide-react';
 import { StaggerReveal, StaggerItem } from '../ui/StaggerReveal';
 import { MagneticButton } from '../ui/MagneticButton';
 import { NutriSearch } from '../NutriSearch';
+import { TypingEffect, TextEffect, AnimatedUnderlineText } from '../ui/text-animations';
 
 // --- Main Section Component ---
 export function HomeToolsSection() {
@@ -14,11 +15,13 @@ export function HomeToolsSection() {
       <div className="w-full px-6 md:px-12">
         <StaggerReveal className="mb-16">
           <StaggerItem>
-            <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Ecossistema Digital</span>
+            <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
+              <TypingEffect text="Ecossistema Digital" />
+            </span>
           </StaggerItem>
           <StaggerItem>
-            <h2 className="text-4xl md:text-6xl font-headline text-on-surface dark:text-stone-100 font-semibold mb-6">
-              Ferramentas de <span className="italic text-primary">Precisão.</span>
+            <h2 className="text-4xl md:text-6xl font-headline text-on-surface dark:text-stone-100 font-semibold mb-6 flex flex-wrap gap-2">
+              <TextEffect text="Ferramentas de" preset="slide" /> <span className="italic text-primary"><TextEffect text="Precisão." preset="fade" delay={0.3} /></span>
             </h2>
           </StaggerItem>
           <StaggerItem>
@@ -43,7 +46,7 @@ export function HomeToolsSection() {
               </p>
               <div className="flex items-center gap-2 text-primary dark:text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                 <Sparkles className="w-4 h-4" />
-                <span>Criar Receitas</span>
+                <AnimatedUnderlineText text="Criar Receitas" underlineColor="bg-primary/50" />
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </div>
             </a>
@@ -62,7 +65,7 @@ export function HomeToolsSection() {
               Explore profundamente a composição de milhares de alimentos com dados baseados na Tabela TACO e bancos internacionais.
             </p>
             <div className="flex items-center gap-2 text-primary dark:text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-              <span>Explorar Alimentos</span>
+              <AnimatedUnderlineText text="Explorar Alimentos" underlineColor="bg-primary/50" />
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </div>
           </StaggerItem>

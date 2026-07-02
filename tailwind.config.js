@@ -18,10 +18,10 @@ export default {
         "secondary-container": "#f0e8db",
         "on-secondary-container": "#5e5548",
 
-        "tertiary": "#705c30",
+        "tertiary": "#EA8C5F",
         "on-tertiary": "#ffffff",
-        "tertiary-container": "#c4a66a",
-        "on-tertiary-container": "#554020",
+        "tertiary-container": "#fce5da",
+        "on-tertiary-container": "#552005",
 
         "background": "#faf6f0",
         "on-background": "#2e3230",

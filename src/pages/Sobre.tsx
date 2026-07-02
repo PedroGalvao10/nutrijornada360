@@ -5,14 +5,14 @@ import { PointerHighlight } from '../components/ui/PointerHighlight';
 import { TextRevealByWord } from '../components/ui/TextRevealByWord';
 import { useTilt } from '../hooks/useTilt';
 import { Highlight } from '../components/ui/Highlight';
-import { CardStack } from '../components/ui/CardStack';
+import { DisplayCards } from '../components/ui/DisplayCards';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
-import marianaProfile from '../assets/mariana-profile.png';
 import SEO from '../components/SEO';
 import aprovadaCuscs from '../assets/aprovada-cuscs.jpg';
 import amendoasHero from '../assets/amendoas_hero.png';
 import { GlowWrapper } from '../components/ui/GlowWrapper';
 import { FloatingAsset } from '../components/ui/FloatingAsset';
+import { TextEffect, DotPatternQuote, TextReveal, RevealText } from '../components/ui/text-animations';
 
 /* ── Pilares da NutriJornada360º para o CardStack ── */
 const CORE_PAGES_INFO = [
@@ -123,7 +123,7 @@ export default function Sobre() {
           </StaggerItem>
           <StaggerItem>
             <h1 className="text-4xl md:text-6xl text-primary dark:text-emerald-400 font-bold mb-6 leading-tight font-headline">
-              <PointerHighlight>Mariana Bermudes</PointerHighlight>
+              <TextEffect text="Mariana Bermudes" preset="fade" />
             </h1>
           </StaggerItem>
           <StaggerItem className="text-lg md:text-xl text-on-surface-variant dark:text-stone-400 leading-relaxed mb-8 font-body">
@@ -168,14 +168,21 @@ export default function Sobre() {
             <div className="relative">
               <div 
                 ref={profileRef}
-                className="aspect-[4/5] bg-surface-container-highest rounded-2xl parallax-shadow overflow-hidden transform-style-3d relative z-30"
+                className="aspect-[4/5] bg-black rounded-2xl parallax-shadow overflow-hidden transform-style-3d relative z-30 flex items-center justify-center"
               >
-                <img 
-                  className="w-full h-full object-cover scale-110 tilt-child tz-30" 
-                  alt="Mariana Bermudes" 
-                  src={marianaProfile}
+                {/* Fundo Desfocado (Espelho) */}
+                <video 
+                  className="absolute inset-0 w-full h-full object-cover scale-125 blur-md opacity-85" 
+                  src="/videos/mariana_trabalhando_cropped.mp4"
+                  autoPlay muted loop playsInline
                 />
-            </div>
+                {/* Vídeo Principal Recortado */}
+                <video 
+                  className="relative z-10 w-full h-full object-contain tilt-child tz-30" 
+                  src="/videos/mariana_trabalhando_cropped.mp4"
+                  autoPlay muted loop playsInline
+                />
+              </div>
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-tertiary-container rounded-xl flex items-center justify-center p-4 text-center shadow-lg z-40">
               <p className="text-on-tertiary-container font-headline italic text-sm font-bold">Cuidado 360º para sua saúde</p>
             </div>
@@ -194,20 +201,26 @@ export default function Sobre() {
         <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* Bloco Esquerdo — CardStack + Essência */}
           <div className="antigravity-glass bg-white/5 dark:bg-black/10 flex flex-col items-start justify-center border border-white/20 dark:border-stone-800/40 p-4 sm:p-5 lg:p-6">
-            <div className="relative w-full mb-4 sm:mb-6">
-              <div className="absolute inset-x-0 -bottom-2 h-16 sm:h-20 lg:h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
-              <CardStack items={CORE_PAGES_INFO} />
+            <div className="relative w-full mb-4 sm:mb-6 flex justify-center">
+              <DisplayCards items={CORE_PAGES_INFO} />
             </div>
 
             <div className="flex flex-col gap-2">
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-primary dark:text-emerald-400 font-headline">
-                <PointerHighlight>Mariana Bermudes</PointerHighlight>
+                <TextEffect text="Mariana Bermudes" preset="fade" />
               </h3>
               <h4 className="text-lg sm:text-xl lg:text-2xl font-normal text-on-surface dark:text-stone-200 font-headline">
                 Minha Essência
               </h4>
-              <p className="text-on-surface-variant dark:text-stone-400 text-sm sm:text-base lg:text-lg font-body mt-2">
-                Minha história começa com o cheiro de “comida de verdade” vindo da cozinha. Desde a infância, aprendi que nutrir-se é um ato de carinho e conexão com a natureza.
+              <p className="text-on-surface-variant dark:text-stone-400 text-sm sm:text-base lg:text-lg font-body mt-2 h-[120px]">
+                <RevealText 
+                  text="Minha história começa com o cheiro de comida de verdade vindo da cozinha. Desde a infância, aprendi que nutrir-se é um ato de carinho e conexão com a natureza."
+                  triggerWords={[
+                    { word: 'comida', imageSrc: '/fruits/Blueberry 1.webp' },
+                    { word: 'infância', imageSrc: '/apple.png' },
+                    { word: 'natureza', imageSrc: '/fruits/Kiwi 1.webp' }
+                  ]}
+                />
               </p>
             </div>
           </div>
@@ -216,13 +229,13 @@ export default function Sobre() {
           <div className="antigravity-glass bg-white/5 dark:bg-black/10 flex flex-col items-start justify-center border border-white/20 dark:border-stone-800/40 p-4 sm:p-5 lg:p-6">
             <div className="flex flex-col gap-2 mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-primary dark:text-emerald-400 font-headline">
-                <PointerHighlight>Superação</PointerHighlight>
+                <TextEffect text="Superação" preset="slide" />
               </h3>
               <h4 className="text-lg sm:text-xl lg:text-2xl font-normal text-on-surface dark:text-stone-200 font-headline">
                 Da Dor ao Propósito
               </h4>
               <p className="text-on-surface-variant dark:text-stone-400 text-sm sm:text-base lg:text-lg font-body mt-2">
-                Enfrentei e superei transtornos alimentares que me mostraram o lado sensível da nutrição. Essa vivência moldou minha empatia e o desejo profundo de ajudar outros a encontrarem a paz com o prato.
+                <TextReveal text="Enfrentei e superei transtornos alimentares que me mostraram o lado sensível da nutrição. Essa vivência moldou minha empatia e o desejo profundo de ajudar outros a encontrarem a paz com o prato." />
               </p>
             </div>
 
@@ -247,11 +260,15 @@ export default function Sobre() {
           <div className="flex justify-center items-center p-4 sm:p-6">
             <div className="grid grid-cols-2 gap-6 sm:gap-8 w-full text-center sm:text-left">
               <div className="space-y-2 sm:space-y-3">
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-on-surface dark:text-stone-100 font-headline">360º</div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-on-surface dark:text-stone-100 font-headline">
+                  <TextEffect text="360º" preset="blur" />
+                </div>
                 <p className="text-sm sm:text-base text-on-surface-variant dark:text-stone-400">Visão Integrativa</p>
               </div>
               <div className="space-y-2 sm:space-y-3">
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-on-surface dark:text-stone-100 font-headline">100%</div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-medium text-on-surface dark:text-stone-100 font-headline">
+                  <TextEffect text="100%" preset="blur" />
+                </div>
                 <p className="text-sm sm:text-base text-on-surface-variant dark:text-stone-400">Bem-estar</p>
               </div>
             </div>
@@ -259,15 +276,11 @@ export default function Sobre() {
 
           {/* Depoimento / Quote */}
           <div className="relative">
-            <blockquote className="border-l-2 border-outline-variant/40 dark:border-emerald-500/30 pl-4 sm:pl-6 lg:pl-8 text-on-surface-variant dark:text-stone-400">
-              <p className="text-sm sm:text-base lg:text-lg leading-relaxed font-body italic">
-                &ldquo;Acredito em uma nutrição que acolhe sem julgar, fundamentada no rigor técnico e profissional. Cada pessoa é única e o plano alimentar deve respeitar sua história, suas emoções e seus objetivos.&rdquo;
-              </p>
-              <div className="mt-4 sm:mt-6 space-y-1">
-                <cite className="block font-medium text-sm sm:text-base text-on-surface dark:text-stone-200 not-italic font-headline">Mariana Bermudes</cite>
-                <p className="text-xs text-on-surface-variant dark:text-stone-500">Nutricionista • CRN-3</p>
-              </div>
-            </blockquote>
+            <DotPatternQuote 
+              text="Acredito em uma nutrição que acolhe sem julgar, fundamentada no rigor técnico e profissional. Cada pessoa é única e o plano alimentar deve respeitar sua história, suas emoções e seus objetivos."
+              author="Mariana Bermudes"
+              role="Nutricionista • CRN-3"
+            />
           </div>
         </div>
 

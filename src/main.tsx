@@ -6,6 +6,7 @@ import { PostHogProvider } from 'posthog-js/react';
 import App from './App.tsx';
 import { AuthProvider } from './context/AuthContext';
 import { BookingProvider } from './context/BookingContext';
+import { SiteProgressProvider } from './context/SiteProgressContext';
 import './index.css';
 
 // Initialize PostHog
@@ -28,7 +29,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <PostHogProvider client={posthog}>
         <AuthProvider>
           <BookingProvider>
-            <App />
+            <SiteProgressProvider>
+              <App />
+            </SiteProgressProvider>
           </BookingProvider>
         </AuthProvider>
       </PostHogProvider>

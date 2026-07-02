@@ -11,6 +11,9 @@ import { fileURLToPath } from 'url';
 // Importa o novo módulo de rotas de nutrição
 import nutritionRouter from './nutrition-api.js';
 
+// BOOKING FLOW: Importa módulo de agendamento/contratos
+import bookingRouter, { setAuthMiddleware } from './booking-api.js';
+
 dotenv.config();
 
 const app = express();
@@ -88,6 +91,10 @@ app.get('/api/auth/check', requireAuth, (req, res) => {
 
 // Registra as rotas de nutrição (Proxy para USDA, Spoonacular, etc)
 app.use('/api/nutrition', nutritionRouter);
+
+// BOOKING FLOW: Registra rotas de agendamento/contratos
+setAuthMiddleware(requireAuth);
+app.use('/api/booking', bookingRouter);
 
 app.get('/api/articles', (req, res) => {
     db.all(`SELECT * FROM articles WHERE is_published = 1 ORDER BY published_at DESC`, [], (err, rows) => {
