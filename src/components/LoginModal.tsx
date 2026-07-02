@@ -31,7 +31,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
       const data = await res.json();
       if (res.ok) {
-        await checkAuth();
+        // force: ignora o cache do AuthContext — o login acabou de mudar o estado
+        await checkAuth({ force: true });
         onClose();
         navigate('/admin/dashboard');
       } else {

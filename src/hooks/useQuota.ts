@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { deviceHeaders } from '../lib/deviceId';
 
 interface QuotaState {
     remaining: number | null;
@@ -22,7 +23,7 @@ export function useQuota() {
 
     const fetchQuota = useCallback(async () => {
         try {
-            const response = await fetch('/api/nutrition/quota');
+            const response = await fetch('/api/nutrition/quota', { headers: deviceHeaders() });
             if (response.ok) {
                 const data = await response.json();
                 setQuota(prev => ({

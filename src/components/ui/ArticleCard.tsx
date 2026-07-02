@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTilt } from '../../hooks/useTilt';
 import { GlowWrapper } from './GlowWrapper';
-import marianaProfile from '../../assets/mariana-profile.png';
+import marianaProfile from '../../assets/mariana-profile.webp';
 
 import type { Article } from '../../article_types';
 

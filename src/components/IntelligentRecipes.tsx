@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChefHat, AlertCircle, Sparkles, Plus } from 'lucide-react';
 import { useQuota } from '../hooks/useQuota';
 import { NutriChatInput } from './ui/nutri-chat-input';
+import { deviceHeaders } from '../lib/deviceId';
 
 
 interface RecipeResult {
@@ -37,7 +38,7 @@ export const IntelligentRecipes: React.FC = () => {
         clearLimitWarning();
 
         try {
-            const response = await fetch(`/api/nutrition/recipes?ingredients=${encodeURIComponent(ingredients)}`);
+            const response = await fetch(`/api/nutrition/recipes?ingredients=${encodeURIComponent(ingredients)}`, { headers: deviceHeaders() });
             
             // Atualizar quota após busca
             fetchQuota();

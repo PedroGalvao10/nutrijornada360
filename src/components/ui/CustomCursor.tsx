@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useSiteProgress } from '../../context/SiteProgressContext';
 
 /**
  * CustomCursor — cursor de 3 camadas via rAF puro (sem GSAP, sem useState).
@@ -6,7 +7,8 @@ import { useEffect, useRef } from 'react';
  * - mid: lerp 0.22
  * - ring: lerp 0.10, escala 2.4x em hover de a/button/[data-cursor]
  * - label: aparece sobre o ring quando o alvo tem data-cursor
- * Event delegation (1 listener no document) — zero MutationObserver.
+ * Posição do mouse vem do singleton SiteProgressContext (mouseRef) —
+ * este componente não registra mousemove próprio.
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -14,31 +16,30 @@ export function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const labelTextRef = useRef<HTMLSpanElement>(null);
+  const { mouseRef } = useSiteProgress();
 
   useEffect(() => {
     // Dispositivos sem hover (touch) não recebem cursor custom
     if (!window.matchMedia('(hover: hover)').matches) return;
 
-    let mx = 0, my = 0;   // posição alvo (mouse)
     let cx = 0, cy = 0;   // mid (lerp 0.22)
     let rx = 0, ry = 0;   // ring (lerp 0.10)
 
-    const onMove = (e: MouseEvent) => {
-      mx = e.clientX;
-      my = e.clientY;
-      if (dotRef.current) dotRef.current.style.transform = `translate(${mx}px,${my}px)`;
-    };
-
     const tick = () => {
+      // mouseRef é normalizado -1→1; desnormaliza para pixels de viewport
+      const mx = ((mouseRef.current.x + 1) / 2) * window.innerWidth;
+      const my = ((mouseRef.current.y + 1) / 2) * window.innerHeight;
       cx += (mx - cx) * 0.22;
       cy += (my - cy) * 0.22;
       rx += (mx - rx) * 0.10;
       ry += (my - ry) * 0.10;
+      if (dotRef.current) dotRef.current.style.transform = `translate(${mx}px,${my}px)`;
       if (midRef.current) midRef.current.style.transform = `translate(${cx}px,${cy}px)`;
       if (ringRef.current) ringRef.current.style.transform = `translate(${rx}px,${ry}px)`;
       if (labelRef.current) labelRef.current.style.transform = `translate(${rx}px,${ry}px)`;
-      requestAnimationFrame(tick);
+      rafId = requestAnimationFrame(tick);
     };
+    let rafId = 0;
 
     // Event delegation — resolve o alvo via closest(), cobre conteúdo dinâmico
     const onOver = (e: MouseEvent) => {
@@ -60,26 +61,24 @@ export function CustomCursor() {
     const onDown = () => { if (dotRef.current) dotRef.current.style.scale = '0.6'; };
     const onUp = () => { if (dotRef.current) dotRef.current.style.scale = '1'; };
 
-    window.addEventListener('mousemove', onMove, { passive: true });
     document.addEventListener('mouseover', onOver);
     document.addEventListener('mouseout', onOut);
     window.addEventListener('mousedown', onDown);
     window.addEventListener('mouseup', onUp);
     document.body.style.cursor = 'none';
     document.body.classList.add('custom-cursor-active');
-    const raf = requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseover', onOver);
       document.removeEventListener('mouseout', onOut);
       window.removeEventListener('mousedown', onDown);
       window.removeEventListener('mouseup', onUp);
       document.body.style.cursor = '';
       document.body.classList.remove('custom-cursor-active');
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [mouseRef]);
 
   return (
     <>

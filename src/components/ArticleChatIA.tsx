@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { deviceHeaders } from '../lib/deviceId';
 
 export default function ArticleChatIA() {
 
@@ -27,7 +28,7 @@ export default function ArticleChatIA() {
         try {
             const response = await fetch('/api/nutrition/chat-articles', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...deviceHeaders() },
                 body: JSON.stringify({ message: userMsg })
             });
             const data = await response.json();

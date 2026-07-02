@@ -11,6 +11,9 @@ import db from './db.js';
 import config from './config.js';
 import { generateContractHTML } from './contract-template.js';
 import { sendNewBookingNotification, sendPaymentConfirmation } from './mail-service.js';
+import { validate, bookingSchema, rejectSchema, signatureSchema } from './schemas.js';
+import { bookingLimiter, contractPdfLimiter } from './rate-limit.js';
+import { sanitizeSignatureDataUrl } from './sanitize.js';
 
 const router = express.Router();
 
@@ -100,9 +103,16 @@ function dbAll(sql, params = []) {
 // ============================================================
 async function generatePDF(html) {
     const puppeteer = await import('puppeteer');
+    // Sandbox do Chromium HABILITADO por padrão. O HTML renderizado inclui
+    // dados de usuário (mesmo escapados, defesa em profundidade). Apenas
+    // hosts que comprovadamente não suportam sandbox (alguns containers)
+    // podem desativar via PUPPETEER_NO_SANDBOX=1.
+    const launchArgs = process.env.PUPPETEER_NO_SANDBOX === '1'
+        ? ['--no-sandbox', '--disable-setuid-sandbox']
+        : [];
     const browser = await puppeteer.default.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: launchArgs
     });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -122,7 +132,7 @@ async function generatePDF(html) {
 // Recebe todos os dados do formulário + triagem + assinatura
 // Gera contrato HTML e token de acompanhamento
 // ============================================================
-router.post('/', async (req, res) => {
+router.post('/', bookingLimiter, validate(bookingSchema), async (req, res) => {
     try {
         const {
             nome, email, whatsapp, cpf, dataNascimento,
@@ -134,11 +144,11 @@ router.post('/', async (req, res) => {
             assinaturaBase64
         } = req.body;
 
-        // STEP: Validação básica
-        if (!nome || !email || !whatsapp || !planId || !assinaturaBase64) {
-            return res.status(400).json({
-                error: 'Campos obrigatórios: nome, email, whatsapp, planId, assinaturaBase64'
-            });
+        // STEP: A assinatura precisa ser uma data-URL de imagem válida —
+        // é interpolada diretamente num <img src> do contrato.
+        const assinaturaSegura = sanitizeSignatureDataUrl(assinaturaBase64);
+        if (!assinaturaSegura) {
+            return res.status(400).json({ error: 'Assinatura em formato inválido' });
         }
 
         // STEP: Gera token único para acompanhamento
@@ -281,7 +291,7 @@ router.get('/status/:token', async (req, res) => {
 // STEP: GET /api/booking/contract-pdf/:token — Download do PDF
 // Usa Puppeteer para renderizar HTML → PDF
 // ============================================================
-router.get('/contract-pdf/:token', async (req, res) => {
+router.get('/contract-pdf/:token', contractPdfLimiter, async (req, res) => {
     try {
         const booking = await dbGet(
             `SELECT * FROM bookings WHERE booking_token = ?`,
@@ -315,12 +325,14 @@ router.get('/contract-pdf/:token', async (req, res) => {
                 });
             }
 
-            const cleanVerify = verify.replace(/\D/g, '');
+            const cleanVerify = String(verify).replace(/\D/g, '');
             const cleanDbCpf = booking.cpf ? booking.cpf.replace(/\D/g, '') : '';
             const cleanDbWhatsapp = booking.whatsapp ? booking.whatsapp.replace(/\D/g, '') : '';
 
-            const matchesCpf = cleanDbCpf && (cleanDbCpf === cleanVerify || cleanDbCpf.endsWith(cleanVerify));
-            const matchesWhatsapp = cleanDbWhatsapp && (cleanDbWhatsapp === cleanVerify || cleanDbWhatsapp.endsWith(cleanVerify));
+            // Exige o número COMPLETO (CPF ou WhatsApp). Aceitar sufixos de
+            // poucos dígitos reduzia a entropia e viabilizava força bruta.
+            const matchesCpf = cleanDbCpf.length > 0 && cleanDbCpf === cleanVerify;
+            const matchesWhatsapp = cleanDbWhatsapp.length > 0 && cleanDbWhatsapp === cleanVerify;
 
             if (!matchesCpf && !matchesWhatsapp) {
                 return res.status(403).json({ 
@@ -504,7 +516,7 @@ router.patch('/admin/:id/approve', (req, res, next) => requireAuth(req, res, nex
 });
 
 // STEP: PATCH /api/admin/bookings/:id/reject — Rejeitar contrato
-router.patch('/admin/:id/reject', (req, res, next) => requireAuth(req, res, next), async (req, res) => {
+router.patch('/admin/:id/reject', (req, res, next) => requireAuth(req, res, next), validate(rejectSchema), async (req, res) => {
     try {
         const { reason } = req.body;
         const booking = await dbGet(`SELECT status FROM bookings WHERE id = ?`, [req.params.id]);
@@ -532,10 +544,10 @@ router.patch('/admin/:id/reject', (req, res, next) => requireAuth(req, res, next
 });
 
 // STEP: POST /api/admin/signature — Upload da assinatura da Mariana
-router.post('/admin/signature', (req, res, next) => requireAuth(req, res, next), async (req, res) => {
+router.post('/admin/signature', (req, res, next) => requireAuth(req, res, next), validate(signatureSchema), async (req, res) => {
     try {
-        const { signature } = req.body;
-        if (!signature) return res.status(400).json({ error: 'Assinatura é obrigatória' });
+        const signature = sanitizeSignatureDataUrl(req.body.signature);
+        if (!signature) return res.status(400).json({ error: 'Assinatura em formato inválido' });
 
         // STEP: Upsert — insere ou atualiza
         await dbRun(`

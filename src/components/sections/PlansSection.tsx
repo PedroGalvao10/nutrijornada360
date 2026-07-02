@@ -42,6 +42,7 @@ export function PlansSection() {
           className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 brightness-75 saturate-[0.7] blur-[2px] scale-[1.02]"
         >
           <source src="/bg-plans.webm" type="video/webm" />
+          <source src="/bg-plans.mp4" type="video/mp4" />
         </video>
         {/* Overlay mantendo o aspecto escuro sem usar o pesadíssimo backdrop-blur */}
         <div className="absolute inset-0 bg-stone-950/40"></div>

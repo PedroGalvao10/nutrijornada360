@@ -1,7 +1,23 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { escapeHtml } from './sanitize.js';
 
 dotenv.config();
+
+// STEP: Versão escapada dos campos de usuário para interpolação segura
+// no corpo HTML dos e-mails (a versão text/plain não interpreta HTML).
+function safeView(booking) {
+    return {
+        nome: escapeHtml(booking.nome),
+        email: escapeHtml(booking.email),
+        whatsapp: escapeHtml(booking.whatsapp),
+        plan_title: escapeHtml(booking.plan_title),
+        objetivo: escapeHtml(booking.objetivo),
+        descricao_objetivo: escapeHtml(booking.descricao_objetivo),
+        condicoes_saude: escapeHtml(booking.condicoes_saude),
+        medicamentos: escapeHtml(booking.medicamentos),
+    };
+}
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST || 'smtp.gmail.com',
@@ -17,6 +33,7 @@ const transporter = nodemailer.createTransport({
  * Envia notificação de novo contrato para a Mariana
  */
 export async function sendNewBookingNotification(booking, pdfBuffer) {
+  const safe = safeView(booking);
   const adminUrl = `${process.env.SITE_URL || 'http://localhost:5173'}/admin`;
   
   // STEP: Higieniza o número de WhatsApp e monta o link de contato rápido
@@ -62,15 +79,15 @@ O contrato assinado pelo cliente segue em anexo em formato PDF.`,
         
         <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0; font-size: 14px; color: #666; text-transform: uppercase;">Dados do Cliente</h3>
-          <p style="margin: 5px 0;"><strong>Nome:</strong> ${booking.nome}</p>
-          <p style="margin: 5px 0;"><strong>WhatsApp:</strong> ${booking.whatsapp}</p>
-          <p style="margin: 5px 0;"><strong>Plano:</strong> ${booking.plan_title}</p>
+          <p style="margin: 5px 0;"><strong>Nome:</strong> ${safe.nome}</p>
+          <p style="margin: 5px 0;"><strong>WhatsApp:</strong> ${safe.whatsapp}</p>
+          <p style="margin: 5px 0;"><strong>Plano:</strong> ${safe.plan_title}</p>
         </div>
 
         <div style="background: #edf7ed; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4a7c59;">
           <h3 style="margin-top: 0; font-size: 14px; color: #4a7c59; text-transform: uppercase;">Resumo da Triagem</h3>
-          <p style="margin: 5px 0;"><strong>Objetivo:</strong> ${booking.objetivo}</p>
-          <p style="margin: 5px 0;"><strong>Saúde:</strong> ${booking.condicoes_saude || 'Nenhuma'}</p>
+          <p style="margin: 5px 0;"><strong>Objetivo:</strong> ${safe.objetivo}</p>
+          <p style="margin: 5px 0;"><strong>Saúde:</strong> ${safe.condicoes_saude || 'Nenhuma'}</p>
         </div>
 
         <div style="background: #eaf6ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1d9bf0;">
@@ -116,6 +133,7 @@ O contrato assinado pelo cliente segue em anexo em formato PDF.`,
  * Envia e-mail de boas-vindas e confirmação de pagamento para o cliente
  */
 export async function sendPaymentConfirmation(booking, pdfBuffer) {
+  const safe = safeView(booking);
   const mailOptions = {
     from: `"Mariana Bermudes" <${process.env.MAIL_USER}>`,
     to: booking.email,
@@ -138,8 +156,8 @@ Nutricionista - CRN-3`,
     html: `
       <div style="font-family: sans-serif; line-height: 1.6; color: #333; max-width: 600px; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
         <h2 style="color: #4a7c59; text-align: center;">🎉 Seja muito bem-vindo(a)!</h2>
-        <p>Olá <strong>${booking.nome}</strong>,</p>
-        <p>É com muita alegria que confirmo o recebimento do seu pagamento. Sua vaga na consultoria exclusiva <strong>NutriJornada 360º</strong> (Plano: ${booking.plan_title}) está oficialmente garantida!</p>
+        <p>Olá <strong>${safe.nome}</strong>,</p>
+        <p>É com muita alegria que confirmo o recebimento do seu pagamento. Sua vaga na consultoria exclusiva <strong>NutriJornada 360º</strong> (Plano: ${safe.plan_title}) está oficialmente garantida!</p>
         
         <div style="background: #edf7ed; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #4a7c59;">
           <h3 style="margin-top: 0; color: #4a7c59; font-size: 16px;">📋 Seu Contrato Assinado</h3>

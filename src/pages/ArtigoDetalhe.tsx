@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { Article } from '../article_types';
-import marianaProfile from '../assets/mariana-profile.png';
+import marianaProfile from '../assets/mariana-profile.webp';
 import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';

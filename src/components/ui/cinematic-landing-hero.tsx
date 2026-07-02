@@ -6,6 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "../../lib/utils";
+import { useSiteProgress } from "../../context/SiteProgressContext";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -196,42 +197,45 @@ export function CinematicHero({
   const mainCardRef = useRef<HTMLDivElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
+  const { mouseRef } = useSiteProgress();
 
-  // 1. Mouse Interaction
+  // 1. Mouse Interaction — lê o mouseRef do singleton SiteProgressContext
+  // (nenhum mousemove próprio). O rAF só trabalha quando o mouse se move.
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    let lastX = NaN;
+    let lastY = NaN;
+
+    const tick = () => {
+      requestRef.current = requestAnimationFrame(tick);
       if (window.scrollY > window.innerHeight * 2) return;
 
-      cancelAnimationFrame(requestRef.current);
-      
-      requestRef.current = requestAnimationFrame(() => {
-        if (mainCardRef.current && mockupRef.current) {
-          const rect = mainCardRef.current.getBoundingClientRect();
-          const mouseX = e.clientX - rect.left;
-          const mouseY = e.clientY - rect.top;
-          
-          mainCardRef.current.style.setProperty("--mouse-x", `${mouseX}px`);
-          mainCardRef.current.style.setProperty("--mouse-y", `${mouseY}px`);
+      const { x, y } = mouseRef.current; // normalizado -1→1
+      if (x === lastX && y === lastY) return; // mouse parado: frame sem custo
+      lastX = x;
+      lastY = y;
 
-          const xVal = (e.clientX / window.innerWidth - 0.5) * 2;
-          const yVal = (e.clientY / window.innerHeight - 0.5) * 2;
+      if (mainCardRef.current && mockupRef.current) {
+        const clientX = ((x + 1) / 2) * window.innerWidth;
+        const clientY = ((y + 1) / 2) * window.innerHeight;
+        const rect = mainCardRef.current.getBoundingClientRect();
 
-          gsap.to(mockupRef.current, {
-            rotationY: xVal * 12,
-            rotationX: -yVal * 12,
-            ease: "power3.out",
-            duration: 1.2,
-          });
-        }
-      });
+        mainCardRef.current.style.setProperty("--mouse-x", `${clientX - rect.left}px`);
+        mainCardRef.current.style.setProperty("--mouse-y", `${clientY - rect.top}px`);
+
+        gsap.to(mockupRef.current, {
+          rotationY: x * 12,
+          rotationX: -y * 12,
+          ease: "power3.out",
+          duration: 1.2,
+        });
+      }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    requestRef.current = requestAnimationFrame(tick);
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(requestRef.current);
     };
-  },[]);
+  }, [mouseRef]);
 
   // 2. Cinematic Scroll Timeline — ORIGINAL logic, scoped to containerRef
   useEffect(() => {
@@ -298,6 +302,7 @@ export function CinematicHero({
         className="bg-video-layer absolute inset-0 w-full h-full object-cover z-0 scale-110"
         style={{ opacity: 0.9, filter: "blur(4px) brightness(1.0)" }}
       >
+        <source src="/videos/bg_nutri.webm" type="video/webm" />
         <source src="/videos/bg_nutri.mp4" type="video/mp4" />
       </video>
 
@@ -384,6 +389,7 @@ export function CinematicHero({
                       {/* Video in phone (16:9) filled with object-cover - INCREASED SIZE */}
                       <div className="phone-widget relative flex-[4] min-h-[320px] mx-[-8px] rounded-[1.25rem] overflow-hidden mb-6 flex items-center justify-center bg-[#07130d] shadow-2xl">
                         <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover scale-[1.35] origin-center">
+                          <source src="/videos/mariana_trabalhando.webm" type="video/webm" />
                           <source src="/videos/mariana_trabalhando.mp4" type="video/mp4" />
                         </video>
                       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { TypewriterTextAnim, AnimatedUnderlineText, TypingEffect, TextMarquee } from '../components/ui/text-animations';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
@@ -13,7 +13,9 @@ import { TextRotate } from '../components/ui/TextRotate';
 import ArticlesSection from '../components/ArticlesSection';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { CinematicHero } from '../components/ui/cinematic-landing-hero';
-import SplineSafe from '../components/ui/SplineSafe';
+// Spline em chunk próprio: o pacote 3D só é baixado quando esta seção monta,
+// em vez de entrar no bundle inteiro da Home.
+const SplineSafe = lazy(() => import('../components/ui/SplineSafe'));
 import { MissionSection } from '../components/sections/MissionSection';
 import { PlansSection } from '../components/sections/PlansSection';
 import { HomeToolsSection } from '../components/sections/HomeToolsSection';
@@ -131,6 +133,7 @@ export default function Home() {
                 preload="auto"
               >
                 <source src="/hero-video-v2.webm" type="video/webm" />
+                <source src="/hero-video-v2.mp4" type="video/mp4" />
               </video>
             </div>
           </div>
@@ -222,11 +225,13 @@ export default function Home() {
 
             {/* Elemento 3D (DNA) posicionado à direita */}
             <div className="w-full md:w-1/2 h-full flex items-center justify-center relative">
-              <SplineSafe 
-                scene="https://prod.spline.design/23mP4RppmrjsD4Yo/scene.splinecode" 
-                onLoad={handleSplineLoad}
-                className="w-full h-full scale-[1.1] md:scale-125 lg:scale-[1.4] origin-center"
-              />
+              <Suspense fallback={<div className="w-full h-full" />}>
+                <SplineSafe
+                  scene="https://prod.spline.design/23mP4RppmrjsD4Yo/scene.splinecode"
+                  onLoad={handleSplineLoad}
+                  className="w-full h-full scale-[1.1] md:scale-125 lg:scale-[1.4] origin-center"
+                />
+              </Suspense>
             </div>
           </div>
         </div>

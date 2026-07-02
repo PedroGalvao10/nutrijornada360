@@ -214,6 +214,10 @@ export function useScrollCanvas({
       }
     };
 
+    // Exceção deliberada ao singleton: este progresso é do CONTAINER (não da
+    // página), e o listener passivo acorda o renderLoop que se auto-encerra
+    // quando os frames convergem — um rAF permanente lendo o contexto seria
+    // mais caro (frames constantes mesmo com scroll parado).
     window.addEventListener('scroll', onScroll, { passive: true });
     renderLoop();
     onScroll();

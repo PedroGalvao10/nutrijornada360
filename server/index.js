@@ -4,8 +4,11 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import helmet from 'helmet';
 import db, { initDb } from './db.js';
 import config from './config.js';
+import { validate, loginSchema, leadSchema, aiChatSchema, articleSchema } from './schemas.js';
+import { leadsLimiter, aiChatLimiter } from './rate-limit.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -24,17 +27,21 @@ initDb();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.json());
+// Headers de segurança. CSP desabilitada por ora — o app usa fontes/CDNs
+// externos e inline styles do Vite; endurecer CSP fica documentado como
+// melhoria incremental pós-deploy.
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
-app.use(cors({
-    origin: [
-        'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175',
-        'http://localhost:5176', 'http://localhost:5177', 'http://localhost:5178',
-        'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://127.0.0.1:5175',
-        'http://127.0.0.1:5176', 'http://127.0.0.1:5177', 'http://127.0.0.1:5178',
-    ],
-    credentials: true,
-}));
+
+// CORS: origem de produção derivada de SITE_URL; localhosts só em dev.
+const corsOrigins = [config.siteUrl];
+if (!config.isProduction) {
+    for (const port of [5173, 5174, 5175, 5176, 5177, 5178]) {
+        corsOrigins.push(`http://localhost:${port}`, `http://127.0.0.1:${port}`);
+    }
+}
+app.use(cors({ origin: corsOrigins, credentials: true }));
 
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -54,7 +61,7 @@ const requireAuth = (req, res, next) => {
     }
 };
 
-app.post('/api/auth/login', loginLimiter, async (req, res) => {
+app.post('/api/auth/login', loginLimiter, validate(loginSchema), async (req, res) => {
     const { email, password } = req.body || {};
     const ip = req.ip;
 
@@ -114,7 +121,7 @@ app.get('/api/articles/:slug', (req, res) => {
     });
 });
 
-app.post('/api/articles', requireAuth, (req, res) => {
+app.post('/api/articles', requireAuth, validate(articleSchema), (req, res) => {
     const { 
       title, slug, hat, content, excerpt, meta_description, 
       cover_image_url, image_alt, reading_time, published_at, is_published 
@@ -140,7 +147,7 @@ app.post('/api/articles', requireAuth, (req, res) => {
 });
 
 
-app.put('/api/articles/:id', requireAuth, (req, res) => {
+app.put('/api/articles/:id', requireAuth, validate(articleSchema), (req, res) => {
     const { 
       title, slug, hat, content, excerpt, meta_description, 
       cover_image_url, image_alt, reading_time, published_at, is_published
@@ -189,16 +196,14 @@ import { spawn } from 'child_process';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DEFAULT_NOTEBOOK_ID = process.env.NLM_DEFAULT_NOTEBOOK_ID || null;
 
-app.post('/api/ai/chat', async (req, res) => {
-    const { message, notebookId = DEFAULT_NOTEBOOK_ID } = req.body || {};
+app.post('/api/ai/chat', aiChatLimiter, validate(aiChatSchema), async (req, res) => {
+    const { message, notebookId = DEFAULT_NOTEBOOK_ID } = req.body;
 
     if (!config.aiChatEnabled) {
         return res.status(503).json({ error: 'O chat de IA está temporariamente indisponível.' });
     }
-    if (!message || typeof message !== 'string' || message.length > 2000) {
-        return res.status(400).json({ error: 'Mensagem é obrigatória (máx. 2000 caracteres)' });
-    }
     // Valida o notebookId antes de repassar a um processo externo
+    // (o schema já valida o formato quando enviado; aqui cobre o default)
     if (!notebookId || !UUID_RE.test(notebookId)) {
         return res.status(400).json({ error: 'notebookId inválido' });
     }
@@ -232,7 +237,7 @@ app.post('/api/ai/chat', async (req, res) => {
 
 // Configuração para Hostinger: Servir a pasta /dist do compilado do React
 // Rota de Proxy para Google Sheets (Elimina erros de CORS no Navegador)
-app.post('/api/leads', express.json(), async (req, res) => {
+app.post('/api/leads', leadsLimiter, validate(leadSchema), async (req, res) => {
     const webhookUrl = process.env.VITE_GOOGLE_SHEETS_WEBHOOK_URL;
     
     if (!webhookUrl || webhookUrl === 'SUA_URL_AQUI') {
@@ -300,6 +305,15 @@ app.use((req, res) => {
     // root + caminho relativo: evita que o sendFile negue caminhos absolutos
     // que contenham diretórios-dot (ex.: ".gemini") como se fossem dotfiles.
     res.sendFile('index.html', { root: distPath });
+});
+
+// STEP: Error-handling middleware global — exceções não tratadas em rotas
+// retornam 500 JSON em vez de derrubar o processo ou vazar stack trace.
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+    console.error(`[Error] ${req.method} ${req.path}:`, err);
+    if (res.headersSent) return;
+    res.status(err.status || 500).json({ error: 'Erro interno do servidor' });
 });
 
 // Inicialização Final do Servidor

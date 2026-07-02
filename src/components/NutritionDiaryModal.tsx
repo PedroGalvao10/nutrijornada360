@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, ChevronRight, Clock, Loader2, BookOpen } from 'lucide-react';
+import { deviceHeaders } from '../lib/deviceId';
 
 interface Props {
     isOpen: boolean;
@@ -25,7 +26,7 @@ export const NutritionDiaryModal: React.FC<Props> = ({ isOpen, onClose }) => {
     const fetchPlates = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('/api/nutrition/plates');
+            const response = await fetch('/api/nutrition/plates', { headers: deviceHeaders() });
             const data = await response.json();
             setPlates(data);
         } catch (err) {

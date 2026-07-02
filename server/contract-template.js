@@ -1,7 +1,10 @@
 // ==========================================================
 // CONTRACT TEMPLATE: Geração de HTML dinâmico para contratos
 // de prestação de serviços de consultoria nutricional.
+// Todo dado vindo do usuário é escapado antes da interpolação
+// (o HTML é renderizado pelo Puppeteer para gerar o PDF).
 // ==========================================================
+import { escapeHtml, sanitizeSignatureDataUrl } from './sanitize.js';
 
 /**
  * Formata valor de centavos para string BRL (ex: 20000 -> "200,00")
@@ -29,12 +32,22 @@ function formatDate(isoDate) {
  */
 export function generateContractHTML(data, options = {}) {
     const {
-        nome, cpf, dataNascimento, email, whatsapp,
-        plan_title, plan_price_cents, parcelas, valor_parcela_cents,
-        objetivo, descricao_objetivo,
-        assinatura_usuario, assinatura_admin,
-        assinado_em, approved_at, booking_token
+        plan_price_cents, parcelas, valor_parcela_cents,
+        objetivo,
+        assinado_em, booking_token
     } = data;
+
+    // STEP: Escapa todos os campos de texto fornecidos pelo usuário
+    const nome = escapeHtml(data.nome);
+    const cpf = escapeHtml(data.cpf);
+    const dataNascimento = data.dataNascimento;
+    const email = escapeHtml(data.email);
+    const whatsapp = escapeHtml(data.whatsapp);
+    const plan_title = escapeHtml(data.plan_title);
+    const descricao_objetivo = escapeHtml(data.descricao_objetivo);
+    // Assinaturas só entram se forem data-URLs de imagem válidas
+    const assinatura_usuario = sanitizeSignatureDataUrl(data.assinatura_usuario);
+    const assinatura_admin = sanitizeSignatureDataUrl(data.assinatura_admin);
 
     const { showApprovalStamp = false } = options;
 
@@ -49,7 +62,7 @@ export function generateContractHTML(data, options = {}) {
         'saude': 'Melhoria de Saúde e Bem-estar',
         'outro': 'Acompanhamento Nutricional Personalizado'
     };
-    const objetivoTexto = objetivoMap[objetivo] || objetivo || 'Acompanhamento Nutricional';
+    const objetivoTexto = objetivoMap[objetivo] || escapeHtml(objetivo) || 'Acompanhamento Nutricional';
 
     return `<!DOCTYPE html>
 <html lang="pt-BR">

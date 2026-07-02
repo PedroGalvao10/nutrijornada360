@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSiteProgress } from '../../context/SiteProgressContext';
 
 const InteractiveNeuralVortexBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointer = useRef({ x: 0, y: 0, tX: 0, tY: 0 }); 
+  const pointer = useRef({ x: 0, y: 0, tX: 0, tY: 0 });
   const animationRef = useRef<number | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { mouseRef } = useSiteProgress();
 
   useEffect(() => {
     const checkTheme = () => {
@@ -140,6 +142,9 @@ const InteractiveNeuralVortexBackground = () => {
     window.addEventListener('resize', resizeCanvas);
 
     const render = (time: number) => {
+      // Alvo do pointer vem do singleton SiteProgressContext (sem mousemove próprio)
+      pointer.current.tX = ((mouseRef.current.x + 1) / 2) * window.innerWidth;
+      pointer.current.tY = ((mouseRef.current.y + 1) / 2) * window.innerHeight;
       pointer.current.x += (pointer.current.tX - pointer.current.x) * 0.1;
       pointer.current.y += (pointer.current.tY - pointer.current.y) * 0.1;
       
@@ -154,19 +159,11 @@ const InteractiveNeuralVortexBackground = () => {
 
     animationRef.current = requestAnimationFrame(render);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      pointer.current.tX = e.clientX;
-      pointer.current.tY = e.clientY;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
     return () => {
       window.removeEventListener('resize', resizeCanvas);
-      window.removeEventListener('mousemove', handleMouseMove);
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [isDarkMode]);
+  }, [isDarkMode, mouseRef]);
 
   return (
     <canvas 

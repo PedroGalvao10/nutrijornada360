@@ -125,9 +125,12 @@ export const ScrollExpandMedia: React.FC<ScrollExpandMediaProps> = ({
       document.documentElement.style.overflow = '';
     };
     window.addEventListener('pagehide', restoreOverflow);
-    document.addEventListener('visibilitychange', () => {
+    // Referência nomeada: sem ela o listener era inline e nunca removido,
+    // acumulando um novo listener no document a cada mount (leak).
+    const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') restoreOverflow();
-    });
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('wheel', handleWheel);
@@ -135,6 +138,7 @@ export const ScrollExpandMedia: React.FC<ScrollExpandMediaProps> = ({
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('pagehide', restoreOverflow);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       restoreOverflow();
     };
   }, [mediaFullyExpanded, rawProgress]);

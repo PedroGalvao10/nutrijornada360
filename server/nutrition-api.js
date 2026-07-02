@@ -184,39 +184,69 @@ const localFoodDB = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-//  RATE LIMITING MIDDLEWARE (Paywall Simulado)
+//  IDENTIDADE DO USUÁRIO ANÔNIMO
+//  O client envia um UUID de dispositivo (X-Device-Id, gerado no
+//  localStorage). Isso evita que usuários atrás do mesmo IP/NAT
+//  compartilhem histórico e limites. IP é apenas fallback.
 // ═══════════════════════════════════════════════════════════════
-const ipLimits = new Map();
+const DEVICE_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function getUserKey(req) {
+    const deviceId = req.get('X-Device-Id');
+    if (deviceId && DEVICE_ID_RE.test(deviceId)) return `dev:${deviceId.toLowerCase()}`;
+    return `ip:${getCleanIP(req)}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RATE LIMITING MIDDLEWARE (Paywall Simulado)
+//  Contador diário persistido em SQLite (tabela rate_limits) —
+//  sobrevive a restart do processo, diferente do Map in-memory.
+// ═══════════════════════════════════════════════════════════════
+const FREE_TIER_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 const rateLimitMiddleware = (req, res, next) => {
     const userIp = getCleanIP(req);
-    
+
     if (isWhitelistedIP(userIp)) {
-        console.log(`[RateLimit] Acesso liberado para IP Whitelisted: ${userIp}`);
         res.setHeader('X-RateLimit-Limit', 'Unlimited');
         return next();
     }
 
-    const currentUsage = ipLimits.get(userIp) || 0;
-    console.log(`[RateLimit] IP: ${userIp} | Uso: ${currentUsage}/${FREE_TIER_LIMIT}`);
+    const key = `freetier:${getUserKey(req)}`;
+    const now = Date.now();
+    const resetTime = now + FREE_TIER_WINDOW_MS;
 
-    if (currentUsage >= FREE_TIER_LIMIT) {
-        return res.status(429).json({
-            error: 'LIMIT_REACHED',
-            message: 'Você atingiu o limite do plano gratuito de buscas por hoje.',
-            upsell: {
-                title: 'Desbloqueie o Acesso Premium',
-                description: 'Assine um de nossos pacotes e tenha acesso ampliado a todas as ferramentas premium de nutrição.',
-                cta: 'Ver Pacotes',
-                link: '/planos'
+    db.run(
+        `INSERT INTO rate_limits (key, hits, reset_time) VALUES (?, 1, ?)
+         ON CONFLICT(key) DO UPDATE SET
+            hits = CASE WHEN reset_time < ? THEN 1 ELSE hits + 1 END,
+            reset_time = CASE WHEN reset_time < ? THEN ? ELSE reset_time END`,
+        [key, resetTime, now, now, resetTime],
+        (err) => {
+            if (err) {
+                console.error('[RateLimit] Erro no contador persistente:', err.message);
+                return next(); // fail-open: não bloqueia a ferramenta por falha do contador
             }
-        });
-    }
-
-    ipLimits.set(userIp, currentUsage + 1);
-    res.setHeader('X-RateLimit-Limit', String(FREE_TIER_LIMIT));
-    res.setHeader('X-RateLimit-Remaining', String(Math.max(0, FREE_TIER_LIMIT - (currentUsage + 1))));
-    next();
+            db.get(`SELECT hits FROM rate_limits WHERE key = ?`, [key], (err2, row) => {
+                const usage = row?.hits ?? 1;
+                if (usage > FREE_TIER_LIMIT) {
+                    return res.status(429).json({
+                        error: 'LIMIT_REACHED',
+                        message: 'Você atingiu o limite do plano gratuito de buscas por hoje.',
+                        upsell: {
+                            title: 'Desbloqueie o Acesso Premium',
+                            description: 'Assine um de nossos pacotes e tenha acesso ampliado a todas as ferramentas premium de nutrição.',
+                            cta: 'Ver Pacotes',
+                            link: '/planos'
+                        }
+                    });
+                }
+                res.setHeader('X-RateLimit-Limit', String(FREE_TIER_LIMIT));
+                res.setHeader('X-RateLimit-Remaining', String(Math.max(0, FREE_TIER_LIMIT - usage)));
+                next();
+            });
+        }
+    );
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -229,7 +259,6 @@ router.get('/health', async (_req, res) => {
         server: 'ok',
         searchCache: { keys: searchCache.keys().length, hits: searchCache.getStats().hits, misses: searchCache.getStats().misses },
         translationCache: { keys: translationCache.keys().length },
-        activeIPs: ipLimits.size,
         apis: {}
     };
 
@@ -608,7 +637,7 @@ router.get('/recipes', rateLimitMiddleware, async (req, res) => {
 // ROTA: Reset de limites (M2 fix — apenas em desenvolvimento)
 if (process.env.NODE_ENV !== 'production') {
     router.post('/_reset_limits', (_req, res) => {
-        ipLimits.clear();
+        db.run(`DELETE FROM rate_limits WHERE key LIKE 'freetier:%'`);
         searchCache.flushAll();
         translationCache.flushAll();
         res.json({ message: 'Limites e caches resetados com sucesso (DEV only)' });
@@ -620,7 +649,9 @@ if (process.env.NODE_ENV !== 'production') {
 // ROTA: Salvar Prato no Diário
 router.post('/plates', async (req, res) => {
     const { title, items, totals } = req.body;
-    const userIp = getCleanIP(req);
+    // user_ip agora guarda a chave anônima do dispositivo (dev:<uuid>),
+    // com fallback para IP — dados não vazam entre usuários do mesmo NAT.
+    const userKey = getUserKey(req);
 
     if (!items || items.length === 0) {
         return res.status(400).json({ error: 'O prato deve conter itens.' });
@@ -628,7 +659,7 @@ router.post('/plates', async (req, res) => {
 
     db.run(
         `INSERT INTO plates (user_ip, title, total_calories, total_protein, total_carbs, total_fat) VALUES (?, ?, ?, ?, ?, ?)`,
-        [userIp, title || 'Meu Prato', totals.calories, totals.protein, totals.carbs, totals.fat],
+        [userKey, title || 'Meu Prato', totals.calories, totals.protein, totals.carbs, totals.fat],
         function(err) {
             if (err) return res.status(500).json({ error: err.message });
             
@@ -647,8 +678,8 @@ router.post('/plates', async (req, res) => {
 
 // ROTA: Listar Pratos do Usuário (baseado no IP para simplicidade sem login)
 router.get('/plates', (req, res) => {
-    const userIp = getCleanIP(req);
-    db.all(`SELECT * FROM plates WHERE user_ip = ? ORDER BY created_at DESC LIMIT 10`, [userIp], (err, rows) => {
+    const userKey = getUserKey(req);
+    db.all(`SELECT * FROM plates WHERE user_ip = ? ORDER BY created_at DESC LIMIT 10`, [userKey], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
     });
@@ -657,9 +688,9 @@ router.get('/plates', (req, res) => {
 // ROTA: Buscar Prato Específico com Itens
 router.get('/plates/:id', (req, res) => {
     const { id } = req.params;
-    const userIp = getCleanIP(req);
+    const userKey = getUserKey(req);
 
-    db.get(`SELECT * FROM plates WHERE id = ? AND user_ip = ?`, [id, userIp], (err, plate) => {
+    db.get(`SELECT * FROM plates WHERE id = ? AND user_ip = ?`, [id, userKey], (err, plate) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!plate) return res.status(404).json({ error: 'Prato não encontrado' });
 
@@ -673,9 +704,9 @@ router.get('/plates/:id', (req, res) => {
 // ROTA: Excluir Prato do Histórico
 router.delete('/plates/:id', (req, res) => {
     const { id } = req.params;
-    const userIp = getCleanIP(req);
+    const userKey = getUserKey(req);
 
-    db.run(`DELETE FROM plates WHERE id = ? AND user_ip = ?`, [id, userIp], function(err) {
+    db.run(`DELETE FROM plates WHERE id = ? AND user_ip = ?`, [id, userKey], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         if (this.changes === 0) return res.status(404).json({ error: 'Prato não encontrado ou sem permissão' });
         

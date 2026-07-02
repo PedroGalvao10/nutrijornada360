@@ -6,7 +6,7 @@ export interface AuthContextType {
   isLoading: boolean;
   setIsAdmin: (value: boolean) => void;
   setIsPremium: (value: boolean) => void;
-  checkAuth: () => Promise<void>;
+  checkAuth: (options?: { force?: boolean }) => Promise<void>;
   logout: () => Promise<void>;
 }
 

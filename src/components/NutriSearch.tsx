@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Info, Crown, Plus, ChevronLeft, Apple, BookOpen } from 'lucide-react';
 import { useQuota } from '../hooks/useQuota';
 import { NutriChatInput } from './ui/nutri-chat-input';
+import { deviceHeaders } from '../lib/deviceId';
 
 interface FoodResult {
     id: string;
@@ -44,7 +45,7 @@ export const NutriSearch: React.FC = () => {
         setSelectedFood(null);
 
         try {
-            const response = await fetch(`/api/nutrition/search?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/nutrition/search?query=${encodeURIComponent(query)}`, { headers: deviceHeaders() });
             
             // Atualizar quota após busca
             fetchQuota();
@@ -285,7 +286,7 @@ export const NutriSearch: React.FC = () => {
                                             try {
                                                 const res = await fetch('/api/nutrition/chat-articles', {
                                                     method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
+                                                    headers: { 'Content-Type': 'application/json', ...deviceHeaders() },
                                                     body: JSON.stringify({ message: msg })
                                                 });
                                                 const data = await res.json();
