@@ -7,6 +7,7 @@ import express from 'express';
 import NodeCache from 'node-cache';
 import { execFile } from 'child_process';
 import db from './db.js';
+import config from './config.js';
 
 const router = express.Router();
 
@@ -90,24 +91,23 @@ function getCleanIP(req) {
 // STEP: Consultar NotebookLM via Proxy Determinístico
 async function queryNotebook(notebookId, query) {
     return new Promise((resolve) => {
-        const proxyPath = 'c:\\Users\\soare\\.gemini\\antigravity\\scratch\\execution\\nlm_proxy.py';
-        const pythonPath = 'C:\\Users\\soare\\AppData\\Local\\Programs\\Python\\Python312\\python.exe';
-        
-        // Incluir diretório do nlm.exe no PATH para o subprocesso
-        const nlmDir = 'C:\\Users\\soare\\AppData\\Local\\Programs\\Python\\Python312\\Scripts';
-        const envPath = process.env.PATH || process.env.Path || '';
-        
-        const execOptions = { 
+        // Integração opcional: paths vêm do ambiente (NLM_PROXY_PATH / PYTHON_PATH).
+        // Sem eles, resolve null e o chamador cai no fallback gracioso.
+        if (!config.nlmProxyPath) {
+            console.warn('[NotebookLM] NLM_PROXY_PATH não configurado — integração desabilitada.');
+            return resolve(null);
+        }
+
+        const execOptions = {
             timeout: 90000,
-            env: { 
-                ...process.env, 
+            env: {
+                ...process.env,
                 PYTHONIOENCODING: 'utf-8',
-                PATH: `${nlmDir};${envPath}`
             }
         };
-        
+
         console.log(`[NotebookLM] Executando query para notebook ${notebookId}...`);
-        execFile(pythonPath, [proxyPath, notebookId, query], execOptions, (error, stdout, stderr) => {
+        execFile(config.pythonPath || 'python', [config.nlmProxyPath, notebookId, query], execOptions, (error, stdout, stderr) => {
             if (error) {
                 console.error(`[NotebookLM] ERRO (code ${error.code}): ${error.message}`);
                 if (stderr) console.error(`[NotebookLM] Stderr: ${stderr}`);

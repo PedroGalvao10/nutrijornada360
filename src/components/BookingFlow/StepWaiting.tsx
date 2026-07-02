@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function StepWaiting({ onApproved, onRejected }: Props) {
-  const { activeBookingToken, activeBookingStatus, updateBookingStatus } = useBooking();
+  const { activeBookingToken, updateBookingStatus } = useBooking();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // STEP: Polling de status a cada 10 segundos

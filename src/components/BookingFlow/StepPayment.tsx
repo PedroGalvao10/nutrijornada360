@@ -11,10 +11,6 @@ const PIX_KEY = '11956007142';
 const PIX_KEY_DISPLAY = '(11) 95600-7142';
 const WHATSAPP_NUMBER = '5511956007142';
 
-function formatBRL(cents: number): string {
-  return `R$${(cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-}
-
 /**
  * STEP: Gera payload PIX simplificado (chave + valor)
  * Para QR Code estático com chave de telefone
@@ -60,7 +56,7 @@ interface Props {
   onComplete: () => void;
 }
 
-export function StepPayment({ onComplete }: Props) {
+export function StepPayment(_props: Props) {
   const { selectedPlan, paymentDeadline, activeBookingToken } = useBooking();
   const [timeLeft, setTimeLeft] = useState('');
   const [copied, setCopied] = useState(false);

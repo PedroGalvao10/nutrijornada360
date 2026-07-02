@@ -1,6 +1,5 @@
 import { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useTilt } from '../../hooks/useTilt';
 import { useViewportVisibility } from '../../hooks/useViewportVisibility';
 import { StaggerReveal, StaggerItem } from '../ui/StaggerReveal';
 import { GlowWrapper } from '../ui/GlowWrapper';

@@ -1,4 +1,4 @@
-import { useEffect, Suspense, lazy, useState } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -13,6 +13,7 @@ const Artigos = lazy(() => import('./pages/Artigos'));
 const ArtigoDetalhe = lazy(() => import('./pages/ArtigoDetalhe'));
 const Ferramentas = lazy(() => import('./pages/Ferramentas'));
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -49,15 +50,14 @@ function AppContent() {
               <Route path="blog/:slug" element={<PageTransition><ArtigoDetalhe /></PageTransition>} />
               {/* Redireciona /login para a home pois o login é um modal */}
               <Route path="login" element={<Navigate to="/" replace />} />
+              {/* Página 404 dedicada para URLs inexistentes */}
+              <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
             </Route>
 
             {/* Rotas Administrativas CMS */}
             <Route path="/admin" element={<ProtectedRoute />}>
               <Route path="dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
             </Route>
-
-            {/* Rota de Fallback para qualquer URL inexistente */}
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </AnimatePresence>

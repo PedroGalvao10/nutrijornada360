@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
@@ -25,7 +25,7 @@ if (typeof window !== 'undefined') {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <HelmetProvider>
-    <HashRouter>
+    <BrowserRouter>
       <PostHogProvider client={posthog}>
         <AuthProvider>
           <BookingProvider>
@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           </BookingProvider>
         </AuthProvider>
       </PostHogProvider>
-    </HashRouter>
+    </BrowserRouter>
   </HelmetProvider>
 )
 

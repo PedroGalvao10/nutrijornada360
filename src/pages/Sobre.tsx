@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { HulyTextHighlight } from '../components/HulyTextHighlight';
-import { PointerHighlight } from '../components/ui/PointerHighlight';
 import { TextRevealByWord } from '../components/ui/TextRevealByWord';
 import { useTilt } from '../hooks/useTilt';
 import { Highlight } from '../components/ui/Highlight';

@@ -3,8 +3,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import db, { initDb } from './db.js';
-import dotenv from 'dotenv';
+import config from './config.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,13 +15,9 @@ import nutritionRouter from './nutrition-api.js';
 // BOOKING FLOW: Importa módulo de agendamento/contratos
 import bookingRouter, { setAuthMiddleware } from './booking-api.js';
 
-dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 3001;
-const JWT_SECRET = process.env.JWT_SECRET || 'a_very_secret_key_123';
-const ADMIN_EMAIL = process.env.VITE_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'admin@nutrijornada.com';
-const ADMIN_PASS = process.env.VITE_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '123456';
+const PORT = config.port;
+const JWT_SECRET = config.jwtSecret;
 
 initDb();
 
@@ -57,11 +54,18 @@ const requireAuth = (req, res, next) => {
     }
 };
 
-app.post('/api/auth/login', loginLimiter, (req, res) => {
-    const { email, password } = req.body;
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
+    const { email, password } = req.body || {};
     const ip = req.ip;
 
-    const isMatch = (email === ADMIN_EMAIL && password === ADMIN_PASS);
+    // Compara e-mail e hash bcrypt — nunca senha em texto plano.
+    // Sem credenciais configuradas no ambiente, o login fica desabilitado.
+    let isMatch = false;
+    if (email && password && config.adminEmail && config.adminPasswordHash) {
+        const emailMatch = email === config.adminEmail;
+        const passMatch = await bcrypt.compare(String(password), config.adminPasswordHash);
+        isMatch = emailMatch && passMatch;
+    }
 
     db.run(`INSERT INTO login_logs (email, ip, success) VALUES (?, ?, ?)`, [email, ip, isMatch ? 1 : 0]);
 
@@ -178,19 +182,30 @@ app.get('/api/admin/articles', requireAuth, (req, res) => {
     });
 });
 
-// --- NOVO: Integração NutriChat (NotebookLM CLI) ---
+// --- Integração NutriChat (NotebookLM CLI) ---
+// Depende de NLM_PROXY_PATH (e opcionalmente PYTHON_PATH) no ambiente.
+// Sem eles, a rota responde 503 — nada de caminho da máquina do dev no código.
 import { spawn } from 'child_process';
-app.post('/api/ai/chat', async (req, res) => {
-    const { message, notebookId = '58532935-cd30-467c-9b7e-cf1920496423' } = req.body;
-    
-    if (!message) return res.status(400).json({ error: 'Mensagem é obrigatória' });
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const DEFAULT_NOTEBOOK_ID = process.env.NLM_DEFAULT_NOTEBOOK_ID || null;
 
-    // Path absoluto para o proxy determinístico
-    const proxyPath = 'c:\\Users\\soare\\.gemini\\antigravity\\scratch\\execution\\nlm_proxy.py';
-    
+app.post('/api/ai/chat', async (req, res) => {
+    const { message, notebookId = DEFAULT_NOTEBOOK_ID } = req.body || {};
+
+    if (!config.aiChatEnabled) {
+        return res.status(503).json({ error: 'O chat de IA está temporariamente indisponível.' });
+    }
+    if (!message || typeof message !== 'string' || message.length > 2000) {
+        return res.status(400).json({ error: 'Mensagem é obrigatória (máx. 2000 caracteres)' });
+    }
+    // Valida o notebookId antes de repassar a um processo externo
+    if (!notebookId || !UUID_RE.test(notebookId)) {
+        return res.status(400).json({ error: 'notebookId inválido' });
+    }
+
     console.log(`[AI Chat] Consultando Notebook: ${notebookId} | Query: ${message.substring(0, 50)}...`);
 
-    const pythonProcess = spawn('python', [proxyPath, notebookId, message], {
+    const pythonProcess = spawn(config.pythonPath || 'python', [config.nlmProxyPath, notebookId, message], {
         env: { ...process.env, PYTHONIOENCODING: 'utf-8' }
     });
 
@@ -246,11 +261,45 @@ app.post('/api/leads', express.json(), async (req, res) => {
     }
 });
 
+// Sitemap dinâmico: gerado das rotas reais + artigos publicados, com SITE_URL.
+// (Substitui o sitemap.xml estático que listava /logistica e /blog, rotas mortas.)
+app.get('/sitemap.xml', (req, res) => {
+    const staticRoutes = [
+        { loc: '/', changefreq: 'weekly', priority: '1.0' },
+        { loc: '/planos', changefreq: 'monthly', priority: '0.9' },
+        { loc: '/sobre', changefreq: 'monthly', priority: '0.7' },
+        { loc: '/artigos', changefreq: 'weekly', priority: '0.8' },
+        { loc: '/ferramentas', changefreq: 'monthly', priority: '0.6' },
+    ];
+    db.all(`SELECT slug, COALESCE(updated_at, published_at) AS lastmod FROM articles WHERE is_published = 1`, [], (err, rows) => {
+        const articles = (err || !rows) ? [] : rows;
+        const urls = [
+            ...staticRoutes.map((r) =>
+                `  <url>\n    <loc>${config.siteUrl}${r.loc}</loc>\n    <changefreq>${r.changefreq}</changefreq>\n    <priority>${r.priority}</priority>\n  </url>`
+            ),
+            ...articles.map((a) => {
+                const lastmod = a.lastmod ? `\n    <lastmod>${String(a.lastmod).substring(0, 10)}</lastmod>` : '';
+                return `  <url>\n    <loc>${config.siteUrl}/blog/${a.slug}</loc>${lastmod}\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+            }),
+        ];
+        res.type('application/xml').send(
+            `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`
+        );
+    });
+});
+
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));
 
+// SPA fallback (BrowserRouter): qualquer rota não-API serve o index.html.
+// Rotas /api desconhecidas retornam 404 JSON em vez de HTML.
 app.use((req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'Rota não encontrada' });
+    }
+    // root + caminho relativo: evita que o sendFile negue caminhos absolutos
+    // que contenham diretórios-dot (ex.: ".gemini") como se fossem dotfiles.
+    res.sendFile('index.html', { root: distPath });
 });
 
 // Inicialização Final do Servidor

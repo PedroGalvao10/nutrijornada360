@@ -8,6 +8,7 @@ import express from 'express';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import db from './db.js';
+import config from './config.js';
 import { generateContractHTML } from './contract-template.js';
 import { sendNewBookingNotification, sendPaymentConfirmation } from './mail-service.js';
 
@@ -296,8 +297,7 @@ router.get('/contract-pdf/:token', async (req, res) => {
         const token = req.cookies?.admin_token;
         if (token) {
             try {
-                const JWT_SECRET = process.env.JWT_SECRET || 'a_very_secret_key_123';
-                const decoded = jwt.verify(token, JWT_SECRET);
+                const decoded = jwt.verify(token, config.jwtSecret);
                 if (decoded && decoded.role === 'admin') {
                     isAdmin = true;
                 }

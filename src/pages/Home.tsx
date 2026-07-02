@@ -12,7 +12,6 @@ import { ContainerScroll } from '../components/ui/container-scroll-animation';
 import { TextRotate } from '../components/ui/TextRotate';
 import ArticlesSection from '../components/ArticlesSection';
 import { MagneticButton } from '../components/ui/MagneticButton';
-import { ScrollExpandMedia } from '../components/ui/ScrollExpandMedia';
 import { CinematicHero } from '../components/ui/cinematic-landing-hero';
 import SplineSafe from '../components/ui/SplineSafe';
 import { MissionSection } from '../components/sections/MissionSection';

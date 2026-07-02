@@ -15,7 +15,6 @@ export function Layout() {
   const location = useLocation();
   const { openBooking } = useBooking();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [hasPortalCompleted, setHasPortalCompleted] = useState(false);
   const isNavbarVisible = true;
 
   // STEP: Barra de progresso lê progressRef do provider — zero re-render do Layout.

@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { useDynamicShadow } from '../hooks/useDynamicShadow';
 import { useTilt } from '../hooks/useTilt';
-import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useBooking } from '../context/BookingContext';
@@ -20,11 +19,8 @@ export default function Logistica() {
 
   return (
     <main className="w-full pt-24 md:pt-32 bg-background dark:bg-stone-950 transition-colors duration-500">
-      <SEO 
-        title="Logística e Agendamento | Mariana Bermudes"
-        description="Entenda como funcionam as consultas online e presenciais com Mariana Bermudes. Passo a passo do agendamento à consulta."
-      />
-      
+      {/* Nota: sem <SEO> aqui — este componente é renderizado como seção dentro
+          da Home, e um segundo <SEO> competia com o da própria Home no Helmet. */}
       {/* Header Section */}
       <StaggerReveal>
         <header className="mb-20 text-center max-w-3xl mx-auto">

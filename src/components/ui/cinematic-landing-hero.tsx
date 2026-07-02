@@ -235,8 +235,6 @@ export function CinematicHero({
 
   // 2. Cinematic Scroll Timeline — ORIGINAL logic, scoped to containerRef
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-
     const ctx = gsap.context(() => {
       gsap.set(".text-track", { autoAlpha: 0, y: 60, scale: 0.85, filter: "blur(20px)", rotationX: -20 });
       gsap.set(".text-days", { autoAlpha: 1, clipPath: "inset(0 100% 0 0)" });
