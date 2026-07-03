@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import type { Article } from '../article_types';
-import { useDynamicShadow } from '../hooks/useDynamicShadow';
-import { TypewriterText } from '../components/TypewriterText';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import SEO from '../components/SEO';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import ArticleCard from '../components/ui/ArticleCard';
-import { HeroAnimatedImages } from '../components/ui/HeroAnimatedImages';
 import { EbookCard } from '../components/ebooks/EbookCard';
 import { EbookLeadModal } from '../components/ebooks/EbookLeadModal';
 import { EBOOKS, EMPTY_LEAD_FORM, type Ebook } from '../components/ebooks/ebooks-data';
 
+// ============================================================
+// Artigos — página de publicações na direção "Editorial Orgânico".
+// A lógica de leads/e-books/newsletter permanece intacta; apenas
+// a apresentação segue o sistema (eyebrow ouro, display Lora,
+// faixas creme-2 e verde-profundo).
+// ============================================================
+
 export default function Artigos() {
   const [posts, setPosts] = useState<Article[]>([]);
-
-  useDynamicShadow();
 
   // Busca os posts dinâmicos do banco
   useEffect(() => {
@@ -41,15 +43,15 @@ export default function Artigos() {
   const handleGoalToggle = (goal: string) => {
     setFormData(prev => ({
       ...prev,
-      goals: prev.goals.includes(goal) 
+      goals: prev.goals.includes(goal)
         ? prev.goals.filter(g => g !== goal)
         : [...prev.goals, goal]
     }));
   };
 
-  const isValidForm = formData.name.trim() !== '' && 
-                      formData.email.trim() !== '' && 
-                      formData.goals.length > 0 && 
+  const isValidForm = formData.name.trim() !== '' &&
+                      formData.email.trim() !== '' &&
+                      formData.goals.length > 0 &&
                       formData.consentMarketing;
 
   const [newsletterEmail, setNewsletterEmail] = useState("");
@@ -123,17 +125,17 @@ export default function Artigos() {
       };
 
       await sendLeadData(payload);
-      
+
       localStorage.setItem('ebook_user_email', formData.email);
       setSuccessMessage("Cadastro realizado com sucesso! Seu download começará em instantes.");
-      
+
       setTimeout(() => {
         if (selectedEbook) triggerDownload(selectedEbook);
         setTimeout(() => {
             setIsModalOpen(false);
             setSuccessMessage("");
             setFormData(EMPTY_LEAD_FORM);
-        }, 1500); 
+        }, 1500);
       }, 1000);
 
     } catch (err) {
@@ -166,131 +168,137 @@ export default function Artigos() {
   };
 
   return (
-    <div className="animate-fade-in bg-background/50 dark:bg-stone-950/50 min-h-screen relative pt-24 md:pt-32">
-
-      <SEO 
+    <div className="relative bg-background dark:bg-stone-950 min-h-screen overflow-x-hidden transition-colors duration-500">
+      <SEO
         title="Blog e Conteúdos | Mariana Bermudes Nutrição"
-        description="Acesse artigos científicos, guias práticos e e-books gratuitos sobre nutrição comportamental, emagrecimento e saúde integral."
+        description="Artigos, guias práticos e e-books gratuitos sobre nutrição comportamental, emagrecimento e saúde integral."
       />
-      
-      {/* ═══ Hero Section Artigos ═══ */}
-      <section id="video-artigos-container" className="relative min-h-[60vh] md:h-[75vh] w-full overflow-hidden flex items-center border-b border-outline/10 bg-background/30 dark:bg-stone-950/30 backdrop-blur-sm">
-        {/* Subtle Gradient Overlay for legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 dark:via-stone-950/40 to-background dark:to-stone-950 z-10 pointer-events-none"></div>
-        
-        <div className="w-full px-6 md:px-12 relative z-20 mx-auto max-w-7xl">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <StaggerReveal className="md:py-12">
-                <StaggerItem>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8 border border-primary/30 dark:border-emerald-500/30 text-primary dark:text-emerald-400 bg-primary/5 dark:bg-emerald-500/5 backdrop-blur-md">
-                    <span className="material-symbols-outlined text-sm">menu_book</span>
-                    Publicações & Ciência
-                  </div>
-                </StaggerItem>
-                
-                <StaggerItem>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-[1.1] font-headline text-on-surface dark:text-stone-100 tracking-tight">
-                    Nutrição com Ciência<br /> 
-                    <span className="relative inline-block">
-                      <span className="relative z-10">e </span>
-                      <span className="text-primary dark:text-emerald-400 italic font-serif">Consciência</span>
-                      <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/10 dark:bg-emerald-500/10 -z-10 rotate-1"></span>
-                    </span>
-                  </h1>
-                </StaggerItem>
-                
-                <StaggerItem>
-                  <div className="text-lg md:text-2xl leading-relaxed font-body font-medium text-on-surface-variant dark:text-stone-300 max-w-xl mx-auto lg:mx-0">
-                    <TypewriterText text="Explore conteúdos baseados em evidências, reflexões sobre comportamento alimentar e estratégias para uma vida equilibrada." speed={20} delay={600} />
-                  </div>
-                </StaggerItem>
-              </StaggerReveal>
-            </div>
-            
-            <div className="w-full lg:w-1/2 max-w-md mx-auto lg:max-w-full flex justify-center lg:justify-end mt-8 lg:mt-0">
-              <div className="w-full h-full max-w-[500px]">
-                <HeroAnimatedImages />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Grid de Artigos */}
-      <section className="py-20 px-6 w-full md:px-12 relative z-10">
-        <StaggerReveal 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          staggerInterval={0.15}
-        >
-          {posts.map(post => (
-            <StaggerItem key={post.id}>
-              <ArticleCard post={post} />
-            </StaggerItem>
-          ))}
+      <div aria-hidden="true" className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
+
+      {/* Cabeçalho editorial */}
+      <section className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-12 md:pb-16">
+        <StaggerReveal className="max-w-3xl">
+          <StaggerItem>
+            <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
+              <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+              Publicações
+            </p>
+          </StaggerItem>
+          <StaggerItem>
+            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
+              Nutrição com ciência,{' '}
+              <em className="italic text-primary dark:text-emerald-400">escrita para gente de verdade.</em>
+            </h1>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">
+              Artigos baseados em evidências, reflexões sobre comportamento
+              alimentar e materiais gratuitos para o dia a dia. Sem promessa
+              milagrosa — só o que a ciência sustenta.
+            </p>
+          </StaggerItem>
         </StaggerReveal>
       </section>
 
-
-
-      {/* Seção de E-books Gratuitos */}
-      <section className="py-20 px-6 bg-surface-variant/40 dark:bg-stone-900/40 relative z-10 backdrop-blur-sm">
-        <div className="w-full px-6 md:px-12">
-          <StaggerReveal className="text-center mb-12">
-             <StaggerItem>
-               <h2 className="text-3xl md:text-5xl font-headline font-bold text-on-surface dark:text-stone-100 mb-4">E-books Gratuitos</h2>
-             </StaggerItem>
-             <StaggerItem>
-               <p className="text-on-surface-variant dark:text-stone-300 md:text-lg max-w-2xl mx-auto">Baixe nossos materiais exclusivos e aprofunde seus conhecimentos em nutrição prática e bem-estar.</p>
-             </StaggerItem>
-          </StaggerReveal>
-          
-          <StaggerReveal 
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-            staggerInterval={0.2}
+      {/* Grade de artigos */}
+      <section aria-label="Artigos" className="max-w-[1280px] mx-auto px-6 md:px-12 pb-20 md:pb-28">
+        {posts.length > 0 ? (
+          <StaggerReveal
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+            staggerInterval={0.1}
           >
-             {ebooks.map(ebook => (
-               <StaggerItem key={ebook.id}>
-                 <EbookCard ebook={ebook} onDownload={handleOpenModal} />
-               </StaggerItem>
-             ))}
+            {posts.map(post => (
+              <StaggerItem key={post.id} className="h-full">
+                <ArticleCard post={post} />
+              </StaggerItem>
+            ))}
+          </StaggerReveal>
+        ) : (
+          <p className="text-on-surface-variant dark:text-stone-400 font-light">
+            Os artigos estão a caminho. Enquanto isso, aproveite os e-books abaixo.
+          </p>
+        )}
+      </section>
+
+      {/* E-books gratuitos — faixa creme-2 */}
+      <section aria-labelledby="ebooks" className="bg-creme-2 dark:bg-stone-900/60 transition-colors duration-500">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-12 py-20 md:py-28">
+          <StaggerReveal className="max-w-2xl mb-12">
+            <StaggerItem>
+              <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
+                <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+                Materiais gratuitos
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <h2 id="ebooks" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100 mb-4">
+                E-books para <em className="italic text-primary dark:text-emerald-400">começar hoje.</em>
+              </h2>
+            </StaggerItem>
+            <StaggerItem>
+              <p className="text-on-surface-variant dark:text-stone-400 font-light text-lg leading-relaxed">
+                Guias práticos de nutrição e bem-estar. Baixe, leia no seu ritmo e
+                aplique o que fizer sentido para a sua rotina.
+              </p>
+            </StaggerItem>
+          </StaggerReveal>
+
+          <StaggerReveal
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl"
+            staggerInterval={0.15}
+          >
+            {ebooks.map(ebook => (
+              <StaggerItem key={ebook.id} className="h-full">
+                <EbookCard ebook={ebook} onDownload={handleOpenModal} />
+              </StaggerItem>
+            ))}
           </StaggerReveal>
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="bg-surface-container/60 dark:bg-stone-900/60 backdrop-blur-md py-20 px-6 relative overflow-hidden z-10">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 dark:via-emerald-500/20 to-transparent"></div>
-        <StaggerReveal className="max-w-4xl mx-auto text-center">
+      {/* Newsletter — faixa verde-profundo */}
+      <section aria-labelledby="newsletter" className="bg-verde-profundo dark:bg-emerald-950 relative overflow-hidden">
+        <div aria-hidden="true" className="absolute -bottom-32 -right-24 w-[420px] h-[420px] rounded-full bg-primary/25 blur-[100px] pointer-events-none" />
+        <StaggerReveal className="relative max-w-[760px] mx-auto px-6 md:px-12 py-20 md:py-28 text-center">
           <StaggerItem>
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-on-surface dark:text-stone-100 mb-6">Assine a nossa Newsletter</h2>
+            <p className="text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-ouro-suave mb-5">Newsletter</p>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-on-surface-variant dark:text-stone-300 mb-10 text-lg md:text-xl max-w-2xl mx-auto">Receba novos artigos, materiais de nutrição comportamental e atualizações diretamente no seu e-mail.</p>
+            <h2 id="newsletter" className="font-headline font-medium text-3xl md:text-[2.6rem] leading-[1.12] text-background mb-5">
+              Um e-mail por vez, <em className="italic text-ouro-suave">sempre com conteúdo útil.</em>
+            </h2>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="text-background/75 font-light text-lg leading-relaxed max-w-[46ch] mx-auto mb-9">
+              Novos artigos e materiais de nutrição comportamental direto na sua
+              caixa de entrada. Sem spam, cancele quando quiser.
+            </p>
           </StaggerItem>
           <StaggerItem>
             <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-xl mx-auto" onSubmit={handleNewsletterSubmit}>
               <label htmlFor="newsletter-email" className="sr-only">Seu endereço de e-mail</label>
-              <input 
-                type="email" 
-                id="newsletter-email" 
+              <input
+                type="email"
+                id="newsletter-email"
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Digite seu melhor e-mail" 
-                className="flex-1 bg-surface border-2 border-outline-variant/60 px-6 py-4 rounded-full text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base hover:border-outline shadow-sm dark:bg-stone-950 dark:border-stone-700 dark:text-stone-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-400 dark:hover:border-stone-500" 
-                required 
+                placeholder="Seu melhor e-mail"
+                className="flex-1 bg-background/95 border border-transparent px-6 py-4 rounded-full text-on-background placeholder:text-on-surface-variant/70 focus:outline-none focus:border-ouro-suave focus:ring-1 focus:ring-ouro-suave transition-all text-base shadow-float-1"
+                required
                 disabled={newsletterSubmitting}
               />
               <MagneticButton as="div">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={newsletterSubmitting}
-                  className="bg-primary text-on-primary dark:bg-emerald-500 dark:text-stone-950 font-bold px-8 py-4 rounded-full hover:bg-opacity-90 dark:hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 hover:scale-105 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 w-full"
+                  data-cursor="Assinar"
+                  className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-background text-verde-profundo px-8 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50"
                 >
                   {newsletterSubmitting ? (
-                     <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                    <span className="material-symbols-outlined animate-spin text-lg" aria-label="Enviando">progress_activity</span>
                   ) : (
-                     <>Inscrever-se <span className="material-symbols-outlined text-lg">rocket_launch</span></>
+                    <>Assinar <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_forward</span></>
                   )}
                 </button>
               </MagneticButton>
