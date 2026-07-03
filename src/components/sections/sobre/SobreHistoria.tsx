@@ -1,4 +1,6 @@
 import { StaggerReveal, StaggerItem } from '../../ui/StaggerReveal';
+import { ClipPathImage } from '../../ui/ClipPathImage';
+import { PointerHighlight } from '../../ui/PointerHighlight';
 import aprovadaCuscs from '../../../assets/aprovada-cuscs.jpg';
 
 // ============================================================
@@ -33,14 +35,12 @@ export function SobreHistoria() {
         <div className="max-w-[1280px] mx-auto px-6 md:px-12 py-20 md:py-28 grid md:grid-cols-[.9fr_1.1fr] gap-12 md:gap-[5vw] items-center">
           <StaggerReveal className="relative max-w-[420px] w-full mx-auto md:mx-0">
             <StaggerItem>
-              <div className="aspect-[4/5] rounded-[32px] overflow-hidden shadow-float-2 bg-verde-nevoa dark:bg-stone-900">
-                <img
-                  src={aprovadaCuscs}
-                  alt="Mariana comemorando a aprovação na faculdade de Nutrição"
-                  className="w-full h-full object-cover object-top"
-                  loading="lazy"
-                />
-              </div>
+              <ClipPathImage
+                src={aprovadaCuscs}
+                alt="Mariana comemorando a aprovação na faculdade de Nutrição"
+                objectPosition="top"
+                className="aspect-[4/5] bg-verde-nevoa dark:bg-stone-900"
+              />
             </StaggerItem>
           </StaggerReveal>
 
@@ -59,16 +59,19 @@ export function SobreHistoria() {
             <StaggerItem>
               <p className="text-on-surface-variant dark:text-stone-400 leading-relaxed mb-5">
                 Minha história começa com o cheiro de comida de verdade vindo da
-                cozinha. Desde a infância, aprendi que se alimentar é um ato de
-                carinho e de conexão — com as pessoas e com a natureza.
+                cozinha. Desde a infância, aprendi que se alimentar é{' '}
+                <PointerHighlight>um ato de carinho e de conexão</PointerHighlight>{' '}
+                — com as pessoas e com a natureza.
               </p>
             </StaggerItem>
             <StaggerItem>
               <p className="text-on-surface-variant dark:text-stone-400 leading-relaxed">
                 Também enfrentei e superei transtornos alimentares. Essa vivência me
                 mostrou o lado sensível da nutrição e moldou a forma como atendo
-                hoje: com empatia, sem julgamento e com o compromisso de ajudar cada
-                paciente a encontrar paz com o próprio prato.
+                hoje:{' '}
+                <PointerHighlight>com empatia, sem julgamento</PointerHighlight>{' '}
+                e com o compromisso de ajudar cada paciente a encontrar paz com o
+                próprio prato.
               </p>
             </StaggerItem>
           </StaggerReveal>
