@@ -6,6 +6,7 @@ import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { SimuladorResultados } from '../components/SimuladorResultados';
 import SEO from '../components/SEO';
+import { FontesDeDados } from '../components/sections/ferramentas/FontesDeDados';
 
 // ============================================================
 // Ferramentas — página na direção "Editorial Orgânico".
@@ -84,6 +85,9 @@ const Ferramentas: React.FC = () => {
                         <SimuladorResultados />
                     </StaggerItem>
                 </StaggerReveal>
+
+                {/* Fontes de dados científicas */}
+                <FontesDeDados />
 
                 {/* CTA para os planos */}
                 <StaggerReveal className="relative overflow-hidden rounded-[32px] bg-verde-profundo dark:bg-emerald-950 px-8 md:px-16 py-14 md:py-20 text-center shadow-float-2 mt-20 md:mt-28">
