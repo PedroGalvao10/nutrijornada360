@@ -1,64 +1,113 @@
-import { StaggerReveal, StaggerItem } from '../../ui/StaggerReveal';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import marianaProfile from '../../../assets/mariana-profile.webp';
 
 // ============================================================
-// SobreHero — dobra de abertura da página Sobre na direção
-// "Editorial Orgânico": display Lora com itálico verde, filete
-// dourado e vídeo da Mariana em cartão com selo glass.
+// SobreHero — dobra de abertura na direção "Editorial Orgânico",
+// reconstruída sobre o padrão "Portfolio Hero": nome gigante em
+// Lora com a foto da Mariana sobreposta ao centro. Texto entra
+// com blur letra-a-letra (IntersectionObserver, sem libs).
 // ============================================================
+
+interface BlurTextProps {
+  text: string;
+  delay?: number;
+  animateBy?: 'words' | 'letters';
+  className?: string;
+  as?: 'span' | 'p';
+}
+
+// Revela cada segmento saindo de blur+deslocamento quando entra em viewport.
+const BlurText: React.FC<BlurTextProps> = ({ text, delay = 60, animateBy = 'letters', className = '', as = 'span' }) => {
+  const [inView, setInView] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && setInView(true),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const segments = useMemo(
+    () => (animateBy === 'words' ? text.split(' ') : text.split('')),
+    [text, animateBy]
+  );
+
+  const Tag = as as React.ElementType;
+  return (
+    <Tag ref={ref} className={`inline-flex flex-wrap ${className}`}>
+      {segments.map((segment, i) => (
+        <span
+          key={i}
+          style={{
+            display: 'inline-block',
+            filter: inView ? 'blur(0px)' : 'blur(10px)',
+            opacity: inView ? 1 : 0,
+            transform: inView ? 'translateY(0)' : 'translateY(-20px)',
+            transition: `all 0.55s cubic-bezier(0.22,1,0.36,1) ${i * delay}ms`,
+          }}
+        >
+          {segment === ' ' ? ' ' : segment}
+          {animateBy === 'words' && i < segments.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </Tag>
+  );
+};
+
+const nameClasses =
+  'font-headline font-medium text-primary dark:text-emerald-400 ' +
+  'text-[3.6rem] sm:text-[6rem] md:text-[8rem] lg:text-[10.5rem] ' +
+  'leading-[0.78] tracking-[-0.04em] uppercase justify-center whitespace-nowrap';
 
 export function SobreHero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden min-h-[92vh] flex flex-col">
+      {/* Glow de fundo on-brand (único elemento animado leve da dobra) */}
       <div aria-hidden="true" className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
+      <div aria-hidden="true" className="absolute -bottom-52 -left-40 w-[520px] h-[520px] rounded-full bg-verde-nevoa/40 dark:bg-emerald-900/10 blur-[130px] pointer-events-none" />
 
-      <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-16 md:pb-24 grid md:grid-cols-[1.1fr_.9fr] gap-12 md:gap-[5vw] items-center">
-        <StaggerReveal>
-          <StaggerItem>
-            <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
-              <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-              Sobre Mariana
-            </p>
-          </StaggerItem>
-          <StaggerItem>
-            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
-              Por trás de cada plano alimentar,{' '}
-              <em className="italic text-primary dark:text-emerald-400">uma história com a comida.</em>
-            </h1>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[50ch]">
-              Sou a Mariana Bermudes, nutricionista formada pelo Centro Universitário
-              São Camilo. Trabalho com nutrição comportamental porque aprendi, na
-              prática, que comer bem passa menos por força de vontade e mais por um
-              plano que respeita a sua rotina.
-            </p>
-          </StaggerItem>
-        </StaggerReveal>
+      {/* Eyebrow — mantém a assinatura da página */}
+      <div className="relative z-20 max-w-[1280px] w-full mx-auto px-6 md:px-12 pt-28 md:pt-36">
+        <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave">
+          <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+          Sobre Mariana
+        </p>
+      </div>
 
-        <StaggerReveal className="relative max-w-[420px] w-full mx-auto md:mx-0 md:justify-self-end" delay={0.2}>
-          <StaggerItem>
-            <div className="relative">
-              <div className="aspect-[4/5] rounded-[32px] overflow-hidden shadow-float-2 bg-verde-nevoa dark:bg-stone-900 flex items-center justify-center">
-                {/* Fundo espelhado desfocado preenche as bordas do vídeo em retrato */}
-                <video
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover scale-125 blur-md opacity-85"
-                  src="/videos/mariana_trabalhando_cropped.mp4"
-                  autoPlay muted loop playsInline
-                />
-                <video
-                  className="relative z-10 w-full h-full object-contain"
-                  src="/videos/mariana_trabalhando_cropped.mp4"
-                  autoPlay muted loop playsInline
-                />
-              </div>
-              <div className="absolute -bottom-6 -left-4 md:-left-8 bg-white/75 dark:bg-stone-900/80 backdrop-blur-xl border border-white/80 dark:border-stone-700 rounded-[20px] px-6 py-4 shadow-float-1 z-20">
-                <p className="font-headline font-medium text-on-background dark:text-stone-100">No consultório</p>
-                <p className="text-xs text-on-surface-variant dark:text-stone-400">Atendimento presencial e online</p>
-              </div>
+      {/* Nome gigante com foto sobreposta ao centro */}
+      <div className="relative flex-1 flex items-center justify-center px-4">
+        <div className="relative text-center">
+          <BlurText text="Mariana" animateBy="letters" delay={90} className={nameClasses} />
+          <div aria-hidden="true" className="mx-auto my-3 md:my-5 h-px w-24 md:w-40 bg-ouro-suave/70" />
+          <BlurText text="Bermudes" animateBy="letters" delay={90} className={nameClasses} />
+
+          {/* Foto da Mariana — retrato sobreposto ao centro do nome */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className="w-[92px] h-[150px] sm:w-[120px] sm:h-[195px] md:w-[150px] md:h-[240px] lg:w-[180px] lg:h-[290px] rounded-full overflow-hidden shadow-float-2 ring-1 ring-white/60 dark:ring-stone-700 transition-transform duration-500 hover:scale-105">
+              <img
+                src={marianaProfile}
+                alt="Mariana Bermudes, nutricionista"
+                className="w-full h-full object-cover"
+              />
             </div>
-          </StaggerItem>
-        </StaggerReveal>
+          </div>
+        </div>
+      </div>
+
+      {/* Tagline / bio curta */}
+      <div className="relative z-20 pb-20 md:pb-28 px-6">
+        <BlurText
+          as="p"
+          animateBy="words"
+          delay={40}
+          text="Nutricionista formada pelo São Camilo. Nutrição comportamental — porque comer bem passa menos por força de vontade e mais por um plano que respeita a sua rotina."
+          className="max-w-[62ch] mx-auto text-center text-base md:text-lg font-light text-on-surface-variant dark:text-stone-400 leading-relaxed"
+        />
       </div>
     </section>
   );
