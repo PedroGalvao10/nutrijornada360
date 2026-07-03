@@ -1,0 +1,72 @@
+<!-- @dsCard group="Mockups" -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mockup — Home Hero (Editorial Orgânico)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Raleway:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --creme:#faf6f0; --creme-2:#f3ece1; --areia:#e4e0d8; --verde:#4a7c59;
+    --verde-profundo:#1e3a2a; --verde-nevoa:#dce8df; --ouro:#a08339; --ouro-suave:#c9b073;
+    --tinta:#26302b; --tinta-suave:#5c655f;
+    --float-1:0 12px 32px rgba(38,48,43,.07); --float-2:0 28px 64px rgba(38,48,43,.12);
+  }
+  * { margin:0; box-sizing:border-box; }
+  body { font-family:'Raleway',sans-serif; background:var(--creme); color:var(--tinta); }
+  .nav { display:flex; justify-content:space-between; align-items:center; padding:28px 6vw; }
+  .logo { font-family:'Lora',serif; font-weight:600; font-size:1.1rem; letter-spacing:.02em; }
+  .nav ul { display:flex; gap:32px; list-style:none; font-size:.82rem; font-weight:500; color:var(--tinta-suave); }
+  .nav .cta { background:var(--verde-profundo); color:var(--creme); padding:12px 24px; border-radius:999px; font-size:.82rem; font-weight:600; }
+  .hero { display:grid; grid-template-columns:1.1fr .9fr; gap:5vw; align-items:center; padding:6vh 6vw 10vh; min-height:82vh; }
+  .eyebrow { font-size:.68rem; letter-spacing:.26em; text-transform:uppercase; font-weight:800; color:var(--ouro); display:flex; align-items:center; gap:14px; }
+  .eyebrow::before { content:""; width:40px; height:1px; background:var(--ouro-suave); }
+  h1 { font-family:'Lora',serif; font-weight:500; font-size:clamp(2.6rem,5.2vw,4.4rem); line-height:1.06; letter-spacing:-.02em; margin:22px 0; }
+  h1 em { font-style:italic; color:var(--verde); }
+  .lead { font-size:1.1rem; font-weight:300; color:var(--tinta-suave); max-width:46ch; line-height:1.7; }
+  .ctas { display:flex; gap:16px; margin-top:36px; align-items:center; }
+  .btn-p { background:var(--verde-profundo); color:var(--creme); padding:18px 36px; border-radius:999px; font-weight:600; font-size:.92rem; box-shadow:var(--float-1); border:0; }
+  .btn-g { background:none; border:0; color:var(--tinta); font-weight:600; font-size:.92rem; border-bottom:1px solid var(--ouro-suave); padding-bottom:4px; }
+  .prova { display:flex; gap:36px; margin-top:56px; padding-top:28px; border-top:1px solid var(--areia); }
+  .prova div p:first-child { font-family:'Lora',serif; font-size:1.6rem; font-weight:500; }
+  .prova div p:last-child { font-size:.72rem; color:var(--tinta-suave); text-transform:uppercase; letter-spacing:.12em; }
+  .foto { position:relative; }
+  .foto .quadro { aspect-ratio:4/5; border-radius:32px; background:linear-gradient(150deg,var(--verde-nevoa),var(--creme-2)); box-shadow:var(--float-2); display:flex; align-items:center; justify-content:center; color:var(--tinta-suave); font-size:.8rem; overflow:hidden; }
+  .foto .selo { position:absolute; bottom:-22px; left:-22px; background:rgba(255,255,255,.72); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.8); border-radius:20px; padding:18px 22px; box-shadow:var(--float-1); }
+  .foto .selo b { font-family:'Lora',serif; font-weight:500; }
+  .foto .selo p { font-size:.72rem; color:var(--tinta-suave); }
+  .marquee { background:var(--verde-profundo); color:rgba(250,246,240,.85); font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; padding:16px 0; text-align:center; }
+  @media (max-width:900px){ .hero{grid-template-columns:1fr} .foto{order:-1} }
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <span class="logo">Mariana Bermudes</span>
+    <ul><li>Método</li><li>Planos</li><li>Sobre</li><li>Artigos</li><li>Ferramentas</li></ul>
+    <span class="cta">Agendar consulta</span>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Nutrição comportamental · CRN-3</p>
+      <h1>Você não precisa de mais uma dieta.<br><em>Precisa de um plano que caiba na sua vida.</em></h1>
+      <p class="lead">Acompanhamento 360º que olha para o seu corpo, a sua rotina e a sua relação com a comida — sem terrorismo nutricional, sem cardápio de gaveta.</p>
+      <div class="ctas">
+        <button class="btn-p">Começar minha jornada →</button>
+        <button class="btn-g">Ver como funciona</button>
+      </div>
+      <div class="prova">
+        <div><p>360º</p><p>corpo · mente · rotina</p></div>
+        <div><p>1:1</p><p>curadoria humana</p></div>
+        <div><p>0</p><p>dietas de gaveta</p></div>
+      </div>
+    </div>
+    <div class="foto">
+      <div class="quadro">[ foto da Mariana — mariana-profile.webp ]</div>
+      <div class="selo"><b>Mariana Bermudes</b><p>Nutricionista · São Paulo & online</p></div>
+    </div>
+  </section>
+
+  <div class="marquee">saúde integral · emagrecimento consciente · comportamento alimentar · nutrição de precisão</div>
+</body>
+</html>

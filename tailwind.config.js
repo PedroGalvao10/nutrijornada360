@@ -18,10 +18,18 @@ export default {
         "secondary-container": "#f0e8db",
         "on-secondary-container": "#5e5548",
 
-        "tertiary": "#EA8C5F",
+        /* Terciário recalibrado: laranja -> ouro editorial (direção Editorial Orgânico) */
+        "tertiary": "#a08339",
         "on-tertiary": "#ffffff",
-        "tertiary-container": "#fce5da",
-        "on-tertiary-container": "#552005",
+        "tertiary-container": "#f0e5cb",
+        "on-tertiary-container": "#4a3c15",
+
+        /* Tokens da direção Editorial Orgânico */
+        "verde-profundo": "#1e3a2a",
+        "verde-nevoa": "#dce8df",
+        "ouro": "#a08339",
+        "ouro-suave": "#c9b073",
+        "creme-2": "#f3ece1",
 
         "background": "#faf6f0",
         "on-background": "#2e3230",
@@ -65,6 +73,10 @@ export default {
         "headline": ["Lora", "serif"],
         "body": ["Raleway", "sans-serif"],
         "label": ["Raleway", "sans-serif"]
+      },
+      boxShadow: {
+        "float-1": "0 12px 32px rgba(38,48,43,.07)",
+        "float-2": "0 28px 64px rgba(38,48,43,.12)",
       },
       borderRadius: {
         "blob": "30% 70% 70% 30% / 30% 30% 70% 70%",

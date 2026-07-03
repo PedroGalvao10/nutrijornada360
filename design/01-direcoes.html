@@ -1,0 +1,62 @@
+<!-- @dsCard group="Direções" -->
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>NutriJornada 360º — Direções Visuais</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Raleway:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --verde:#4a7c59; --verde-escuro:#1e3a2a; --creme:#faf6f0; --tinta:#2e3230; --ouro:#705c30; --areia:#e4e0d8; }
+  * { margin:0; box-sizing:border-box; }
+  body { font-family:'Raleway',sans-serif; background:var(--creme); color:var(--tinta); padding:64px 8vw; }
+  h1 { font-family:'Lora',serif; font-size:clamp(2rem,4vw,3.2rem); font-weight:600; margin-bottom:8px; }
+  .sub { color:#6b6358; max-width:640px; margin-bottom:48px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:32px; }
+  .card { border-radius:24px; overflow:hidden; box-shadow:0 24px 60px rgba(46,50,48,.08); background:#fff; display:flex; flex-direction:column; }
+  .swatch { height:180px; display:flex; align-items:flex-end; padding:24px; }
+  .card h2 { font-family:'Lora',serif; font-size:1.4rem; }
+  .card .body { padding:24px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .tag { font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; font-weight:800; }
+  .escolhida { outline:3px solid var(--verde); outline-offset:4px; }
+  .a .swatch { background:linear-gradient(160deg,#faf6f0 55%,#e4e0d8); }
+  .a .swatch h2 { color:var(--tinta); }
+  .b .swatch { background:linear-gradient(160deg,#1e3a2a,#4a7c59); }
+  .b .swatch h2 { color:#faf6f0; }
+  .c .swatch { background:linear-gradient(160deg,#0a1d14,#2e3230); }
+  .c .swatch h2 { color:#faf6f0; }
+  .dfii { font-size:.75rem; color:#6b6358; border-top:1px solid var(--areia); padding-top:12px; margin-top:auto; }
+  em.serif { font-family:'Lora',serif; }
+</style>
+</head>
+<body>
+  <p class="tag" style="color:var(--verde)">NutriJornada 360º · Mariana Bermudes</p>
+  <h1>Três direções, uma escolha</h1>
+  <p class="sub">Brainstorm avaliado com DFII (impacto estético, fit de contexto, viabilidade, performance, consistência). A direção A foi a escolhida para a reconstrução.</p>
+  <div class="grid">
+    <div class="card a escolhida">
+      <div class="swatch"><h2>A · Editorial Orgânico ✓</h2></div>
+      <div class="body">
+        <p class="tag" style="color:var(--ouro)">Escolhida</p>
+        <p>Revista premium de bem-estar. Creme dominante, <em class="serif">Lora display em itálico</em>, linhas douradas finas, whitespace generoso, fotografia com presença. Profundidade e float sutis como tempero.</p>
+        <p class="dfii">DFII 23/25 — fit perfeito com o brandbook (creme + verde + serif), performance excelente, envelhece bem.</p>
+      </div>
+    </div>
+    <div class="card b">
+      <div class="swatch"><h2>B · Clínico Premium</h2></div>
+      <div class="body">
+        <p class="tag" style="color:#6b6358">Alternativa</p>
+        <p>Verde profundo como base, cartões glass, números e dados em destaque ("nutrição de precisão"), microinterações técnicas.</p>
+        <p class="dfii">DFII 19/25 — impacto alto, mas esfria a marca acolhedora e compete com o tom comportamental.</p>
+      </div>
+    </div>
+    <div class="card c">
+      <div class="swatch"><h2>C · Vitalidade Cinematográfica</h2></div>
+      <div class="body">
+        <p class="tag" style="color:#6b6358">Alternativa</p>
+        <p>Evolução do site atual: vídeo fullscreen, WebGL, portais de scroll. Espetáculo em primeiro plano.</p>
+        <p class="dfii">DFII 17/25 — é o que já existe; peso de assets e efeito competem com clareza e conversão.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
