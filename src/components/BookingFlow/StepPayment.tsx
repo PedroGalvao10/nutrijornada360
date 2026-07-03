@@ -56,6 +56,7 @@ interface Props {
   onComplete: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function StepPayment(_props: Props) {
   const { selectedPlan, paymentDeadline, activeBookingToken } = useBooking();
   const [timeLeft, setTimeLeft] = useState('');
