@@ -130,13 +130,23 @@ export default function Planos() {
             return (
               <StaggerItem key={plan.id} className="h-full">
                 <article
-                  className={`relative h-full flex flex-col rounded-[28px] p-8 md:p-9 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 ${
+                  className={`relative h-full flex flex-col rounded-[28px] p-8 md:p-9 backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 ${
                     destaque
-                      ? 'bg-verde-profundo dark:bg-emerald-950 text-background shadow-float-2'
-                      : 'bg-white dark:bg-stone-900 text-on-background dark:text-stone-100 shadow-float-1 hover:shadow-float-2'
+                      ? 'bg-verde-profundo/95 dark:bg-emerald-950/90 text-background shadow-float-2 ring-2 ring-ouro-suave/40'
+                      : 'bg-white/70 dark:bg-stone-900/70 border border-white/60 dark:border-white/10 text-on-background dark:text-stone-100 shadow-float-1 hover:shadow-float-2'
                   }`}
                 >
-                  <div className="flex items-baseline justify-between mb-3">
+                  {destaque && (
+                    <>
+                      {/* Brilho de vidro no topo do cartão-âncora */}
+                      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/15 to-transparent" />
+                      {/* Selo do plano mais escolhido */}
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-ouro-suave text-verde-profundo text-[0.6rem] font-extrabold uppercase tracking-[0.18em] shadow-float-1 whitespace-nowrap">
+                        Mais escolhido
+                      </span>
+                    </>
+                  )}
+                  <div className="relative flex items-baseline justify-between mb-3">
                     <span className={`font-headline italic text-lg ${destaque ? 'text-ouro-suave' : 'text-ouro-suave'}`}>
                       Nº 0{i + 1}
                     </span>
