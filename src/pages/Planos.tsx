@@ -1,221 +1,279 @@
-
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
+import { MagneticButton } from '../components/ui/MagneticButton';
 import SEO from '../components/SEO';
-import { FloatingAsset } from '../components/ui/FloatingAsset';
-import { useBooking } from '../context/BookingContext';
-import { PricingCard } from '../components/ui/animated-glassy-pricing';
-import { motion } from 'framer-motion';
-import { Apple, Zap, Target, Star } from 'lucide-react';
-import { TextEffect, TypewriterTextAnim, TextMarquee, LiquidText } from '../components/ui/text-animations';
+import { useBooking, PLANS } from '../context/BookingContext';
+
+// ============================================================
+// Planos — página de planos na direção "Editorial Orgânico".
+// Cartões brancos com numeração itálica ouro e filete dourado;
+// preços e ids vêm de PLANS (BookingContext) para manter o
+// booking flow como fonte única de verdade.
+// ============================================================
+
+type PlanoDetalhe = {
+  tag: string;
+  duracao: string;
+  destaque?: boolean;
+  inclui: string[];
+};
+
+const DETALHES: Record<string, PlanoDetalhe> = {
+  'avulsa': {
+    tag: 'Início',
+    duracao: 'Sessão única',
+    inclui: [
+      'Avaliação da rotina antes da consulta',
+      'Orientações personalizadas na sessão',
+      'Espaço para dúvidas pontuais',
+    ],
+  },
+  'emagrece-mais': {
+    tag: 'Foco',
+    duracao: '1 mês de acompanhamento',
+    inclui: [
+      'Check-up completo de hábitos',
+      'Plano alimentar com déficit calórico bem calibrado',
+      'Suporte via WhatsApp em horário comercial',
+    ],
+  },
+  'hipertrofia-pro': {
+    tag: 'Performance',
+    duracao: '3 meses de acompanhamento',
+    destaque: true,
+    inclui: [
+      'Protocolo de ganho de massa muscular',
+      'Bioimpedância quinzenal',
+      'Ajuste fino de suplementação',
+      'Revisões de treino junto ao seu educador físico',
+    ],
+  },
+  'transformacao-360': {
+    tag: 'Completo',
+    duracao: '6 meses de acompanhamento',
+    inclui: [
+      'Suporte prioritário via WhatsApp',
+      'Check-up presencial ou online',
+      'Leitura de exames e biofeedback',
+      'Reeducação comportamental com a comida',
+    ],
+  },
+  'casal': {
+    tag: 'Dupla',
+    duracao: 'Acompanhamento conjunto',
+    inclui: [
+      'Cardápio pensado para as compras da casa',
+      'Estratégias para a rotina da família',
+      'Suporte compartilhado via WhatsApp',
+    ],
+  },
+};
+
+const ETAPAS = [
+  {
+    num: 'Nº 01',
+    titulo: 'Você escolhe o plano',
+    texto: 'Preenche um formulário curto de triagem: objetivo, rotina, saúde. Leva menos de cinco minutos.',
+  },
+  {
+    num: 'Nº 02',
+    titulo: 'A Mariana revisa o seu caso',
+    texto: 'Cada pedido passa por curadoria humana. Se o plano escolhido não for o ideal para você, ela sugere outro caminho.',
+  },
+  {
+    num: 'Nº 03',
+    titulo: 'Consulta e acompanhamento',
+    texto: 'Com o agendamento confirmado, começa o acompanhamento de verdade — presencial em São Paulo ou online.',
+  },
+];
 
 export default function Planos() {
   const { openBooking } = useBooking();
-  
+
   return (
-    <div className="min-h-screen pt-24 md:pt-32 pb-24 px-6 flex flex-col items-center bg-background dark:bg-stone-950 text-on-background overflow-x-hidden relative transition-colors duration-500">
-      <SEO 
+    <div className="relative min-h-screen bg-background dark:bg-stone-950 transition-colors duration-500 overflow-x-hidden">
+      <SEO
         title="Planos e Consultorias | Mariana Bermudes Nutrição"
-        description="Conheça nossos planos de acompanhamento nutricional personalizado. Emagrecimento, hipertrofia e bem-estar em São Paulo."
+        description="Planos de acompanhamento nutricional personalizado: consulta avulsa, emagrecimento, hipertrofia e acompanhamento 360º. Presencial em São Paulo ou online."
       />
 
-      {/* Kiwis MONUMENTAIS em cascata - DESIGN DE ALTO IMPACTO */}
-      <FloatingAsset 
-        src="/fruits/Kiwi 1.webp" 
-        className="top-[0%] right-[-15%] md:right-[-10%] w-[700px] md:w-[1100px] z-0 opacity-30 grayscale-[20%]" 
-        depth={0.05} 
-        delay={0.2}
-      />
-      <FloatingAsset 
-        src="/fruits/Kiwi 2.webp" 
-        className="top-[12%] right-[-12%] md:right-[-10%] w-[600px] md:w-[900px] z-30 opacity-95" 
-        depth={0.2} 
-        delay={0.5}
-      />
-      <FloatingAsset 
-        src="/fruits/kiwi 3.webp" 
-        className="top-[35%] right-[-15%] md:right-[-12%] w-[550px] md:w-[850px] z-30" 
-        depth={0.12} 
-        delay={0.8}
-      />
-      <FloatingAsset 
-        src="/fruits/kiwi 4.webp" 
-        className="bottom-[20%] right-[-10%] md:right-[-5%] w-[700px] md:w-[1000px] z-50 drop-shadow-3xl" 
-        depth={0.25} 
-        delay={0.4}
-      />
-      
-      <StaggerReveal className="text-center mb-24 max-w-4xl mx-auto relative z-10">
-        <StaggerItem>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary dark:bg-emerald-500/10 dark:text-emerald-400 font-bold text-[10px] uppercase tracking-widest mb-6 border border-primary/20">
-            <Zap className="w-3 h-3" /> Investimento na sua Saúde
-          </div>
-        </StaggerItem>
-        <StaggerItem>
-          <h1 className="font-headline text-5xl md:text-7xl text-on-surface dark:text-stone-100 font-bold mb-8 leading-[1.1]">
-            <TextEffect text="Escolha o seu caminho para a" preset="slide" /> <br/>
-            <span className="italic text-primary dark:text-emerald-400 bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent"><TextEffect text="transformação." preset="fade" delay={0.4} /></span>
-          </h1>
-        </StaggerItem>
-        <StaggerItem>
-          <p className="text-xl text-on-surface-variant dark:text-stone-400 font-light max-w-2xl mx-auto leading-relaxed h-[80px]">
-            <TypewriterTextAnim text="Transforme sua relação com a comida e potencialize seus resultados com suporte profissional contínuo e estratégias de alta performance." speed={35} delay={800} />
-          </p>
-        </StaggerItem>
-      </StaggerReveal>
+      {/* Névoa verde no topo, como no hero da Home */}
+      <div aria-hidden="true" className="absolute -top-40 -left-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
 
-      <StaggerReveal 
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24 perspective-1200 w-full"
-        staggerInterval={0.2}
-      >
-        <StaggerItem className="h-full">
-          <PricingCard 
-            id="avulsa"
-            tag="Início"
-            title="Consulta Avulsa"
-            description="Ideal para quem busca um norte inicial e ajustes pontuais na alimentação."
-            price="R$200,00"
-            items={[
-              { text: "Entendimento da rotina pré-atendimento", highlight: true, icon: "analytics" },
-              { text: "Orientações iniciais personalizadas", icon: "assignment_ind" },
-              { text: "Suporte para dúvidas pontuais", icon: "chat" }
-            ]}
-          />
-        </StaggerItem>
-
-        <StaggerItem className="h-full">
-          <PricingCard 
-            id="emagrece-mais"
-            tag="Foco"
-            title="Consultoria Emagrece+"
-            description="Focado em perda de peso saudável com suporte contínuo para manter a constância."
-            price="R$280,00"
-            items={[
-              { text: "Check-up completo de hábitos", highlight: true, icon: "fact_check" },
-              { text: "Plano focado em déficit inteligente", icon: "monitoring" },
-              { text: "Suporte via WhatsApp (Horário comercial)", icon: "support_agent" },
-              { text: "Duração de 1 mês de acompanhamento", icon: "calendar_today" }
-            ]}
-          />
-        </StaggerItem>
-
-        <StaggerItem className="h-full">
-          <PricingCard 
-            id="hipertrofia-pro"
-            tag="Performance"
-            title="Hipertrofia Pro+"
-            description="Estratégias avançadas para ganho de massa muscular e rendimento físico superior."
-            price="R$497,00"
-            isPopular={true}
-            items={[
-              { text: "Protocolo de ganho de massa muscular", highlight: true, icon: "fitness_center" },
-              { text: "Check-up quinzenal de bioimpedância", highlight: true, icon: "medical_services" },
-              { text: "Otimização de suplementação avançada", icon: "pill" },
-              { text: "Período de 3 meses intensivos", icon: "speed" }
-            ]}
-          />
-        </StaggerItem>
-
-        <StaggerItem className="h-full">
-          <PricingCard 
-            id="transformacao-360"
-            tag="Completo"
-            title="Transformação 360º"
-            description="A experiência definitiva para quem busca uma mudança de vida integral e profunda."
-            price="R$697,00"
-            items={[
-              { text: "Suporte prioritário 24/7", highlight: true, icon: "star" },
-              { text: "Check-up presencial/online", highlight: true, icon: "medical_services" },
-              { text: "Biofeedback e acompanhamento hormonal", icon: "biotech" },
-              { text: "Reeducação comportamental completa", icon: "psychology" },
-              { text: "Ciclo de 6 meses de transformação", icon: "all_inclusive" }
-            ]}
-          />
-        </StaggerItem>
-
-        <StaggerItem className="h-full">
-          <PricingCard 
-            id="casal"
-            tag="Dupla"
-            title="Plano Casal"
-            description="Acompanhamento conjunto para casais que buscam alinhar saúde e rotina."
-            price="R$640,00*"
-            items={[
-              { text: "Cardápio otimizado para compras", highlight: true, icon: "shopping_cart" },
-              { text: "Estratégias para rotina familiar", icon: "family_restroom" },
-              { text: "Suporte compartilhado via WhatsApp", icon: "groups" },
-              { text: "Sinergia de objetivos e hábitos", icon: "sync" }
-            ]}
-          />
-        </StaggerItem>
-      </StaggerReveal>
-
-      {/* Marquee Banner adicionado criativamente */}
-      <div className="w-full mb-24 overflow-hidden opacity-50">
-        <TextMarquee text="ACOMPANHAMENTO 360º • BIOIMPEDÂNCIA • BEM-ESTAR • HIPERTROFIA • " speed={50} className="text-4xl md:text-7xl font-headline font-bold text-primary/10 dark:text-emerald-500/10 whitespace-nowrap" />
-      </div>
-
-      <section className="w-full max-w-6xl mx-auto mb-32 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div 
-                whileHover={{ y: -5 }}
-                className="bg-white/5 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/10 dark:border-white/5"
-            >
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
-                    <Target className="w-6 h-6" />
-                </div>
-                <h4 className="font-bold text-lg mb-3"><LiquidText text="Diagnóstico Preciso" /></h4>
-                <p className="text-sm text-stone-500 leading-relaxed">Análise profunda da sua fisiologia e rotina para criar o plano perfeito.</p>
-            </motion.div>
-            <motion.div 
-                whileHover={{ y: -5 }}
-                className="bg-white/5 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/10 dark:border-white/5"
-            >
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
-                    <Apple className="w-6 h-6" />
-                </div>
-                <h4 className="font-bold text-lg mb-3"><LiquidText text="Nutrição Consciente" /></h4>
-                <p className="text-sm text-stone-500 leading-relaxed">Cardápios que respeitam seu paladar e promovem saciedade real.</p>
-            </motion.div>
-            <motion.div 
-                whileHover={{ y: -5 }}
-                className="bg-white/5 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/10 dark:border-white/5"
-            >
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
-                    <Star className="w-6 h-6" />
-                </div>
-                <h4 className="font-bold text-lg mb-3"><LiquidText text="Acompanhamento Premium" /></h4>
-                <p className="text-sm text-stone-500 leading-relaxed">Suporte contínuo para garantir que cada obstáculo seja superado.</p>
-            </motion.div>
-        </div>
-      </section>
-
-      <StaggerReveal className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-surface-container-high dark:bg-stone-900/50 rounded-3xl p-8 md:p-16 w-full border border-outline/5 dark:border-stone-700/20 shadow-inner">
-        <div className="lg:col-span-2">
+      <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-24">
+        {/* Cabeçalho editorial */}
+        <StaggerReveal className="max-w-3xl mb-16 md:mb-20">
           <StaggerItem>
-            <span className="inline-flex items-center gap-2 text-primary dark:text-emerald-400 font-bold uppercase text-[10px] tracking-widest mb-4">Próximo Passo</span>
-          </StaggerItem>
-          <StaggerItem>
-            <h2 className="font-headline text-3xl md:text-4xl font-bold text-on-surface dark:text-stone-100 mb-6 italic">Pronto para começar?</h2>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="text-on-surface-variant dark:text-stone-400 text-lg leading-relaxed max-w-2xl h-[60px]">
-              <TypewriterTextAnim text="Escolha o seu plano acima para iniciar o processo de qualificação e agendamento NutriJornada 360º." speed={35} delay={500} />
+            <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
+              <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+              Planos e consultorias
             </p>
           </StaggerItem>
-        </div>
-        <StaggerItem 
-          className="bg-surface dark:bg-stone-800/50 p-8 rounded-[2rem] border border-outline/10 dark:border-stone-700/20 flex flex-col items-center text-center shadow-lg hover:shadow-xl transition-all group cursor-pointer active:scale-[0.98]"
-          onClick={() => openBooking()}
-        >
-          <div className="w-full h-full flex flex-col items-center">
-            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
-               <span className="material-symbols-outlined text-4xl">calendar_month</span>
-            </div>
-            <h4 className="font-bold text-on-surface dark:text-stone-100 mb-2">Agendamento Online</h4>
-            <p className="text-xs text-on-surface-variant dark:text-stone-400">Clique para iniciar o fluxo unificado.</p>
-          </div>
-        </StaggerItem>
-      </StaggerReveal>
+          <StaggerItem>
+            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
+              Um plano para cada momento.{' '}
+              <em className="italic text-primary dark:text-emerald-400">O ritmo é seu.</em>
+            </h1>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">
+              De uma consulta pontual a seis meses de acompanhamento completo.
+              Todos começam do mesmo jeito: entendendo a sua rotina antes de mexer no seu prato.
+            </p>
+          </StaggerItem>
+        </StaggerReveal>
+
+        {/* Grade de planos */}
+        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24 md:mb-32" staggerInterval={0.1}>
+          {PLANS.map((plan, i) => {
+            const detalhe = DETALHES[plan.id];
+            const destaque = detalhe?.destaque;
+            return (
+              <StaggerItem key={plan.id} className="h-full">
+                <article
+                  className={`relative h-full flex flex-col rounded-[28px] p-8 md:p-9 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 ${
+                    destaque
+                      ? 'bg-verde-profundo dark:bg-emerald-950 text-background shadow-float-2'
+                      : 'bg-white dark:bg-stone-900 text-on-background dark:text-stone-100 shadow-float-1 hover:shadow-float-2'
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between mb-3">
+                    <span className={`font-headline italic text-lg ${destaque ? 'text-ouro-suave' : 'text-ouro-suave'}`}>
+                      Nº 0{i + 1}
+                    </span>
+                    <span className={`text-[0.62rem] tracking-[0.22em] uppercase font-extrabold ${destaque ? 'text-ouro-suave' : 'text-tertiary dark:text-ouro-suave'}`}>
+                      {detalhe?.tag}
+                    </span>
+                  </div>
+
+                  <h2 className="font-headline font-medium text-2xl mb-2">{plan.title}</h2>
+                  <p className={`text-sm leading-relaxed ${destaque ? 'text-background/75' : 'text-on-surface-variant dark:text-stone-400'}`}>
+                    {plan.description}
+                  </p>
+
+                  <div aria-hidden="true" className="w-16 h-px bg-ouro-suave my-5" />
+
+                  <p className="mb-1">
+                    <span className="font-headline font-medium text-3xl md:text-[2.1rem]">{plan.price}</span>
+                  </p>
+                  <p className={`text-[0.72rem] uppercase tracking-[0.12em] mb-6 ${destaque ? 'text-background/60' : 'text-on-surface-variant dark:text-stone-500'}`}>
+                    {detalhe?.duracao} · até {plan.maxParcelas}x
+                  </p>
+
+                  <ul className="space-y-3 flex-grow mb-8">
+                    {detalhe?.inclui.map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
+                        <span
+                          aria-hidden="true"
+                          className={`material-symbols-outlined text-[17px] mt-0.5 ${destaque ? 'text-ouro-suave' : 'text-primary dark:text-emerald-400'}`}
+                        >
+                          check
+                        </span>
+                        <span className={destaque ? 'text-background/85' : 'text-on-surface-variant dark:text-stone-300'}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    type="button"
+                    onClick={() => openBooking(plan.id)}
+                    data-cursor="Agendar"
+                    className={`w-full inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.9rem] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${
+                      destaque
+                        ? 'bg-background text-verde-profundo shadow-float-1 hover:shadow-float-2'
+                        : 'border border-surface-variant dark:border-stone-700 text-on-background dark:text-stone-100 hover:border-ouro-suave'
+                    }`}
+                  >
+                    Agendar consulta
+                    <span aria-hidden="true" className="material-symbols-outlined text-[17px]">arrow_forward</span>
+                  </button>
+                </article>
+              </StaggerItem>
+            );
+          })}
+
+          {/* Sexto slot: nota editorial preenchendo a grade */}
+          <StaggerItem className="h-full">
+            <aside className="h-full flex flex-col justify-center rounded-[28px] p-8 md:p-9 bg-creme-2 dark:bg-stone-900/60 border border-surface-variant dark:border-stone-800">
+              <p className="font-headline italic text-xl text-on-background dark:text-stone-200 leading-snug mb-4">
+                “Não sei qual plano faz sentido para mim.”
+              </p>
+              <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed mb-6">
+                Normal. Comece pela consulta avulsa ou preencha a triagem: a Mariana
+                revisa cada pedido e indica o caminho certo antes de qualquer pagamento.
+              </p>
+              <button
+                type="button"
+                onClick={() => openBooking()}
+                className="self-start font-semibold text-[0.9rem] text-on-background dark:text-stone-200 border-b border-ouro-suave pb-1 hover:border-tertiary transition-colors"
+              >
+                Preencher a triagem
+              </button>
+            </aside>
+          </StaggerItem>
+        </StaggerReveal>
+
+        {/* Como funciona */}
+        <section aria-labelledby="como-funciona" className="mb-24 md:mb-32">
+          <StaggerReveal className="max-w-2xl mb-12">
+            <StaggerItem>
+              <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
+                <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+                Como funciona
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <h2 id="como-funciona" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
+                Três etapas, <em className="italic text-primary dark:text-emerald-400">nenhuma automática.</em>
+              </h2>
+            </StaggerItem>
+          </StaggerReveal>
+
+          <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8" staggerInterval={0.12}>
+            {ETAPAS.map((etapa) => (
+              <StaggerItem key={etapa.num} className="h-full">
+                <div className="h-full bg-white dark:bg-stone-900 rounded-[28px] p-8 shadow-float-1 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-float-2">
+                  <span className="font-headline italic text-ouro-suave text-lg">{etapa.num}</span>
+                  <h3 className="font-headline font-medium text-xl text-on-background dark:text-stone-100 mt-2 mb-3">{etapa.titulo}</h3>
+                  <div aria-hidden="true" className="w-16 h-px bg-ouro-suave mb-4" />
+                  <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed">{etapa.texto}</p>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerReveal>
+        </section>
+
+        {/* CTA final */}
+        <StaggerReveal className="relative overflow-hidden rounded-[32px] bg-verde-profundo dark:bg-emerald-950 px-8 md:px-16 py-14 md:py-20 text-center shadow-float-2">
+          <div aria-hidden="true" className="absolute -bottom-32 -right-24 w-[420px] h-[420px] rounded-full bg-primary/25 blur-[100px] pointer-events-none" />
+          <StaggerItem>
+            <p className="text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-ouro-suave mb-5">Próximo passo</p>
+          </StaggerItem>
+          <StaggerItem>
+            <h2 className="font-headline font-medium text-3xl md:text-[2.6rem] leading-[1.12] text-background mb-5">
+              Pronta para começar? <em className="italic text-ouro-suave">A triagem leva cinco minutos.</em>
+            </h2>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="text-background/75 font-light text-lg leading-relaxed max-w-[46ch] mx-auto mb-9">
+              Escolha um plano acima ou comece direto pela triagem. Sem compromisso:
+              o pagamento só acontece depois da revisão do seu caso.
+            </p>
+          </StaggerItem>
+          <StaggerItem>
+            <MagneticButton as="div" className="inline-block">
+              <button
+                type="button"
+                onClick={() => openBooking()}
+                data-cursor="Agendar"
+                className="inline-flex items-center gap-2 bg-background text-verde-profundo px-9 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              >
+                Agendar minha consulta
+                <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </MagneticButton>
+          </StaggerItem>
+        </StaggerReveal>
+      </div>
     </div>
   );
 }
