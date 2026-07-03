@@ -1,114 +1,130 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Search, Crown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { NutriSearch } from '../components/NutriSearch';
 import { IntelligentRecipes } from '../components/IntelligentRecipes';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { SimuladorResultados } from '../components/SimuladorResultados';
-import { TypewriterTextAnim, LiquidText, AnimatedUnderlineText, DotPatternQuote } from '../components/ui/text-animations';
-import InteractiveParticles from '../components/ui/InteractiveParticles';
 import SEO from '../components/SEO';
 
+// ============================================================
+// Ferramentas — página na direção "Editorial Orgânico".
+// As ferramentas (NutriSearch, IntelligentRecipes, Simulador)
+// permanecem intactas; a página vira uma sequência de cartões
+// brancos editoriais numerados sobre o fundo creme.
+// ============================================================
+
 const Ferramentas: React.FC = () => {
-    // Animation Variants
     return (
-        <div className="min-h-screen text-on-background pt-24 md:pt-32 pb-20 relative overflow-hidden font-body">
+        <div className="relative min-h-screen bg-background dark:bg-stone-950 overflow-x-hidden transition-colors duration-500 font-body">
             <SEO
                 title="Ferramentas de Nutrição Inteligente"
                 description="Busca nutricional com dados científicos, receitas inteligentes e simulador de resultados. Ferramentas gratuitas da NutriJornada 360º de Mariana Bermudes."
             />
-            {/* Background Interativo */}
-            <InteractiveParticles />
 
-            <div className="w-full px-6 md:px-12 relative z-10">
-                <StaggerReveal className="max-w-4xl mx-auto text-center mb-24">
+            <div aria-hidden="true" className="absolute -top-40 -left-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
+
+            <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-24">
+                {/* Cabeçalho editorial */}
+                <StaggerReveal className="max-w-3xl mb-16 md:mb-20">
                     <StaggerItem>
-                        <h1 className="text-6xl md:text-[5.5rem] font-headline font-bold tracking-[-0.03em] mb-8 text-on-surface leading-[1.05]">
-                            <LiquidText text="Inteligência" /> <br />
-                            <span className="text-primary italic font-serif"><LiquidText text="Nutricional" /></span>
+                        <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
+                            <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+                            Ferramentas gratuitas
+                        </p>
+                    </StaggerItem>
+                    <StaggerItem>
+                        <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
+                            Dados nutricionais,{' '}
+                            <em className="italic text-primary dark:text-emerald-400">sem achismo.</em>
                         </h1>
                     </StaggerItem>
                     <StaggerItem>
-                        <p className="text-xl md:text-2xl text-on-surface-variant/80 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
-                            <TypewriterTextAnim text="A ciência encontra a simplicidade. Ferramentas desenhadas com precisão para elevar sua saúde e bem-estar." speed={30} delay={1000} />
+                        <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">
+                            Consulte a composição dos alimentos, monte receitas com o que
+                            você tem em casa e simule seus resultados. Tudo gratuito, com
+                            dados de bancos científicos.
                         </p>
                     </StaggerItem>
                 </StaggerReveal>
 
-                <StaggerReveal staggerInterval={0.2} className="space-y-12">
-                    {/* Main Tool: NutriSearch */}
-                    <StaggerItem
-                        className="antigravity-glass rounded-[3.5rem] p-8 md:p-14 border-white/40 shadow-xl shadow-stone-200/50 relative overflow-hidden group"
-                    >
-                        <div className="flex flex-col md:flex-row items-center gap-8 mb-14 text-center md:text-left relative z-10">
-                            <motion.div 
-                                whileHover={{ scale: 1.05 }}
-                                className="w-20 h-20 rounded-[2rem] bg-white shadow-sm flex items-center justify-center border border-stone-100 flex-shrink-0"
-                            >
-                                <Search className="w-8 h-8 text-primary/80" />
-                            </motion.div>
-                            <div>
-                                <h2 className="text-4xl font-headline font-bold text-on-surface tracking-tight">NutriSearch Pro</h2>
-                                <p className="text-on-surface-variant/70 text-lg font-light mt-1">
-                                    <TypewriterTextAnim text="Exploração profunda de dados nutricionais." speed={40} delay={1500} />
-                                </p>
-                            </div>
+                {/* Ferramentas em cartões editoriais */}
+                <StaggerReveal staggerInterval={0.15} className="space-y-10 md:space-y-14">
+                    <StaggerItem className="bg-white dark:bg-stone-900 rounded-[32px] p-6 md:p-12 shadow-float-1">
+                        <div className="mb-10">
+                            <span className="font-headline italic text-ouro-suave text-lg">Nº 01</span>
+                            <h2 className="font-headline font-medium text-2xl md:text-3xl text-on-background dark:text-stone-100 mt-2 mb-3">
+                                Busca nutricional
+                            </h2>
+                            <div aria-hidden="true" className="w-16 h-px bg-ouro-suave mb-4" />
+                            <p className="text-on-surface-variant dark:text-stone-400 font-light max-w-[52ch]">
+                                Pesquise qualquer alimento e veja calorias, macros e
+                                micronutrientes em detalhe.
+                            </p>
                         </div>
-                        
-                        <div className="relative z-10">
-                            <NutriSearch />
-                        </div>
+                        <NutriSearch />
                     </StaggerItem>
 
-                    {/* Tool 2: Intelligent Recipes */}
-                    <StaggerItem
-                        className="bg-white/80 backdrop-blur-xl rounded-[3rem] p-8 md:p-14 border border-tertiary/10 shadow-2xl shadow-tertiary/5 relative overflow-hidden group"
-                    >
-                        <div className="absolute top-0 left-0 w-96 h-96 bg-tertiary/5 blur-[100px] rounded-full pointer-events-none group-hover:bg-tertiary/10 transition-colors duration-700" />
-                        <div className="relative z-10">
-                            <IntelligentRecipes />
+                    <StaggerItem className="bg-white dark:bg-stone-900 rounded-[32px] p-6 md:p-12 shadow-float-1">
+                        <div className="mb-10">
+                            <span className="font-headline italic text-ouro-suave text-lg">Nº 02</span>
+                            <h2 className="font-headline font-medium text-2xl md:text-3xl text-on-background dark:text-stone-100 mt-2 mb-3">
+                                Receitas inteligentes
+                            </h2>
+                            <div aria-hidden="true" className="w-16 h-px bg-ouro-suave mb-4" />
+                            <p className="text-on-surface-variant dark:text-stone-400 font-light max-w-[52ch]">
+                                Diga o que tem na geladeira e receba combinações que fazem
+                                sentido nutricional.
+                            </p>
                         </div>
+                        <IntelligentRecipes />
                     </StaggerItem>
 
-                    {/* Tool 3: Results Simulator */}
                     <StaggerItem>
                         <SimuladorResultados />
                     </StaggerItem>
-
                 </StaggerReveal>
 
-                {/* Paywall CTA with specialized animation */}
-                <motion.div
-                     initial={{ opacity: 0, scale: 0.9 }}
-                     whileInView={{ opacity: 1, scale: 1 }}
-                     viewport={{ once: true }}
-                     transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                     className="mt-24 text-center pb-20"
-                >
-                    <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-sm mb-6">
-                        <Crown className="w-5 h-5" />
-                        <span>Upgrade para Acesso Total</span>
-                    </div>
-                    <h2 className="text-4xl font-headline font-bold mb-6">Pronto para o próximo nível?</h2>
-                    <p className="text-on-surface-variant text-lg mb-10 max-w-xl mx-auto">
-                        Assine um de nossos pacotes premium e desbloqueie ferramentas ilimitadas e acompanhamento direto.
+                {/* CTA para os planos */}
+                <StaggerReveal className="relative overflow-hidden rounded-[32px] bg-verde-profundo dark:bg-emerald-950 px-8 md:px-16 py-14 md:py-20 text-center shadow-float-2 mt-20 md:mt-28">
+                    <div aria-hidden="true" className="absolute -bottom-32 -right-24 w-[420px] h-[420px] rounded-full bg-primary/25 blur-[100px] pointer-events-none" />
+                    <StaggerItem>
+                        <p className="text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-ouro-suave mb-5">Quer ir além?</p>
+                    </StaggerItem>
+                    <StaggerItem>
+                        <h2 className="font-headline font-medium text-3xl md:text-[2.6rem] leading-[1.12] text-background mb-5">
+                            Ferramenta ajuda. <em className="italic text-ouro-suave">Acompanhamento transforma.</em>
+                        </h2>
+                    </StaggerItem>
+                    <StaggerItem>
+                        <p className="text-background/75 font-light text-lg leading-relaxed max-w-[46ch] mx-auto mb-9">
+                            Os números acima são um ponto de partida. Um plano feito para a
+                            sua rotina, com revisão humana, é o que muda o resultado.
+                        </p>
+                    </StaggerItem>
+                    <StaggerItem>
+                        <MagneticButton as="div" className="inline-block">
+                            <Link
+                                to="/planos"
+                                data-cursor="Ver Planos"
+                                className="inline-flex items-center gap-2 bg-background text-verde-profundo px-9 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                            >
+                                Conhecer os planos
+                                <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </Link>
+                        </MagneticButton>
+                    </StaggerItem>
+                </StaggerReveal>
+
+                {/* Nota de transparência */}
+                <div className="mt-14 max-w-3xl mx-auto border-l-2 border-ouro-suave pl-6">
+                    <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed">
+                        <strong className="font-semibold text-on-background dark:text-stone-200">Nota de transparência:</strong>{' '}
+                        as informações nutricionais são médias aproximadas de bancos de
+                        dados internacionais e podem variar. Use como referência — elas não
+                        substituem a orientação personalizada de um profissional de saúde.
                     </p>
-                    <MagneticButton as="div" className="inline-block">
-                        <a href="/planos" className="inline-block px-12 py-5 rounded-2xl bg-primary text-white font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/30">
-                            <AnimatedUnderlineText text="Conhecer Pacotes Premium" underlineColor="bg-white/50" />
-                        </a>
-                    </MagneticButton>
-
-                    {/* Disclaimer */}
-                    <div className="mt-20 max-w-4xl mx-auto text-left">
-                        <DotPatternQuote 
-                          text="Nota de Transparência: As informações nutricionais apresentadas são médias aproximadas baseadas em bancos de dados internacionais e podem variar significativamente. Estes dados devem ser usados apenas como referência e não substituem a orientação personalizada de um profissional de saúde."
-                          className="!p-6 !rounded-[1.5rem]"
-                        />
-                    </div>
-                </motion.div>
-
+                </div>
             </div>
         </div>
     );
