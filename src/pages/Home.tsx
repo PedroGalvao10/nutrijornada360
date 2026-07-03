@@ -8,6 +8,7 @@ import { ContainerScroll } from '../components/ui/container-scroll-animation';
 import ArticlesSection from '../components/ArticlesSection';
 import { EditorialHero } from '../components/sections/EditorialHero';
 import { MissionSection } from '../components/sections/MissionSection';
+import { ManifestoSection } from '../components/sections/ManifestoSection';
 import { AcompanhamentoSection } from '../components/sections/AcompanhamentoSection';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
 import { PlansSection } from '../components/sections/PlansSection';
@@ -56,6 +57,9 @@ export default function Home() {
 
       {/* Missão */}
       <MissionSection />
+
+      {/* Beat imersivo — manifesto em partículas */}
+      <ManifestoSection />
 
       {/* Ferramentas inteligentes */}
       <HomeToolsSection />
