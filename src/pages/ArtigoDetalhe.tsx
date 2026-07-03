@@ -6,6 +6,7 @@ import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { ShareButton } from '../components/ui/share-button';
+import { DynamicIslandTOC } from '../components/ui/DynamicIslandTOC';
 
 
 export default function ArtigoDetalhe() {
@@ -148,6 +149,9 @@ export default function ArtigoDetalhe() {
           </StaggerItem>
         </StaggerReveal>
       </section>
+
+      {/* Índice flutuante (scroll-spy + progresso). Re-escaneia por artigo. */}
+      <DynamicIslandTOC key={slug} />
     </div>
   );
 }
