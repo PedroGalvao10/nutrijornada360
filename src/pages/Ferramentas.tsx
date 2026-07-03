@@ -47,6 +47,16 @@ const Ferramentas: React.FC = () => {
                             dados de bancos científicos.
                         </p>
                     </StaggerItem>
+                    <StaggerItem>
+                        <Link
+                            to="/alimentos"
+                            data-cursor="Alimentos"
+                            className="inline-flex items-center gap-2 mt-6 font-semibold text-[0.9rem] text-on-background dark:text-stone-200 border-b border-ouro-suave pb-1 hover:border-tertiary transition-colors"
+                        >
+                            Explorar a enciclopédia de alimentos
+                            <span aria-hidden="true" className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </Link>
+                    </StaggerItem>
                 </StaggerReveal>
 
                 {/* Ferramentas em cartões editoriais */}

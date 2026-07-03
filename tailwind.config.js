@@ -88,8 +88,15 @@ export default {
         "marquee-slow": "marquee 80s linear infinite",
         "marquee-reverse-slow": "marquee-reverse 80s linear infinite",
         "fade-in-up": "fadeInUp 0.8s ease-out forwards",
+        "float-drift": "floatDrift 7s ease-in-out infinite",
       },
       keyframes: {
+        // Flutuação suave para imagens do hero de Alimentos.
+        // --float-rot preserva a rotação estática de cada imagem.
+        floatDrift: {
+          '0%, 100%': { transform: 'translateY(0) rotate(var(--float-rot, 0deg))' },
+          '50%': { transform: 'translateY(-18px) rotate(var(--float-rot, 0deg))' },
+        },
         marquee: {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },

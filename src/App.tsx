@@ -12,6 +12,7 @@ const Sobre = lazy(() => import('./pages/Sobre'));
 const Artigos = lazy(() => import('./pages/Artigos'));
 const ArtigoDetalhe = lazy(() => import('./pages/ArtigoDetalhe'));
 const Ferramentas = lazy(() => import('./pages/Ferramentas'));
+const Alimentos = lazy(() => import('./pages/Alimentos'));
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -47,6 +48,7 @@ function AppContent() {
               <Route path="sobre" element={<PageTransition><Sobre /></PageTransition>} />
               <Route path="artigos" element={<PageTransition><Artigos /></PageTransition>} />
               <Route path="ferramentas" element={<PageTransition><Ferramentas /></PageTransition>} />
+              <Route path="alimentos" element={<PageTransition><Alimentos /></PageTransition>} />
               <Route path="blog/:slug" element={<PageTransition><ArtigoDetalhe /></PageTransition>} />
               {/* Redireciona /login para a home pois o login é um modal */}
               <Route path="login" element={<Navigate to="/" replace />} />
