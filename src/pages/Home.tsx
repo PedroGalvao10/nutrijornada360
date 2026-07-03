@@ -9,6 +9,7 @@ import ArticlesSection from '../components/ArticlesSection';
 import { EditorialHero } from '../components/sections/EditorialHero';
 import { MissionSection } from '../components/sections/MissionSection';
 import { AcompanhamentoSection } from '../components/sections/AcompanhamentoSection';
+import { TestimonialsSection } from '../components/sections/TestimonialsSection';
 import { PlansSection } from '../components/sections/PlansSection';
 import { HomeToolsSection } from '../components/sections/HomeToolsSection';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
@@ -61,6 +62,9 @@ export default function Home() {
 
       {/* O que está incluído no acompanhamento */}
       <AcompanhamentoSection />
+
+      {/* Prova social — depoimentos reais */}
+      <TestimonialsSection />
 
       {/* Planos */}
       <PlansSection />
