@@ -1,5 +1,6 @@
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
+import { GlowWrapper } from '../components/ui/GlowWrapper';
 import SEO from '../components/SEO';
 import { useBooking, PLANS } from '../context/BookingContext';
 
@@ -129,8 +130,10 @@ export default function Planos() {
             const destaque = detalhe?.destaque;
             return (
               <StaggerItem key={plan.id} className="h-full">
-                <article
-                  className={`relative h-full flex flex-col rounded-[28px] p-8 md:p-9 backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 ${
+                <GlowWrapper
+                  as="article"
+                  glowColor={destaque ? 'amber' : 'mariana'}
+                  className={`no-glass h-full flex flex-col rounded-[28px] p-8 md:p-9 backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 ${
                     destaque
                       ? 'bg-verde-profundo/95 dark:bg-emerald-950/90 text-background shadow-float-2 ring-2 ring-ouro-suave/40'
                       : 'bg-white/70 dark:bg-stone-900/70 border border-white/60 dark:border-white/10 text-on-background dark:text-stone-100 shadow-float-1 hover:shadow-float-2'
@@ -196,7 +199,7 @@ export default function Planos() {
                     Agendar consulta
                     <span aria-hidden="true" className="material-symbols-outlined text-[17px]">arrow_forward</span>
                   </button>
-                </article>
+                </GlowWrapper>
               </StaggerItem>
             );
           })}

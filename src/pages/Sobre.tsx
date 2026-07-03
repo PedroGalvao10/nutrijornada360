@@ -2,6 +2,7 @@ import SEO from '../components/SEO';
 import { SobreHero } from '../components/sections/sobre/SobreHero';
 import { SobreTrajetoria } from '../components/sections/sobre/SobreTrajetoria';
 import { SobreHistoria } from '../components/sections/sobre/SobreHistoria';
+import { SobrePublicacoes } from '../components/sections/sobre/SobrePublicacoes';
 
 // ============================================================
 // Sobre — página na direção "Editorial Orgânico".
@@ -18,6 +19,7 @@ export default function Sobre() {
       <SobreHero />
       <SobreTrajetoria />
       <SobreHistoria />
+      <SobrePublicacoes />
     </div>
   );
 }
