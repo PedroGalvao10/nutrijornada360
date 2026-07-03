@@ -1,5 +1,6 @@
 import { useBooking } from '../../context/BookingContext';
 import { motion } from 'framer-motion';
+import { FileCard } from '../ui/FileCard';
 
 // ============================================================
 // STEP: Tela final — Boas-vindas + Download PDF
@@ -73,7 +74,7 @@ export function StepComplete() {
         ))}
       </motion.div>
 
-      {/* STEP: Download PDF do contrato */}
+      {/* STEP: Download PDF do contrato — cartão-arquivo clicável */}
       {activeBookingToken && (
         <motion.a
           initial={{ opacity: 0 }}
@@ -82,10 +83,18 @@ export function StepComplete() {
           href={`/api/booking/contract-pdf/${activeBookingToken}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 px-6 py-3 text-primary dark:text-emerald-400 border-2 border-primary/20 dark:border-emerald-500/20 rounded-xl font-bold text-sm hover:bg-primary/5 dark:hover:bg-emerald-500/5 transition-all mb-4"
+          aria-label="Baixar contrato final em PDF"
+          className="mb-4"
         >
-          <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
-          Baixar Contrato Final (PDF)
+          <FileCard
+            formatFile="pdf"
+            label={
+              <span className="inline-flex items-center gap-1 font-semibold text-primary dark:text-emerald-400">
+                <span aria-hidden="true" className="material-symbols-outlined text-[15px]">download</span>
+                Baixar contrato final
+              </span>
+            }
+          />
         </motion.a>
       )}
 
