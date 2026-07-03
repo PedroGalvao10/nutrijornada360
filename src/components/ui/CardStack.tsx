@@ -48,6 +48,7 @@ export function CardStack({
           key={card.id}
           className="absolute bg-surface-container-lowest h-48 w-full rounded-3xl p-5 shadow-xl border border-outline-variant/30 flex flex-col justify-between"
           style={{ transformOrigin: 'top center' }}
+          initial={false}
           animate={{
             top: index * -CARD_OFFSET,
             scale: 1 - index * SCALE_FACTOR,

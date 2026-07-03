@@ -8,6 +8,7 @@ import { ContainerScroll } from '../components/ui/container-scroll-animation';
 import ArticlesSection from '../components/ArticlesSection';
 import { EditorialHero } from '../components/sections/EditorialHero';
 import { MissionSection } from '../components/sections/MissionSection';
+import { AcompanhamentoSection } from '../components/sections/AcompanhamentoSection';
 import { PlansSection } from '../components/sections/PlansSection';
 import { HomeToolsSection } from '../components/sections/HomeToolsSection';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
@@ -57,6 +58,9 @@ export default function Home() {
 
       {/* Ferramentas inteligentes */}
       <HomeToolsSection />
+
+      {/* O que está incluído no acompanhamento */}
+      <AcompanhamentoSection />
 
       {/* Planos */}
       <PlansSection />
