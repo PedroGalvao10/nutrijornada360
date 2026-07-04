@@ -190,7 +190,7 @@ export default function Planos() {
                     type="button"
                     onClick={() => openBooking(plan.id)}
                     data-cursor="Agendar"
-                    className={`w-full inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.9rem] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${
+                    className={`no-glass w-full inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.9rem] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${
                       destaque
                         ? 'bg-background text-verde-profundo shadow-float-1 hover:shadow-float-2'
                         : 'border border-surface-variant dark:border-stone-700 text-on-background dark:text-stone-100 hover:border-ouro-suave'
@@ -217,7 +217,7 @@ export default function Planos() {
               <button
                 type="button"
                 onClick={() => openBooking()}
-                className="self-start font-semibold text-[0.9rem] text-on-background dark:text-stone-200 border-b border-ouro-suave pb-1 hover:border-tertiary transition-colors"
+                className="no-glass self-start font-semibold text-[0.9rem] text-on-background dark:text-stone-200 border-b border-ouro-suave pb-1 hover:border-tertiary transition-colors"
               >
                 Preencher a triagem
               </button>
@@ -278,7 +278,7 @@ export default function Planos() {
                 type="button"
                 onClick={() => openBooking()}
                 data-cursor="Agendar"
-                className="inline-flex items-center gap-2 bg-background text-verde-profundo px-9 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                className="no-glass inline-flex items-center gap-2 bg-background text-verde-profundo px-9 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
               >
                 Agendar minha consulta
                 <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_forward</span>

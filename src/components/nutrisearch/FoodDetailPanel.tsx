@@ -115,7 +115,7 @@ export const FoodDetailPanel: React.FC<Props> = ({ food, onBack }) => {
                     <button
                         onClick={onBack}
                         data-cursor="Voltar"
-                        className="inline-flex items-center gap-2 text-on-surface-variant dark:text-stone-400 hover:text-primary font-extrabold text-[0.68rem] uppercase tracking-[0.22em] transition-colors"
+                        className="no-glass inline-flex items-center gap-2 text-on-surface-variant dark:text-stone-400 hover:text-primary font-extrabold text-[0.68rem] uppercase tracking-[0.22em] transition-colors"
                     >
                         <ChevronLeft className="w-4 h-4" />
                         Voltar aos resultados
@@ -133,7 +133,7 @@ export const FoodDetailPanel: React.FC<Props> = ({ food, onBack }) => {
                         <button
                             disabled
                             title="Em breve: visão detalhada de vitaminas e minerais"
-                            className="w-full py-3.5 rounded-full border border-surface-variant dark:border-stone-700 text-on-surface-variant/60 dark:text-stone-500 font-semibold flex items-center justify-center gap-2 cursor-not-allowed text-sm"
+                            className="no-glass w-full py-3.5 rounded-full border border-surface-variant dark:border-stone-700 text-on-surface-variant/60 dark:text-stone-500 font-semibold flex items-center justify-center gap-2 cursor-not-allowed text-sm"
                         >
                             <Info className="w-4 h-4" />
                             Micronutrientes (em breve)
@@ -142,7 +142,7 @@ export const FoodDetailPanel: React.FC<Props> = ({ food, onBack }) => {
                             onClick={consultarArtigos}
                             disabled={iaLoading}
                             data-cursor="Artigos"
-                            className="w-full py-3.5 rounded-full bg-verde-profundo dark:bg-emerald-500 text-background dark:text-stone-950 font-semibold flex items-center justify-center gap-2 text-sm shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-60"
+                            className="no-glass w-full py-3.5 rounded-full bg-verde-profundo dark:bg-emerald-500 text-background dark:text-stone-950 font-semibold flex items-center justify-center gap-2 text-sm shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-60"
                         >
                             <BookOpen className="w-4 h-4" />
                             {iaLoading ? 'Consultando…' : 'O que dizem os estudos'}
@@ -159,7 +159,7 @@ export const FoodDetailPanel: React.FC<Props> = ({ food, onBack }) => {
                                     <p className="text-on-surface-variant dark:text-stone-300 font-light">{iaInsight}</p>
                                     <button
                                         onClick={() => setIaInsight(null)}
-                                        className="mt-3 text-[0.62rem] uppercase tracking-[0.22em] text-on-surface-variant dark:text-stone-500 hover:text-primary transition-colors font-extrabold"
+                                        className="no-glass mt-3 text-[0.62rem] uppercase tracking-[0.22em] text-on-surface-variant dark:text-stone-500 hover:text-primary transition-colors font-extrabold"
                                     >
                                         Fechar
                                     </button>

@@ -99,7 +99,7 @@ export function ShareButton({ url, title }: { url?: string; title?: string }) {
               transitionDelay: isOpen ? `${index * 60}ms` : "0ms",
               transform: isOpen ? "scale(1)" : "scale(0.5)",
             }}
-            className="w-10 h-10 rounded-full border border-outline/20 dark:border-stone-700 bg-background/80 dark:bg-stone-900/80 backdrop-blur-md flex items-center justify-center text-on-surface-variant dark:text-stone-300 hover:bg-primary hover:text-on-primary dark:hover:bg-emerald-500 dark:hover:text-stone-950 transition-all duration-300 hover:scale-110 shadow-sm cursor-pointer"
+            className="no-glass w-10 h-10 rounded-full border border-outline/20 dark:border-stone-700 bg-background/80 dark:bg-stone-900/80 backdrop-blur-md flex items-center justify-center text-on-surface-variant dark:text-stone-300 hover:bg-primary hover:text-on-primary dark:hover:bg-emerald-500 dark:hover:text-stone-950 transition-all duration-300 hover:scale-110 shadow-sm cursor-pointer"
             aria-label={link.label}
             title={link.label}
           >
@@ -122,7 +122,7 @@ export function ShareButton({ url, title }: { url?: string; title?: string }) {
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
-          "w-12 h-12 rounded-full border-2 border-primary/20 dark:border-emerald-500/20 bg-primary/5 dark:bg-emerald-500/5 text-primary dark:text-emerald-400 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm relative z-10 cursor-pointer",
+          "no-glass w-12 h-12 rounded-full border-2 border-primary/20 dark:border-emerald-500/20 bg-primary/5 dark:bg-emerald-500/5 text-primary dark:text-emerald-400 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm relative z-10 cursor-pointer",
           isOpen
             ? "bg-primary text-on-primary dark:bg-emerald-500 dark:text-stone-950 scale-105 rotate-45"
             : "hover:bg-primary/20 dark:hover:bg-emerald-500/20"

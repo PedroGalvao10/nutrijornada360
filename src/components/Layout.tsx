@@ -122,7 +122,7 @@ export function Layout() {
             <ThemeToggle />
             <button 
               onClick={() => setIsLoginOpen(true)} 
-              className="text-sm font-bold flex items-center gap-1 transition-all duration-300 bg-white/5 dark:bg-white/5 px-3 py-2 rounded-full text-[#705c30] hover:text-[#4a7c59] bg-stone-100/50 dark:text-white dark:hover:bg-white/10"
+              className="no-glass text-sm font-bold flex items-center gap-1 transition-all duration-300 bg-white/5 dark:bg-white/5 px-3 py-2 rounded-full text-[#705c30] hover:text-[#4a7c59] bg-stone-100/50 dark:text-white dark:hover:bg-white/10"
               data-cursor="Login"
             >
               <span className="material-symbols-outlined text-base">login</span>
@@ -131,7 +131,7 @@ export function Layout() {
             <MagneticButton as="div">
               <button 
                 onClick={() => openBooking()} 
-                className="px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 whitespace-nowrap shadow-md block bg-white text-[#4a7c59] hover:bg-stone-50 hover:shadow-lg dark:bg-[#4a7c59] dark:text-white dark:hover:bg-[#3d664a] dark:hover:scale-105"
+                className="no-glass px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 whitespace-nowrap shadow-md block bg-white text-[#4a7c59] hover:bg-stone-50 hover:shadow-lg dark:bg-[#4a7c59] dark:text-white dark:hover:bg-[#3d664a] dark:hover:scale-105"
                 data-cursor="Agendar Agora"
               >
                 Agendar Consulta

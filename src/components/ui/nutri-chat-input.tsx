@@ -48,7 +48,7 @@ export const NutriChatInput: React.FC<NutriChatInputProps> = ({
           {/* Attachment Button (Visual only for now, adds premium feel) */}
           <button 
             type="button"
-            className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-primary/5 transition-colors flex-shrink-0 mb-0.5"
+            className="no-glass w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-primary/5 transition-colors flex-shrink-0 mb-0.5"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -67,7 +67,7 @@ export const NutriChatInput: React.FC<NutriChatInputProps> = ({
           <button
             type="submit"
             disabled={isLoading || !value.trim()}
-            className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 mb-0.5 ${
+            className={`no-glass w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 mb-0.5 ${
               value.trim() && !isLoading 
                 ? "bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105 active:scale-95" 
                 : "bg-stone-100 text-stone-300"

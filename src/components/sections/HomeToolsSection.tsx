@@ -86,7 +86,7 @@ export function HomeToolsSection() {
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveModal(null)} className="absolute inset-0 bg-stone-900/40 backdrop-blur-md" />
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-stone-900 rounded-[3rem] shadow-3xl overflow-hidden border border-white/20 p-8 md:p-12 overflow-y-auto custom-scrollbar">
-                <button onClick={() => setActiveModal(null)} title="Fechar busca" aria-label="Fechar busca" className="absolute top-8 right-8 p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full"><X size={24} /></button>
+                <button onClick={() => setActiveModal(null)} title="Fechar busca" aria-label="Fechar busca" className="no-glass absolute top-8 right-8 p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full"><X size={24} /></button>
                 <div className="mb-8">
                     <h2 className="text-3xl font-headline font-bold mb-2 dark:text-stone-100">NutriSearch Pro</h2>
                     <p className="text-stone-400">Pesquise alimentos e composições detalhadas.</p>

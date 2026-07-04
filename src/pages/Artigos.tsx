@@ -293,7 +293,7 @@ export default function Artigos() {
                   type="submit"
                   disabled={newsletterSubmitting}
                   data-cursor="Assinar"
-                  className="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-background text-verde-profundo px-8 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50"
+                  className="no-glass w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-background text-verde-profundo px-8 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-50"
                 >
                   {newsletterSubmitting ? (
                     <span className="material-symbols-outlined animate-spin text-lg" aria-label="Enviando">progress_activity</span>
