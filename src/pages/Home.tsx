@@ -9,6 +9,7 @@ import ArticlesSection from '../components/ArticlesSection';
 import { EditorialHero } from '../components/sections/EditorialHero';
 import { MissionSection } from '../components/sections/MissionSection';
 import { ManifestoSection } from '../components/sections/ManifestoSection';
+import { ParallaxBreak } from '../components/sections/ParallaxBreak';
 import { AcompanhamentoSection } from '../components/sections/AcompanhamentoSection';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
 import { JornadaScroll } from '../components/sections/JornadaScroll';
@@ -61,6 +62,9 @@ export default function Home() {
 
       {/* Beat imersivo — manifesto em partículas */}
       <ManifestoSection />
+
+      {/* Quebra cinematográfica — janela que se abre no scroll */}
+      <ParallaxBreak />
 
       {/* Ferramentas inteligentes */}
       <HomeToolsSection />
