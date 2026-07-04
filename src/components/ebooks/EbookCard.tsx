@@ -1,32 +1,36 @@
-import { useRef } from 'react';
-import { useTilt } from '../../hooks/useTilt';
-import { MagneticButton } from '../ui/MagneticButton';
+import { BookOpen } from 'lucide-react';
+import { PerspectiveBook } from '../ui/PerspectiveBook';
 import type { Ebook } from './ebooks-data';
 
-export function EbookCard({ ebook, onDownload }: { ebook: Ebook; onDownload: (ebook: Ebook) => void }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  useTilt(cardRef, 15);
+// ============================================================
+// EbookCard — cartão de download na direção Editorial Orgânico.
+// A capa usa o mesmo PerspectiveBook da vitrine de Sobre (sem
+// foto de banco de imagens): tipografia da marca em vez de uma
+// imagem de banco de imagens genérica sem relação com o conteúdo.
+// ============================================================
 
+export function EbookCard({ ebook, onDownload }: { ebook: Ebook; onDownload: (ebook: Ebook) => void }) {
   return (
-    <div
-      ref={cardRef}
-      className="antigravity-glass bg-white/5 dark:bg-black/20 border border-white/20 dark:border-white/5 p-6 rounded-3xl flex flex-col sm:flex-row gap-6 items-center parallax-shadow hover:shadow-lg transition-shadow duration-300 transform-style-3d"
-    >
-      <div className="w-40 h-52 flex-shrink-0 bg-surface-container dark:bg-stone-800 rounded-lg overflow-hidden border border-outline/20 dark:border-stone-700 relative tilt-child tz-30 shadow-md">
-        <img src={ebook.imageUrl} alt={`Capa ${ebook.title}`} className="w-full h-full object-cover" />
-        <div className="absolute top-2 right-2 bg-secondary dark:bg-stone-700 text-on-secondary dark:text-stone-100 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest shadow-sm">PDF</div>
+    <div className="bg-white dark:bg-stone-900 rounded-[28px] p-6 md:p-7 shadow-float-1 hover:shadow-float-2 transition-all duration-500 flex flex-col sm:flex-row gap-6 items-center">
+      <div className="shrink-0">
+        <PerspectiveBook size="sm">
+          <div className="flex items-center gap-1.5 text-ouro-suave">
+            <BookOpen className="w-3.5 h-3.5" />
+            <span className="text-[0.6rem] font-extrabold uppercase tracking-[0.14em]">E-book grátis</span>
+          </div>
+        </PerspectiveBook>
       </div>
-      <div className="flex flex-col flex-1 text-center sm:text-left tilt-child tz-10">
-        <h3 className="text-xl font-headline font-bold text-on-surface dark:text-stone-100 mb-3">{ebook.title}</h3>
+      <div className="flex flex-col flex-1 text-center sm:text-left">
+        <h3 className="font-headline font-medium text-xl text-on-background dark:text-stone-100 mb-3">{ebook.title}</h3>
         <p className="text-sm text-on-surface-variant dark:text-stone-400 mb-6">Um guia prático com passos eficientes desenhados para a sua rotina diária.</p>
-        <MagneticButton as="div" className="self-start sm:w-auto w-full">
-          <button
-            onClick={() => onDownload(ebook)}
-            className="bg-primary dark:bg-emerald-500 text-on-primary dark:text-stone-950 font-bold px-6 py-3 rounded-full hover:opacity-90 transition-all flex items-center justify-center gap-2 mt-auto w-full shadow-sm active:scale-[0.98] tilt-child tz-20"
-          >
-            <span className="material-symbols-outlined text-[18px]">download</span> Baixar Grátis
-          </button>
-        </MagneticButton>
+        <button
+          onClick={() => onDownload(ebook)}
+          data-cursor="Baixar"
+          className="no-glass self-center sm:self-start bg-verde-profundo dark:bg-emerald-500 text-background dark:text-stone-950 font-semibold px-6 py-3 rounded-full flex items-center justify-center gap-2 mt-auto shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+        >
+          <span aria-hidden="true" className="material-symbols-outlined text-[18px]">download</span>
+          Baixar grátis
+        </button>
       </div>
     </div>
   );

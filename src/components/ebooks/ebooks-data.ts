@@ -3,7 +3,6 @@
 export interface Ebook {
   id: number;
   title: string;
-  imageUrl: string;
   pdfUrl: string;
 }
 
@@ -11,13 +10,11 @@ export const EBOOKS: Ebook[] = [
   {
     id: 1,
     title: 'Guia Completo: Nutrição Descomplicada O Ano Todo',
-    imageUrl: 'https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&w=400&q=80',
     pdfUrl: '#', // placeholder
   },
   {
     id: 2,
     title: '10 Receitas Rápidas e Saudáveis',
-    imageUrl: 'https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=400&q=80',
     pdfUrl: '#', // placeholder
   },
 ];
