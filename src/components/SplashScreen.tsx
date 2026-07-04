@@ -22,24 +22,23 @@ export function SplashScreen() {
     return true;
   });
 
-  useEffect(() => {
-    if (!show) return;
-    // Trava o scroll enquanto o splash está visível
-    document.body.style.overflow = 'hidden';
-    const timer = setTimeout(() => dismiss(), DURATION);
-    return () => {
-      clearTimeout(timer);
-      document.body.style.overflow = '';
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [show]);
-
   // Marca como visto só ao sair (evita que o double-mount do StrictMode
   // consuma a flag antes de o splash chegar a aparecer).
   const dismiss = () => {
     sessionStorage.setItem(SESSION_KEY, '1');
     setShow(false);
   };
+
+  useEffect(() => {
+    if (!show) return;
+    // Trava o scroll enquanto o splash está visível
+    document.body.style.overflow = 'hidden';
+    const timer = setTimeout(dismiss, DURATION);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = '';
+    };
+  }, [show]);
 
   return (
     <AnimatePresence>
