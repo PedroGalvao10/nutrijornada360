@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import PageTransition from './components/ui/PageTransition';
+import { SplashScreen } from './components/SplashScreen';
 import { AnimatePresence, MotionConfig } from 'framer-motion';
 // Lazy loaded pages for performance
 const Home = lazy(() => import('./pages/Home'));
@@ -73,6 +74,7 @@ function App() {
   return (
     // reducedMotion="user": todas as animações framer-motion respeitam prefers-reduced-motion
     <MotionConfig reducedMotion="user">
+      <SplashScreen />
       <AppContent />
     </MotionConfig>
   );
