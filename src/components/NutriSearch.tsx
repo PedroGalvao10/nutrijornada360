@@ -148,7 +148,7 @@ export const NutriSearch: React.FC = () => {
                             tabIndex={0}
                             aria-label={`Ver detalhes de ${food.name}`}
                             data-cursor="Ver Detalhes"
-                            className="bg-white dark:bg-stone-900 p-7 rounded-[28px] cursor-pointer shadow-float-1 hover:shadow-float-2 transition-shadow duration-500 flex flex-col justify-between h-full group active:scale-[0.99]"
+                            className="bg-white dark:bg-stone-900 p-7 rounded-[28px] cursor-pointer border border-surface-variant dark:border-stone-800 hover:border-ouro-suave transition-colors duration-300 flex flex-col justify-between h-full group active:scale-[0.99]"
                         >
                             <div>
                                 <h4 className="font-headline font-medium text-xl line-clamp-2 leading-tight mb-2 text-on-background dark:text-stone-100 group-hover:text-primary transition-colors">{food.name}</h4>

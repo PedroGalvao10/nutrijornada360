@@ -142,7 +142,7 @@ export const FoodDetailPanel: React.FC<Props> = ({ food, onBack }) => {
                             onClick={consultarArtigos}
                             disabled={iaLoading}
                             data-cursor="Artigos"
-                            className="no-glass w-full py-3.5 rounded-full bg-verde-profundo dark:bg-emerald-500 text-background dark:text-stone-950 font-semibold flex items-center justify-center gap-2 text-sm shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 disabled:opacity-60"
+                            className="no-glass w-full py-3.5 rounded-full bg-verde-profundo dark:bg-emerald-500 text-background dark:text-stone-950 font-semibold flex items-center justify-center gap-2 text-sm hover:brightness-110 active:scale-[0.99] transition-all duration-300 disabled:opacity-60"
                         >
                             <BookOpen className="w-4 h-4" />
                             {iaLoading ? 'Consultando…' : 'O que dizem os estudos'}
