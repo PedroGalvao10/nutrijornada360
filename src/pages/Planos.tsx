@@ -125,7 +125,7 @@ export default function Planos() {
 
         {/* Grade de planos */}
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24 md:mb-32" staggerInterval={0.1}>
-          {PLANS.map((plan, i) => {
+          {PLANS.map((plan) => {
             const detalhe = DETALHES[plan.id];
             const destaque = detalhe?.destaque;
             return (
@@ -149,14 +149,13 @@ export default function Planos() {
                       </span>
                     </>
                   )}
-                  <div className="relative flex items-baseline justify-between mb-3">
-                    <span className={`font-headline italic text-lg ${destaque ? 'text-ouro-suave' : 'text-ouro-suave'}`}>
-                      Nº 0{i + 1}
-                    </span>
-                    <span className={`text-[0.62rem] tracking-[0.22em] uppercase font-extrabold ${destaque ? 'text-ouro-suave' : 'text-tertiary dark:text-ouro-suave'}`}>
-                      {detalhe?.tag}
-                    </span>
-                  </div>
+                  <span className={`relative inline-block w-fit px-3 py-1 rounded-full text-[0.6rem] tracking-[0.18em] uppercase font-extrabold mb-4 ${
+                    destaque
+                      ? 'bg-ouro-suave/20 text-ouro-suave'
+                      : 'bg-verde-nevoa dark:bg-emerald-900/30 text-primary dark:text-emerald-400'
+                  }`}>
+                    {detalhe?.tag}
+                  </span>
 
                   <h2 className="font-headline font-medium text-2xl mb-2">{plan.title}</h2>
                   <p className={`text-sm leading-relaxed ${destaque ? 'text-background/75' : 'text-on-surface-variant dark:text-stone-400'}`}>

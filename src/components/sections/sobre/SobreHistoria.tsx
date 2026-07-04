@@ -1,3 +1,4 @@
+import { Target, HeartHandshake, Compass } from 'lucide-react';
 import { StaggerReveal, StaggerItem } from '../../ui/StaggerReveal';
 import { ClipPathImage } from '../../ui/ClipPathImage';
 import { PointerHighlight } from '../../ui/PointerHighlight';
@@ -6,22 +7,23 @@ import aprovadaCuscs from '../../../assets/aprovada-cuscs.jpg';
 // ============================================================
 // SobreHistoria — a história pessoal (essência + superação),
 // citação editorial em faixa verde-profundo e os três pilares
-// (missão, valores, propósito) em cartões numerados.
+// (missão, valores, propósito) — conceitos paralelos, não uma
+// sequência, por isso identificados por ícone e não por número.
 // ============================================================
 
 const PILARES = [
   {
-    num: 'Nº 01',
+    Icon: Target,
     titulo: 'Missão',
     texto: 'Promover saúde integral com uma nutrição consciente e humanizada, unindo ciência e bem-estar emocional.',
   },
   {
-    num: 'Nº 02',
+    Icon: HeartHandshake,
     titulo: 'Valores',
     texto: 'Empatia, rigor científico, transparência e respeito absoluto à individualidade de cada pessoa.',
   },
   {
-    num: 'Nº 03',
+    Icon: Compass,
     titulo: 'Propósito',
     texto: 'Transformar a relação das pessoas com a comida, devolvendo liberdade de escolha e vitalidade.',
   },
@@ -112,19 +114,20 @@ export function SobreHistoria() {
           </StaggerItem>
           <StaggerItem>
             <h2 id="pilares" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
-              Três pilares, <em className="italic text-primary dark:text-emerald-400">nenhum negociável.</em>
+              Nenhum dos três é negociável.
             </h2>
           </StaggerItem>
         </StaggerReveal>
 
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8" staggerInterval={0.12}>
-          {PILARES.map((pilar) => (
-            <StaggerItem key={pilar.num} className="h-full">
+          {PILARES.map(({ Icon, titulo, texto }) => (
+            <StaggerItem key={titulo} className="h-full">
               <article className="h-full bg-white dark:bg-stone-900 rounded-[28px] p-8 shadow-float-1 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-float-2">
-                <span className="font-headline italic text-ouro-suave text-lg">{pilar.num}</span>
-                <h3 className="font-headline font-medium text-xl text-on-background dark:text-stone-100 mt-2 mb-3">{pilar.titulo}</h3>
-                <div aria-hidden="true" className="w-16 h-px bg-ouro-suave mb-4" />
-                <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed">{pilar.texto}</p>
+                <div className="w-11 h-11 rounded-2xl bg-verde-nevoa dark:bg-emerald-900/30 flex items-center justify-center text-primary dark:text-emerald-400 mb-4">
+                  <Icon className="w-5 h-5" strokeWidth={1.75} />
+                </div>
+                <h3 className="font-headline font-medium text-xl text-on-background dark:text-stone-100 mb-3">{titulo}</h3>
+                <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed">{texto}</p>
               </article>
             </StaggerItem>
           ))}
