@@ -11,6 +11,7 @@ import { MissionSection } from '../components/sections/MissionSection';
 import { ManifestoSection } from '../components/sections/ManifestoSection';
 import { AcompanhamentoSection } from '../components/sections/AcompanhamentoSection';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
+import { JornadaScroll } from '../components/sections/JornadaScroll';
 import { PlansSection } from '../components/sections/PlansSection';
 import { HomeToolsSection } from '../components/sections/HomeToolsSection';
 import { useFeatureFlagVariantKey } from 'posthog-js/react';
@@ -69,6 +70,9 @@ export default function Home() {
 
       {/* Prova social — depoimentos reais */}
       <TestimonialsSection />
+
+      {/* A jornada — narrativa scroll-driven (cartas pinadas) */}
+      <JornadaScroll />
 
       {/* Planos */}
       <PlansSection />
