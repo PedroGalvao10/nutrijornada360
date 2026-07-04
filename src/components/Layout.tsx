@@ -10,6 +10,7 @@ import { useBooking } from '../context/BookingContext';
 import { BookingModal } from './BookingFlow/BookingModal';
 import { PremiumGrain } from './ui/PremiumGrain';
 import { CustomCursor } from './ui/CustomCursor';
+import { CinematicFooter } from './sections/CinematicFooter';
 
 export function Layout() {
   const location = useLocation();
@@ -185,31 +186,8 @@ export function Layout() {
         </div>
       </div>
 
-      <footer className="bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 mt-20 mobile-footer-spacing">
-        <div className="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-start gap-8 max-w-7xl mx-auto">
-          <div className="max-w-md">
-            <div className="text-lg font-serif text-[#705c30] dark:text-amber-500 mb-4">NutriJornada 360º Mariana Bermudes</div>
-            <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed">
-                Acompanhamento nutricional focado em resultados reais e duradouros. Ciência e empatia unidas para a sua melhor versão.
-            </p>
-          </div>
-          <div className="flex flex-col md:flex-row gap-12">
-            <div className="flex flex-col gap-3">
-              <span className="font-bold text-primary mb-2">Social</span>
-              <a href="https://www.instagram.com/mariana.bermudes?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="text-stone-500 dark:text-stone-400 text-sm hover:underline decoration-[#705c30]">Instagram</a>
-              <a href="https://www.linkedin.com/in/mariana-bermudes/" target="_blank" rel="noopener noreferrer" className="text-stone-500 dark:text-stone-400 text-sm hover:underline decoration-[#705c30]">LinkedIn</a>
-            </div>
-            <div className="flex flex-col gap-3">
-              <span className="font-bold text-primary mb-2">Suporte</span>
-              <a href="#" className="text-stone-500 dark:text-stone-400 text-sm hover:underline decoration-[#705c30]">Contato</a>
-              <a href="#" className="text-stone-500 dark:text-stone-400 text-sm hover:underline decoration-[#705c30]">Política de Privacidade</a>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-8 py-6 border-t border-stone-200/50 dark:border-stone-800/50">
-          <p className="text-stone-400 text-xs text-center md:text-left">© 2024 NutriJornada 360º Mariana Bermudes. Todos os direitos reservados. Pagamentos via Pix aceitos.</p>
-        </div>
-      </footer>
+      {/* Footer-cortina: a página sobe revelando o footer fixo por baixo */}
+      <CinematicFooter />
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
       <BookingModal />
     </>
