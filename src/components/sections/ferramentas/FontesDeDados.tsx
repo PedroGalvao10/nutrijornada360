@@ -41,24 +41,25 @@ const FONTES = [
 export function FontesDeDados() {
   return (
     <section aria-labelledby="fontes-de-dados" className="mt-20 md:mt-28">
-      <StaggerReveal className="max-w-2xl mb-10">
+      <StaggerReveal className="flex items-start gap-6 mb-10">
         <StaggerItem>
-          <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
-            <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-            Fontes de dados
-          </p>
+          <span aria-hidden="true" className="font-headline font-medium text-5xl md:text-6xl text-ouro-suave/50 leading-none shrink-0">
+            0{FONTES.length}
+          </span>
         </StaggerItem>
-        <StaggerItem>
-          <h2 id="fontes-de-dados" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100 mb-4">
-            De onde vêm <em className="italic text-primary dark:text-emerald-400">os números.</em>
-          </h2>
-        </StaggerItem>
-        <StaggerItem>
-          <p className="text-on-surface-variant dark:text-stone-400 font-light leading-relaxed max-w-[52ch]">
-            Cada busca consulta bancos científicos em cascata — do dado brasileiro
-            ao internacional — para responder com a melhor fonte disponível.
-          </p>
-        </StaggerItem>
+        <div className="max-w-2xl">
+          <StaggerItem>
+            <h2 id="fontes-de-dados" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100 mb-4">
+              De onde vêm os números.
+            </h2>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="text-on-surface-variant dark:text-stone-400 font-light leading-relaxed max-w-[52ch]">
+              Cada busca consulta bancos científicos em cascata — do dado brasileiro
+              ao internacional — para responder com a melhor fonte disponível.
+            </p>
+          </StaggerItem>
+        </div>
       </StaggerReveal>
 
       <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5" staggerInterval={0.08}>

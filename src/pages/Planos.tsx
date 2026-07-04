@@ -228,14 +228,8 @@ export default function Planos() {
         <section aria-labelledby="como-funciona" className="mb-24 md:mb-32">
           <StaggerReveal className="max-w-2xl mb-12">
             <StaggerItem>
-              <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
-                <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-                Como funciona
-              </p>
-            </StaggerItem>
-            <StaggerItem>
               <h2 id="como-funciona" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
-                Três etapas, <em className="italic text-primary dark:text-emerald-400">nenhuma automática.</em>
+                Como funciona: três etapas, nenhuma automática.
               </h2>
             </StaggerItem>
           </StaggerReveal>

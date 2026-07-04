@@ -92,12 +92,8 @@ export function SobreTrajetoria() {
   return (
     <section aria-labelledby="trajetoria" className="max-w-[1280px] mx-auto px-6 md:px-12 pb-24 md:pb-32">
       <div className="max-w-2xl mb-12 md:mb-16">
-        <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
-          <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-          Trajetória
-        </p>
         <h2 id="trajetoria" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
-          Do hospital ao consultório, <em className="italic text-primary dark:text-emerald-400">sempre perto de gente.</em>
+          Do hospital ao consultório, sempre perto de gente.
         </h2>
       </div>
 

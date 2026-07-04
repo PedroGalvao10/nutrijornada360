@@ -106,14 +106,8 @@ export default function Alimentos() {
         <div className="max-w-[1280px] mx-auto px-6 md:px-12 mb-4">
           <StaggerReveal className="max-w-2xl">
             <StaggerItem>
-              <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
-                <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-                Roda de alimentos
-              </p>
-            </StaggerItem>
-            <StaggerItem>
               <h2 id="galeria-alimentos" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
-                Gire com o scroll, <em className="italic text-primary dark:text-emerald-400">conheça pelo nome.</em>
+                Roda de alimentos: gire com o scroll, conheça pelo nome.
               </h2>
             </StaggerItem>
           </StaggerReveal>

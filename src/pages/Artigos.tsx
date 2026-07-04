@@ -226,14 +226,8 @@ export default function Artigos() {
         <div className="max-w-[1280px] mx-auto px-6 md:px-12 py-20 md:py-28">
           <StaggerReveal className="max-w-2xl mb-12">
             <StaggerItem>
-              <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-5">
-                <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-                Materiais gratuitos
-              </p>
-            </StaggerItem>
-            <StaggerItem>
               <h2 id="ebooks" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100 mb-4">
-                E-books para <em className="italic text-primary dark:text-emerald-400">começar hoje.</em>
+                Materiais gratuitos: e-books para começar hoje.
               </h2>
             </StaggerItem>
             <StaggerItem>
