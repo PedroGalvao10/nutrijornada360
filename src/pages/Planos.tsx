@@ -104,15 +104,11 @@ export default function Planos() {
         {/* Cabeçalho editorial */}
         <StaggerReveal className="max-w-3xl mb-16 md:mb-20">
           <StaggerItem>
-            <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
-              <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
+            <span className="inline-block px-3 py-1 rounded-full bg-verde-nevoa dark:bg-emerald-900/30 text-primary dark:text-emerald-400 text-[0.62rem] tracking-[0.18em] uppercase font-extrabold mb-5">
               Planos e consultorias
-            </p>
-          </StaggerItem>
-          <StaggerItem>
+            </span>
             <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
-              Um plano para cada momento.{' '}
-              <em className="italic text-primary dark:text-emerald-400">O ritmo é seu.</em>
+              Um plano para cada momento. O ritmo é seu.
             </h1>
           </StaggerItem>
           <StaggerItem>

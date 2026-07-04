@@ -29,16 +29,17 @@ const Ferramentas: React.FC = () => {
                 {/* Cabeçalho editorial */}
                 <StaggerReveal className="max-w-3xl mb-16 md:mb-20">
                     <StaggerItem>
-                        <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
-                            <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-                            Ferramentas gratuitas
-                        </p>
-                    </StaggerItem>
-                    <StaggerItem>
-                        <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
-                            Dados nutricionais,{' '}
-                            <em className="italic text-primary dark:text-emerald-400">sem achismo.</em>
-                        </h1>
+                        <div className="flex items-start gap-4 mb-6">
+                            <span aria-hidden="true" className="w-1 h-12 md:h-16 bg-ouro-suave rounded-full shrink-0 mt-1" />
+                            <div>
+                                <span className="block text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-2">
+                                    Ferramentas gratuitas
+                                </span>
+                                <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100">
+                                    Dados nutricionais, sem achismo.
+                                </h1>
+                            </div>
+                        </div>
                     </StaggerItem>
                     <StaggerItem>
                         <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">

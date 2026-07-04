@@ -180,16 +180,17 @@ export default function Artigos() {
       <section className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-12 md:pb-16">
         <StaggerReveal className="max-w-3xl">
           <StaggerItem>
-            <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
-              <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-              Publicações
-            </p>
-          </StaggerItem>
-          <StaggerItem>
-            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
+            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100">
               Nutrição com ciência,{' '}
               <em className="italic text-primary dark:text-emerald-400">escrita para gente de verdade.</em>
             </h1>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mt-4 mb-6">
+              Publicações
+              <span aria-hidden="true" className="text-ouro-suave/50">·</span>
+              <span className="text-on-surface-variant/70 dark:text-stone-500 tracking-[0.1em] font-semibold normal-case">artigos e materiais gratuitos</span>
+            </p>
           </StaggerItem>
           <StaggerItem>
             <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">
