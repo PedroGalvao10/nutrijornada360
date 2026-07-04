@@ -37,7 +37,7 @@ const topics: Topic[] = [
   {
     title: "Psicologia",
     description: "Relação emocional com a comida e saciedade.",
-    link: "#",
+    link: "/blog/ansiedade-e-compulsao-alimentar-como-quebrar-o-ciclo",
     video: "/videos/psicologia.webm",
     icon: Brain,
     colorClass: "text-amber-600",

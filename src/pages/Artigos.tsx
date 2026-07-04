@@ -8,6 +8,7 @@ import ArticleCard from '../components/ui/ArticleCard';
 import { EbookCard } from '../components/ebooks/EbookCard';
 import { EbookLeadModal } from '../components/ebooks/EbookLeadModal';
 import { EBOOKS, EMPTY_LEAD_FORM, type Ebook } from '../components/ebooks/ebooks-data';
+import { ProjectShowcase } from '../components/ui/project-showcase';
 
 // ============================================================
 // Artigos — página de publicações na direção "Editorial Orgânico".
@@ -221,6 +222,9 @@ export default function Artigos() {
           </p>
         )}
       </section>
+
+      {/* Eixos temáticos — preview de vídeo flutuante segue o cursor */}
+      <ProjectShowcase />
 
       {/* E-books gratuitos — faixa creme-2 */}
       <section aria-labelledby="ebooks" className="bg-creme-2 dark:bg-stone-900/60 transition-colors duration-500">
