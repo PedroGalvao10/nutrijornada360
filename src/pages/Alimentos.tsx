@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { CircularGallery, type GalleryItem } from '../components/ui/CircularGallery';
+import { CardFan } from '../components/ui/CardFan';
 
 // ============================================================
 // Alimentos — nova página (/alimentos): abertura "Floating Food
@@ -99,6 +100,19 @@ export default function Alimentos() {
             </StaggerItem>
           </StaggerReveal>
         </div>
+      </section>
+
+      {/* Leque de alimentos — hover abre espaço com física de mola */}
+      <section aria-label="Leque de alimentos" className="relative pb-8 md:pb-14">
+        <CardFan
+          cards={[
+            { imgUrl: '/fruits/Blueberry 2.webp', alt: 'Mirtilos em tigela' },
+            { imgUrl: '/fruits/Kiwi 2.webp', alt: 'Kiwi fatiado' },
+            { imgUrl: '/fruits/Blueberry 4.webp', alt: 'Mirtilos frescos' },
+            { imgUrl: '/fruits/kiwi 4.webp', alt: 'Kiwis inteiros' },
+            { imgUrl: '/fruits/Blueberry 6.webp', alt: 'Mirtilos no ramo' },
+          ]}
+        />
       </section>
 
       {/* Galeria circular */}
