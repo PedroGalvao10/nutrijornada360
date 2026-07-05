@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContextCore';
 import { useNavigate } from 'react-router-dom';
+import { NeuralVortexBackground } from './ui/NeuralVortexBackground';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -47,15 +48,19 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-stone-950/85 backdrop-blur-sm p-4 overflow-hidden"
       onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
+      {/* Vórtice neural reagindo ao cursor — ambiente do painel (zona dark) */}
+      {!window.matchMedia('(prefers-reduced-motion: reduce)').matches && (
+        <NeuralVortexBackground className="opacity-90" />
+      )}
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="login-modal-title"
-        className="bg-[#faf6f0] dark:bg-stone-900 rounded-2xl shadow-xl w-full max-w-sm p-8 border border-stone-200 dark:border-stone-800"
+        className="relative bg-[#faf6f0] dark:bg-stone-900 rounded-2xl shadow-xl w-full max-w-sm p-8 border border-stone-200 dark:border-stone-800"
       >
         <h2 id="login-modal-title" className="text-2xl font-serif text-[#705c30] dark:text-amber-500 mb-6 text-center">Acesso Restrito</h2>
         
