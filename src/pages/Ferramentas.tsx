@@ -7,6 +7,7 @@ import { MagneticButton } from '../components/ui/MagneticButton';
 import { SimuladorResultados } from '../components/SimuladorResultados';
 import SEO from '../components/SEO';
 import { FontesDeDados } from '../components/sections/ferramentas/FontesDeDados';
+import { GeometricBlurMesh } from '../components/ui/GeometricBlurMesh';
 
 // ============================================================
 // Ferramentas — página na direção "Editorial Orgânico".
@@ -99,6 +100,19 @@ const Ferramentas: React.FC = () => {
 
                 {/* Fontes de dados científicas */}
                 <FontesDeDados />
+
+                {/* Beat "precisão" — wireframes 3D com desfoque sob o cursor (único pesado da tela) */}
+                {typeof window !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && (
+                    <section aria-label="Precisão" className="mt-20 md:mt-28 relative overflow-hidden rounded-[32px] shadow-float-2 h-[380px] md:h-[460px]">
+                        <GeometricBlurMesh className="absolute inset-0" />
+                        <div className="absolute top-8 left-8 md:top-10 md:left-10 pointer-events-none max-w-xs">
+                            <p className="text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-ouro-suave mb-3">Precisão</p>
+                            <p className="font-headline font-medium text-2xl md:text-3xl text-background leading-snug">
+                                Dados nítidos de longe, <em className="italic text-ouro-suave">humanos de perto.</em>
+                            </p>
+                        </div>
+                    </section>
+                )}
 
                 {/* CTA para os planos */}
                 <StaggerReveal className="relative overflow-hidden rounded-[32px] bg-verde-profundo dark:bg-emerald-950 px-8 md:px-16 py-14 md:py-20 text-center shadow-float-2 mt-20 md:mt-28">
