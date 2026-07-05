@@ -1,6 +1,7 @@
 import SEO from '../components/SEO';
 import { SobreHero } from '../components/sections/sobre/SobreHero';
 import { SobreTrajetoria } from '../components/sections/sobre/SobreTrajetoria';
+import { SobreAntesDepois } from '../components/sections/sobre/SobreAntesDepois';
 import { SobreHistoria } from '../components/sections/sobre/SobreHistoria';
 import { SobrePublicacoes } from '../components/sections/sobre/SobrePublicacoes';
 
@@ -18,6 +19,7 @@ export default function Sobre() {
       />
       <SobreHero />
       <SobreTrajetoria />
+      <SobreAntesDepois />
       <SobreHistoria />
       <SobrePublicacoes />
     </div>
