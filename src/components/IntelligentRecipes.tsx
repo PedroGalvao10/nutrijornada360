@@ -172,7 +172,7 @@ export const IntelligentRecipes: React.FC = () => {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 opacity-70 group-hover:opacity-90 transition-opacity" />
                                     <img 
                                         src={recipe.image} 
-                                        alt={recipe.title} 
+                                        alt={recipe.title} loading="lazy"
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                     />
                                     <div className="absolute bottom-6 left-8 right-8 z-20">
@@ -226,7 +226,7 @@ export const IntelligentRecipes: React.FC = () => {
                         >
                             <div className="flex-1 overflow-y-auto custom-scrollbar">
                                 <div className="h-80 md:h-96 relative">
-                                    <img src={selectedRecipe.image} alt={selectedRecipe.title} className="w-full h-full object-cover" />
+                                    <img src={selectedRecipe.image} alt={selectedRecipe.title} loading="lazy" className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
                                     <button 
                                         onClick={() => setSelectedRecipe(null)}

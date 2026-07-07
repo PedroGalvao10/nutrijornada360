@@ -7,7 +7,6 @@ import Logistica from './Logistica';
 import { ContainerScroll } from '../components/ui/container-scroll-animation';
 import ArticlesSection from '../components/ArticlesSection';
 import { EditorialHero } from '../components/sections/EditorialHero';
-import { OcorpoComoSistema } from '../components/sections/OcorpoComoSistema';
 import { MissionSection } from '../components/sections/MissionSection';
 import { ManifestoSection } from '../components/sections/ManifestoSection';
 import { ParallaxBreak } from '../components/sections/ParallaxBreak';
@@ -48,9 +47,6 @@ export default function Home() {
 
       {/* ═══ Hero editorial ═══ */}
       <EditorialHero ctaText={ctaText} ctaVariant={ctaTextVariant as string | null} />
-
-      {/* DNA Interativo / O Corpo como Sistema */}
-      <OcorpoComoSistema />
 
       {/* Faixa marquee — verde profundo, tipografia editorial */}
       <section className="py-5 bg-verde-profundo dark:bg-stone-900">

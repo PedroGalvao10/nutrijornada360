@@ -72,7 +72,7 @@ export default function Logistica() {
             </div>
             <StaggerItem direction="left" className="w-full lg:w-5/12">
               <div className="aspect-[4/3] rounded-xl overflow-hidden parallax-shadow tilt-child tz-30">
-                <img className="w-full h-full object-cover" alt="Consulta remota conduzida através de videochamada" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy6kIfKxb0h9BTxHzfViUMXNu0SCkBcCgnpl2pXWt_JLyAjH2kA-4d3q4ubfdRWIbylrYOIHsl3T5Ef9TMWHy0oiPH96zLUDJ9bkay_Xr4H_xJMF59oUHBnoNii01W8jyI-Og_w9H5WKxN41o0iq_jo9UQmVcncOec3I1AaOzmQJClp_-8QVg9ekHRyuki1dlEU1t36ppri5DkiQy0oT-VTpkv7UqTIUUwsqc_GJOrYNl68IGiLeR7iYEglUIXP8mNCeVPQYVOOpg" />
+                <img loading="lazy" className="w-full h-full object-cover" alt="Consulta remota conduzida através de videochamada" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy6kIfKxb0h9BTxHzfViUMXNu0SCkBcCgnpl2pXWt_JLyAjH2kA-4d3q4ubfdRWIbylrYOIHsl3T5Ef9TMWHy0oiPH96zLUDJ9bkay_Xr4H_xJMF59oUHBnoNii01W8jyI-Og_w9H5WKxN41o0iq_jo9UQmVcncOec3I1AaOzmQJClp_-8QVg9ekHRyuki1dlEU1t36ppri5DkiQy0oT-VTpkv7UqTIUUwsqc_GJOrYNl68IGiLeR7iYEglUIXP8mNCeVPQYVOOpg" />
               </div>
             </StaggerItem>
           </div>

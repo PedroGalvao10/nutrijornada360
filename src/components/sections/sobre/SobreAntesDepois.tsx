@@ -86,6 +86,7 @@ export function SobreAntesDepois() {
             <img
               src={marianaProfile}
               alt="Mariana Bermudes hoje, nutricionista"
+              loading="lazy"
               draggable={false}
               className="absolute left-0 top-0 z-10 w-full h-full object-cover object-top select-none"
               style={{ clipPath: 'inset(0 0 0 ' + inset + '%)' }}
@@ -94,6 +95,7 @@ export function SobreAntesDepois() {
             <img
               src={aprovadaCuscs}
               alt="Mariana comemorando a aprovação na faculdade de Nutrição"
+              loading="lazy"
               draggable={false}
               className="absolute left-0 top-0 w-full h-full object-cover object-top select-none"
             />

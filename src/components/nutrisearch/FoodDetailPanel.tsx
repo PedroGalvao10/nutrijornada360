@@ -123,7 +123,7 @@ export const FoodDetailPanel: React.FC<Props> = ({ food, onBack }) => {
 
                     <div className="aspect-square rounded-[28px] bg-creme-2 dark:bg-stone-800 flex items-center justify-center overflow-hidden p-8">
                         {food.image ? (
-                            <img src={food.image} alt={food.name} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" />
+                            <img src={food.image} alt={food.name} loading="lazy" className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" />
                         ) : (
                             <Apple className="w-20 h-20 text-ouro-suave/40" />
                         )}

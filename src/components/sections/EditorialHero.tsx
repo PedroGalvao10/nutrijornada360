@@ -4,6 +4,7 @@ import { LiquidText, TextEffect } from '../ui/text-animations';
 import { MagneticButton } from '../ui/MagneticButton';
 import { Typewriter } from '../ui/Typewriter';
 import { useBooking } from '../../context/BookingContext';
+import posthog from 'posthog-js';
 import { Star } from 'lucide-react';
 
 // ============================================================
@@ -55,7 +56,7 @@ const rise = (delay: number) => ({
   transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay },
 });
 
-export function EditorialHero({ ctaText = 'Começar minha jornada' }: Props) {
+export function EditorialHero({ ctaText = 'Começar minha jornada', ctaVariant }: Props) {
   const heroRef = useRef<HTMLElement>(null);
   const { openBooking } = useBooking();
   const videoLayerRef = useRef<HTMLDivElement>(null);
@@ -183,7 +184,10 @@ export function EditorialHero({ ctaText = 'Começar minha jornada' }: Props) {
                 <MagneticButton as="div" className="inline-block">
                   <button
                     type="button"
-                    onClick={() => openBooking()}
+                    onClick={() => {
+                      posthog.capture('hero_cta_clicked', { variant: ctaVariant || 'control' });
+                      openBooking();
+                    }}
                     data-cursor="Agendar"
                     className="no-glass group relative inline-flex items-center justify-center bg-white text-stone-900 rounded-full py-4 px-8 md:py-5 md:px-10 overflow-hidden"
                   >

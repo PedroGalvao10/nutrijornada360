@@ -1,0 +1,18 @@
+{
+  "name": "NutriJornada 360º — Mariana Bermudes",
+  "short_name": "NutriJornada",
+  "description": "Nutrição comportamental com acompanhamento 360º: plano individualizado e uma relação melhor com a comida.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf6f0",
+  "theme_color": "#1e3a2a",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

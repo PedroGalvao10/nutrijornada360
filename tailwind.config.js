@@ -26,6 +26,8 @@ export default {
 
         /* Tokens da direção Editorial Orgânico */
         "verde-profundo": "#1e3a2a",
+        "primary-escuro": "#3d664a",
+        "ouro-profundo": "#705c30",
         "verde-nevoa": "#dce8df",
         "ouro": "#a08339",
         "ouro-suave": "#c9b073",

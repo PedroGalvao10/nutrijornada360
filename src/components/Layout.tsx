@@ -39,8 +39,8 @@ export function Layout() {
     const isActive = location.pathname === path;
     const baseClass = "font-medium transition-all duration-300 relative group";
     
-    const activeClass = "text-[#4a7c59] dark:text-white";
-    const inactiveClass = "text-stone-600 hover:text-[#4a7c59] dark:text-stone-300/80 dark:hover:text-white";
+    const activeClass = "text-primary dark:text-white";
+    const inactiveClass = "text-stone-600 hover:text-primary dark:text-stone-300/80 dark:hover:text-white";
 
     return `${isActive ? activeClass : inactiveClass} ${baseClass}`;
   };
@@ -49,7 +49,7 @@ export function Layout() {
   const getMobileTabClass = (path: string) => {
     const isActive = location.pathname === path;
     if (isActive) {
-      return 'mobile-tab active text-[#4a7c59] font-bold';
+      return 'mobile-tab active text-primary font-bold';
     }
     return 'mobile-tab text-stone-500';
   };
@@ -64,15 +64,15 @@ export function Layout() {
       <div className="fixed top-0 left-0 w-full h-[2px] z-[120] pointer-events-none">
         <div
           ref={progressBarRef}
-          className="h-full w-full bg-[#4a7c59] shadow-[0_0_8px_rgba(74,124,89,0.5)]"
+          className="h-full w-full bg-primary shadow-[0_0_8px_rgba(74,124,89,0.5)]"
           style={{ transformOrigin: 'left', transform: 'scaleX(0)', willChange: 'transform' }}
         />
       </div>
       
       {/* Background Interactive Glow */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-40 overflow-hidden mix-blend-soft-light">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-[#4a7c59] blur-[150px] animate-pulse" />
-        <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-[#705c30] blur-[120px] animate-pulse-delayed" />
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary blur-[150px] animate-pulse" />
+        <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] rounded-full bg-ouro-profundo blur-[120px] animate-pulse-delayed" />
       </div>
       <header className={`fixed top-4 left-0 right-0 z-[110] mx-auto w-[96%] max-w-[1600px] flex justify-center items-center pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isNavbarVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
@@ -99,31 +99,31 @@ export function Layout() {
           <div className="hidden lg:flex items-center gap-4 xl:gap-8 text-[14px] xl:text-[15px]">
             <Link to="/" className={getLinkClass('/')} data-cursor="Ir para Início">
               Página Inicial
-              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[#4a7c59] transition-all duration-300 group-hover:w-full ${location.pathname === '/' ? 'w-full' : ''}`} />
+              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full ${location.pathname === '/' ? 'w-full' : ''}`} />
             </Link>
             <Link to="/sobre" className={getLinkClass('/sobre')} data-cursor="Sobre Mariana">
               Sobre Mariana
-              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[#4a7c59] transition-all duration-300 group-hover:w-full ${location.pathname === '/sobre' ? 'w-full' : ''}`} />
+              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full ${location.pathname === '/sobre' ? 'w-full' : ''}`} />
             </Link>
             <Link to="/planos" className={getLinkClass('/planos')} data-cursor="Ver Planos">
               Planos e Consultoria
-              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[#4a7c59] transition-all duration-300 group-hover:w-full ${location.pathname === '/planos' ? 'w-full' : ''}`} />
+              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full ${location.pathname === '/planos' ? 'w-full' : ''}`} />
             </Link>
             <Link to="/artigos" className={getLinkClass('/artigos')} data-cursor="Ler Publicações">
               Publicações
-              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[#4a7c59] transition-all duration-300 group-hover:w-full ${location.pathname === '/artigos' ? 'w-full' : ''}`} />
+              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full ${location.pathname === '/artigos' ? 'w-full' : ''}`} />
             </Link>
             <Link to="/ferramentas" className={getLinkClass('/ferramentas')} data-cursor="Explorar Ferramentas">
               Ferramentas 
-              <span className="ml-1.5 text-[9px] bg-[#4a7c59] text-white px-2 py-0.5 rounded-full uppercase font-bold tracking-widest relative -top-2 animate-pulse">Novo</span>
-              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-[#4a7c59] transition-all duration-300 group-hover:w-full ${location.pathname === '/ferramentas' ? 'w-full' : ''}`} />
+              <span className="ml-1.5 text-[9px] bg-primary text-white px-2 py-0.5 rounded-full uppercase font-bold tracking-widest relative -top-2 animate-pulse">Novo</span>
+              <span className={`absolute -bottom-1 left-0 w-0 h-[1.5px] bg-primary transition-all duration-300 group-hover:w-full ${location.pathname === '/ferramentas' ? 'w-full' : ''}`} />
             </Link>
           </div>
           <div className="flex items-center gap-3 lg:gap-4 ml-auto">
             <ThemeToggle />
             <button 
               onClick={() => setIsLoginOpen(true)} 
-              className="no-glass text-sm font-bold flex items-center gap-1 transition-all duration-300 bg-white/5 dark:bg-white/5 px-3 py-2 rounded-full text-[#705c30] hover:text-[#4a7c59] bg-stone-100/50 dark:text-white dark:hover:bg-white/10"
+              className="no-glass text-sm font-bold flex items-center gap-1 transition-all duration-300 bg-white/5 dark:bg-white/5 px-3 py-2 rounded-full text-ouro-profundo hover:text-primary bg-stone-100/50 dark:text-white dark:hover:bg-white/10"
               data-cursor="Login"
             >
               <span className="material-symbols-outlined text-base">login</span>
@@ -132,7 +132,7 @@ export function Layout() {
             <MagneticButton as="div">
               <button 
                 onClick={() => openBooking()} 
-                className="no-glass px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 whitespace-nowrap shadow-md block bg-white text-[#4a7c59] hover:bg-stone-50 hover:shadow-lg dark:bg-[#4a7c59] dark:text-white dark:hover:bg-[#3d664a] dark:hover:scale-105"
+                className="no-glass px-4 py-2 md:px-5 md:py-2.5 rounded-full font-semibold text-sm md:text-base transition-all duration-300 whitespace-nowrap shadow-md block bg-white text-primary hover:bg-stone-50 hover:shadow-lg dark:bg-primary dark:text-white dark:hover:bg-primary-escuro dark:hover:scale-105"
                 data-cursor="Agendar Agora"
               >
                 Agendar Consulta
@@ -180,7 +180,7 @@ export function Layout() {
             <p className="text-sm">Olá, Mariana! Gostaria de saber mais sobre a consulta!</p>
             <div className="absolute bottom-[-6px] right-6 w-3 h-3 bg-primary rotate-45"></div>
           </div>
-          <a className="bg-[#4a7c59] dark:bg-emerald-800 text-white rounded-full p-3 md:p-4 w-14 h-14 md:w-16 md:h-16 shadow-lg flex items-center justify-center hover:scale-110 hover:bg-[#3d664a] transition-transform floating-pulse-animation" href="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consulta%20ou%20agendar%20um%20atendimento." target="_blank" rel="noopener noreferrer">
+          <a className="bg-primary dark:bg-emerald-800 text-white rounded-full p-3 md:p-4 w-14 h-14 md:w-16 md:h-16 shadow-lg flex items-center justify-center hover:scale-110 hover:bg-primary-escuro transition-transform floating-pulse-animation" href="https://wa.me/5511956007142?text=Ol%C3%A1%2C%20Mariana!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consulta%20ou%20agendar%20um%20atendimento." target="_blank" rel="noopener noreferrer">
             <span className="material-symbols-outlined text-2xl md:text-3xl">chat</span>
           </a>
         </div>
