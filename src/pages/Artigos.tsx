@@ -9,6 +9,7 @@ import { EbookCard } from '../components/ebooks/EbookCard';
 import { EbookLeadModal } from '../components/ebooks/EbookLeadModal';
 import { EBOOKS, EMPTY_LEAD_FORM, type Ebook } from '../components/ebooks/ebooks-data';
 import { ProjectShowcase } from '../components/ui/project-showcase';
+import { GeometricBlurMesh } from '../components/ui/GeometricBlurMesh';
 
 // ============================================================
 // Artigos — página de publicações na direção "Editorial Orgânico".
@@ -177,30 +178,39 @@ export default function Artigos() {
 
       <div aria-hidden="true" className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
 
-      {/* Cabeçalho editorial */}
-      <section className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-12 md:pb-16">
-        <StaggerReveal className="max-w-3xl">
-          <StaggerItem>
-            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100">
-              Nutrição com ciência,{' '}
-              <em className="italic text-primary dark:text-emerald-400">escrita para gente de verdade.</em>
-            </h1>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mt-4 mb-6">
-              Publicações
-              <span aria-hidden="true" className="text-ouro-suave/50">·</span>
-              <span className="text-on-surface-variant/70 dark:text-stone-500 tracking-[0.1em] font-semibold normal-case">artigos e materiais gratuitos</span>
-            </p>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">
-              Artigos baseados em evidências, reflexões sobre comportamento
-              alimentar e materiais gratuitos para o dia a dia. Sem promessa
-              milagrosa — só o que a ciência sustenta.
-            </p>
-          </StaggerItem>
-        </StaggerReveal>
+      {/* Cabeçalho editorial + 3D */}
+      <section className="relative w-full overflow-hidden bg-surface dark:bg-stone-950">
+        {/* Roda/Forma 3D Interativa - Bem enquadrada à direita no desktop, topo no mobile */}
+        <div className="absolute top-0 md:top-1/2 right-0 md:-translate-y-1/2 w-full md:w-[55%] h-[400px] md:h-[120%] pointer-events-auto opacity-25 dark:opacity-40 z-0">
+          <GeometricBlurMesh />
+        </div>
+        
+        {/* Máscara de gradiente para garantir leitura do texto */}
+        <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-surface via-surface/90 to-transparent dark:from-stone-950 dark:via-stone-950/90 pointer-events-none z-0" />
+
+        <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-48 pb-20 md:pb-32 z-10 flex flex-col justify-center min-h-[60vh]">
+          <StaggerReveal className="max-w-2xl relative z-10">
+            <StaggerItem>
+              <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[4rem] leading-[1.05] tracking-[-0.02em] text-on-background dark:text-stone-100">
+                Nutrição com ciência,{' '}
+                <em className="italic text-primary dark:text-emerald-400 block mt-2">escrita para gente de verdade.</em>
+              </h1>
+            </StaggerItem>
+            <StaggerItem>
+              <p className="inline-flex items-center gap-3 text-[0.7rem] tracking-[0.25em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mt-8 mb-6">
+                <span aria-hidden="true" className="inline-block w-8 h-px bg-tertiary/30 dark:bg-ouro-suave/30" />
+                Publicações
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[48ch]">
+                Artigos baseados em evidências, reflexões sobre comportamento
+                alimentar e materiais gratuitos para o dia a dia. Sem promessas
+                milagrosas — só o que a ciência sustenta.
+              </p>
+            </StaggerItem>
+          </StaggerReveal>
+        </div>
       </section>
 
       {/* Grade de artigos */}

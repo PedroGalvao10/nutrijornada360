@@ -1,80 +1,99 @@
-import { StaggerReveal, StaggerItem } from '../ui/StaggerReveal';
-import { CardStack } from '../ui/CardStack';
+import { motion } from 'framer-motion';
+import { TextEffect } from '../ui/text-animations';
 
 // ============================================================
-// AcompanhamentoSection — dobra "o que está incluído no
-// acompanhamento" (blueprint 21st.dev, padrão Cards Stack).
-// Reaproveita o CardStack já existente na marca; entregáveis
-// são reais (transversais aos planos em Planos.tsx) — nada
-// inventado. Layout editorial de 2 colunas.
+// AcompanhamentoSection — O que está incluído (Editorial)
+// Estilo Regis Grumberg: lista numerada expansiva com linhas
+// finas (SVG stroke/CSS border) e tipografia mista em vez
+// de "cards flutuantes". 
 // ============================================================
 
 const ENTREGAVEIS = [
   {
-    id: 1,
-    name: 'Plano alimentar personalizado',
-    designation: 'Nutrição de precisão',
-    content: 'Um cardápio calibrado para o seu objetivo e a sua rotina — não uma dieta genérica de gaveta.',
+    id: '01',
+    title: 'Plano alimentar personalizado',
+    content: 'Seu cardápio desenhado sob medida para a sua rotina real — não uma dieta copiada de gaveta.',
   },
   {
-    id: 2,
-    name: 'Acompanhamento via WhatsApp',
-    designation: 'Suporte contínuo',
-    content: 'Suporte entre as consultas, em horário comercial, para as dúvidas que aparecem no dia a dia.',
+    id: '02',
+    title: 'Acompanhamento direto',
+    content: 'Estou com você no WhatsApp entre as consultas para as dúvidas reais que aparecem no dia a dia.',
   },
   {
-    id: 3,
-    name: 'Revisão humana do seu caso',
-    designation: 'Curadoria',
-    content: 'A Mariana revisa cada caso antes de montar qualquer plano. Nada aqui é automático.',
+    id: '03',
+    title: 'Revisão humana do caso',
+    content: 'Eu mesma leio e avalio a sua história antes de começarmos. Nada aqui é automatizado ou feito por robôs.',
   },
   {
-    id: 4,
-    name: 'Bioimpedância e check-ups',
-    designation: 'Dados reais',
-    content: 'Medições periódicas para ajustar o plano com base no seu corpo, não em achismo.',
+    id: '04',
+    title: 'Análise de exames',
+    content: 'Avaliações precisas para ajustar sua rota baseadas em dados concretos do seu corpo e metabolismo.',
   },
   {
-    id: 5,
-    name: 'Reeducação comportamental',
-    designation: 'Relação com a comida',
-    content: 'Uma relação mais leve e sustentável com o alimento, construída no seu tempo.',
+    id: '05',
+    title: 'Reeducação comportamental',
+    content: 'Construiremos uma relação mais leve e sustentável com o alimento, sem broncas ou restrições severas.',
   },
 ];
 
 export function AcompanhamentoSection() {
   return (
-    <section aria-labelledby="acompanhamento" className="py-20 md:py-28 bg-background dark:bg-stone-950 relative overflow-hidden transition-colors duration-500">
-      <div aria-hidden="true" className="absolute -top-32 -right-40 w-[520px] h-[520px] rounded-full bg-verde-nevoa/50 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
+    <section aria-labelledby="acompanhamento" className="py-24 md:py-40 bg-stone-900 relative overflow-hidden text-stone-100">
+      <div aria-hidden="true" className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-verde-profundo/40 blur-[140px] pointer-events-none" />
 
-      <div className="max-w-[1280px] mx-auto px-6 md:px-12 grid md:grid-cols-[1fr_.9fr] gap-12 md:gap-[5vw] items-center relative z-10">
-        <StaggerReveal>
-          <StaggerItem>
-            <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave mb-6">
-              <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-              O acompanhamento
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 relative z-10">
+        
+        {/* Cabeçalho */}
+        <div className="mb-20 md:mb-32">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <p className="inline-flex items-center gap-3 text-[0.65rem] tracking-[0.26em] uppercase font-bold text-ouro-suave mb-8">
+              <span aria-hidden="true" className="inline-block w-8 h-[1px] bg-ouro-suave/50" />
+              Na Minha Mesa
             </p>
-          </StaggerItem>
-          <StaggerItem>
-            <h2 id="acompanhamento" className="font-headline font-medium text-3xl md:text-[2.8rem] leading-[1.1] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
-              Não é um PDF de dieta.{' '}
-              <em className="italic text-primary dark:text-emerald-400">É gente acompanhando gente.</em>
+            <h2 id="acompanhamento" className="font-headline font-medium text-4xl md:text-[4rem] leading-[1.05] tracking-[-0.02em] max-w-3xl">
+              Não é um PDF de dieta. <br/>
+              <em className="italic text-verde-nevoa/90">É gente cuidando de gente.</em>
             </h2>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="text-lg font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[46ch]">
-              Todo plano vem com o mesmo compromisso por trás: revisão humana,
-              suporte contínuo e ajustes baseados no seu corpo. Veja o que está
-              incluído.
-            </p>
-          </StaggerItem>
-        </StaggerReveal>
+            <div className="mt-8 text-xl font-light text-stone-400 max-w-2xl leading-relaxed">
+              <TextEffect text="Todo plano carrega o meu compromisso: revisão cuidadosa, suporte contínuo e ajustes que conversam com a sua realidade." preset="blur" delay={0.2} />
+            </div>
+          </motion.div>
+        </div>
 
-        <StaggerReveal className="w-full max-w-md mx-auto md:mx-0 md:justify-self-end" delay={0.2}>
-          <StaggerItem>
-            <CardStack items={ENTREGAVEIS} />
-          </StaggerItem>
-        </StaggerReveal>
+        {/* Lista Editorial Interativa */}
+        <div className="flex flex-col border-t border-white/10">
+          {ENTREGAVEIS.map((item, index) => (
+            <motion.div 
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="group flex flex-col md:flex-row md:items-start py-8 md:py-12 border-b border-white/10 hover:border-ouro-suave/50 transition-colors duration-500 cursor-default"
+            >
+              {/* Número */}
+              <div className="text-3xl md:text-5xl font-headline italic text-ouro-suave/40 group-hover:text-ouro-suave transition-colors duration-500 w-24 md:w-40 mb-4 md:mb-0 shrink-0">
+                {item.id}
+              </div>
+              
+              {/* Título & Conteúdo */}
+              <div className="flex-1 grid md:grid-cols-2 gap-4 md:gap-16">
+                <h3 className="text-2xl md:text-3xl font-headline text-stone-200 group-hover:text-white transition-colors duration-500">
+                  {item.title}
+                </h3>
+                <p className="text-base md:text-lg text-stone-400 font-light leading-relaxed group-hover:text-stone-300 transition-colors duration-500">
+                  {item.content}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

@@ -1,14 +1,13 @@
 import { StaggerReveal, StaggerItem } from '../components/ui/StaggerReveal';
 import { MagneticButton } from '../components/ui/MagneticButton';
-import { GlowWrapper } from '../components/ui/GlowWrapper';
 import SEO from '../components/SEO';
 import { useBooking, PLANS } from '../context/BookingContext';
+import { cn } from '../lib/utils';
 
 // ============================================================
-// Planos — página de planos na direção "Editorial Orgânico".
-// Cartões brancos com numeração itálica ouro e filete dourado;
-// preços e ids vêm de PLANS (BookingContext) para manter o
-// booking flow como fonte única de verdade.
+// Planos — O Receituário Clínico
+// O visual "SaaS" (GlowWrapper) deu lugar a um visual de papéis,
+// formulários médicos e carimbos. O texto migrou para a 1ª pessoa.
 // ============================================================
 
 type PlanoDetalhe = {
@@ -20,51 +19,51 @@ type PlanoDetalhe = {
 
 const DETALHES: Record<string, PlanoDetalhe> = {
   'avulsa': {
-    tag: 'Início',
+    tag: 'Ponto de Partida',
     duracao: 'Sessão única',
     inclui: [
-      'Avaliação da rotina antes da consulta',
-      'Orientações personalizadas na sessão',
-      'Espaço para dúvidas pontuais',
+      'Leio sua rotina antes mesmo de você chegar',
+      'Plano desenhado durante a nossa conversa',
+      'Espaço aberto para dúvidas e ajustes',
     ],
   },
   'emagrece-mais': {
-    tag: 'Foco',
+    tag: 'Jornada Focada',
     duracao: '1 mês de acompanhamento',
     inclui: [
-      'Check-up completo de hábitos',
-      'Plano alimentar com déficit calórico bem calibrado',
-      'Suporte via WhatsApp em horário comercial',
+      'Entrevista completa de hábitos reais',
+      'Cálculo de déficit sem terrorismo nutricional',
+      'Meu suporte direto no seu WhatsApp',
     ],
   },
   'hipertrofia-pro': {
-    tag: 'Performance',
+    tag: 'Alta Performance',
     duracao: '3 meses de acompanhamento',
     destaque: true,
     inclui: [
-      'Protocolo de ganho de massa muscular',
-      'Bioimpedância quinzenal',
-      'Ajuste fino de suplementação',
-      'Revisões de treino junto ao seu educador físico',
+      'Estratégia de hipertrofia calculada no detalhe',
+      'Bioimpedância quinzenal para acompanhar os dados',
+      'Ajuste fino de suplementação baseada em evidências',
+      'Troca direta com o seu treinador físico',
     ],
   },
   'transformacao-360': {
-    tag: 'Completo',
+    tag: 'Cuidado Integral',
     duracao: '6 meses de acompanhamento',
     inclui: [
-      'Suporte prioritário via WhatsApp',
-      'Check-up presencial ou online',
-      'Leitura de exames e biofeedback',
-      'Reeducação comportamental com a comida',
+      'Você no topo das minhas prioridades (WhatsApp)',
+      'Encontros recorrentes presenciais ou online',
+      'Avaliação minuciosa de exames de sangue',
+      'Trabalho focado na sua relação emocional com a comida',
     ],
   },
   'casal': {
-    tag: 'Dupla',
-    duracao: 'Acompanhamento conjunto',
+    tag: 'Juntos',
+    duracao: 'Acompanhamento duplo',
     inclui: [
-      'Cardápio pensado para as compras da casa',
-      'Estratégias para a rotina da família',
-      'Suporte compartilhado via WhatsApp',
+      'Um cardápio só para facilitar as compras',
+      'Estratégias que funcionam para a rotina da casa',
+      'Apoio mútuo e suporte compartilhado',
     ],
   },
 };
@@ -72,18 +71,18 @@ const DETALHES: Record<string, PlanoDetalhe> = {
 const ETAPAS = [
   {
     num: 'Nº 01',
-    titulo: 'Você escolhe o plano',
-    texto: 'Preenche um formulário curto de triagem: objetivo, rotina, saúde. Leva menos de cinco minutos.',
+    titulo: 'Você escolhe um caminho',
+    texto: 'Comece preenchendo o meu formulário de triagem. Leva uns cinco minutinhos e é lá que eu começo a entender o seu corpo.',
   },
   {
     num: 'Nº 02',
-    titulo: 'A Mariana revisa o seu caso',
-    texto: 'Cada pedido passa por curadoria humana. Se o plano escolhido não for o ideal para você, ela sugere outro caminho.',
+    titulo: 'Eu leio o seu caso',
+    texto: 'Nada aqui passa por robôs. Eu mesma leio o seu pedido. Se o plano que você escolheu não for o melhor para o que você precisa, eu te oriento antes de qualquer pagamento.',
   },
   {
     num: 'Nº 03',
-    titulo: 'Consulta e acompanhamento',
-    texto: 'Com o agendamento confirmado, começa o acompanhamento de verdade — presencial em São Paulo ou online.',
+    titulo: 'Sentamos para conversar',
+    texto: 'Com o horário confirmado, começamos de verdade. Pode ser presencial aqui em SP ou online. O importante é o olho no olho.',
   },
 ];
 
@@ -91,92 +90,101 @@ export default function Planos() {
   const { openBooking } = useBooking();
 
   return (
-    <div className="relative min-h-screen bg-background dark:bg-stone-950 transition-colors duration-500 overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#FAF9F6] dark:bg-stone-950 transition-colors duration-500 overflow-x-hidden">
       <SEO
         title="Planos e Consultorias | Mariana Bermudes Nutrição"
         description="Planos de acompanhamento nutricional personalizado: consulta avulsa, emagrecimento, hipertrofia e acompanhamento 360º. Presencial em São Paulo ou online."
       />
 
-      {/* Névoa verde no topo, como no hero da Home */}
-      <div aria-hidden="true" className="absolute -top-40 -left-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
+      {/* Ruído tátil na página inteira */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply dark:mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
 
       <div className="relative max-w-[1280px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-24">
         {/* Cabeçalho editorial */}
-        <StaggerReveal className="max-w-3xl mb-16 md:mb-20">
+        <StaggerReveal className="max-w-3xl mb-16 md:mb-24">
           <StaggerItem>
-            <span className="inline-block px-3 py-1 rounded-full bg-verde-nevoa dark:bg-emerald-900/30 text-primary dark:text-emerald-400 text-[0.62rem] tracking-[0.18em] uppercase font-extrabold mb-5">
-              Planos e consultorias
+            <span className="inline-block px-3 py-1 rounded-sm bg-stone-200/50 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-[0.62rem] tracking-[0.18em] uppercase font-extrabold mb-5 border border-stone-300 dark:border-stone-700">
+              Prontuários & Planos
             </span>
-            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[3.6rem] leading-[1.08] tracking-[-0.02em] text-on-background dark:text-stone-100 mb-6">
-              Um plano para cada momento. O ritmo é seu.
+            <h1 className="font-headline font-medium text-4xl sm:text-5xl lg:text-[4rem] leading-[1.08] tracking-[-0.02em] text-stone-900 dark:text-stone-100 mb-6">
+              Um formato para cada fase da sua vida. <em className="font-handwriting text-primary dark:text-emerald-400 rotate-2 inline-block">O ritmo é seu.</em>
             </h1>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-lg md:text-xl font-light text-on-surface-variant dark:text-stone-400 leading-relaxed max-w-[52ch]">
-              De uma consulta pontual a seis meses de acompanhamento completo.
-              Todos começam do mesmo jeito: entendendo a sua rotina antes de mexer no seu prato.
+            <p className="text-lg md:text-xl font-light text-stone-600 dark:text-stone-400 leading-relaxed max-w-[52ch]">
+              De uma conversa pontual até seis meses segurando a sua mão. Todos os formatos começam do mesmo jeito: eu entendendo a sua vida antes de ditar regras no seu prato.
             </p>
           </StaggerItem>
         </StaggerReveal>
 
-        {/* Grade de planos */}
-        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24 md:mb-32" staggerInterval={0.1}>
-          {PLANS.map((plan) => {
+        {/* Grade de prescrições (Papel físico) */}
+        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 mb-24 md:mb-32" staggerInterval={0.15}>
+          {PLANS.map((plan, index) => {
             const detalhe = DETALHES[plan.id];
             const destaque = detalhe?.destaque;
-            return (
-              <StaggerItem key={plan.id} className="h-full">
-                <GlowWrapper
-                  as="article"
-                  glowColor={destaque ? 'amber' : 'mariana'}
-                  className={`no-glass h-full flex flex-col rounded-[28px] p-8 md:p-9 backdrop-blur-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 ${
-                    destaque
-                      ? 'bg-verde-profundo/95 dark:bg-emerald-950/90 text-background shadow-float-2 ring-2 ring-ouro-suave/40'
-                      : 'bg-white/70 dark:bg-stone-900/70 border border-white/60 dark:border-white/10 text-on-background dark:text-stone-100 shadow-float-1 hover:shadow-float-2'
-                  }`}
-                >
-                  {destaque && (
-                    <>
-                      {/* Brilho de vidro no topo do cartão-âncora */}
-                      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/15 to-transparent" />
-                      {/* Selo do plano mais escolhido */}
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-ouro-suave text-verde-profundo text-[0.6rem] font-extrabold uppercase tracking-[0.18em] shadow-float-1 whitespace-nowrap">
-                        Mais escolhido
-                      </span>
-                    </>
-                  )}
-                  <span className={`relative inline-block w-fit px-3 py-1 rounded-full text-[0.6rem] tracking-[0.18em] uppercase font-extrabold mb-4 ${
-                    destaque
-                      ? 'bg-ouro-suave/20 text-ouro-suave'
-                      : 'bg-verde-nevoa dark:bg-emerald-900/30 text-primary dark:text-emerald-400'
-                  }`}>
-                    {detalhe?.tag}
-                  </span>
+            
+            // Alternar leve inclinação para parecerem papéis na mesa
+            const rotations = ['-rotate-1', 'rotate-1', '-rotate-2', 'rotate-2', 'rotate-0'];
+            const rot = rotations[index % rotations.length];
 
-                  <h2 className="font-headline font-medium text-2xl mb-2">{plan.title}</h2>
-                  <p className={`text-sm leading-relaxed ${destaque ? 'text-background/75' : 'text-on-surface-variant dark:text-stone-400'}`}>
+            return (
+              <StaggerItem key={plan.id} className="h-full group perspective-[1000px]">
+                <article
+                  className={cn(
+                    "h-full flex flex-col p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-2 relative border border-stone-200/80 dark:border-stone-800",
+                    destaque
+                      ? "bg-[#1A2622] text-stone-100 shadow-xl scale-[1.02] z-10 rounded-sm"
+                      : `bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-md hover:shadow-xl hover:z-10 rounded-sm ${rot}`
+                  )}
+                  style={!destaque ? {
+                    boxShadow: '2px 4px 15px rgba(0,0,0,0.04), inset 0 0 40px rgba(0,0,0,0.02)'
+                  } : {}}
+                >
+                  {/* Linha superior de receituário (estética) */}
+                  <div className="absolute top-0 left-0 right-0 h-2 bg-stone-100 dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700 flex gap-1 px-4 py-1">
+                    {Array.from({length: 12}).map((_, i) => (
+                      <div key={i} className="w-1 h-1 rounded-full bg-stone-300 dark:bg-stone-600" />
+                    ))}
+                  </div>
+
+                  {destaque && (
+                    <div className="absolute -top-4 right-6 px-4 py-1 rounded-sm bg-ouro-suave text-verde-profundo text-[0.6rem] font-extrabold uppercase tracking-[0.18em] shadow-md transform rotate-3">
+                      Minha recomendação
+                    </div>
+                  )}
+
+                  <div className="mt-4 mb-6">
+                    <span className={cn(
+                      "font-handwriting text-2xl inline-block mb-2",
+                      destaque ? "text-ouro-suave" : "text-primary dark:text-emerald-400"
+                    )}>
+                      {detalhe?.tag}
+                    </span>
+                    <h2 className="font-headline font-medium text-2xl md:text-3xl tracking-tight">{plan.title}</h2>
+                  </div>
+
+                  <p className={cn("text-sm leading-relaxed font-light mb-6", destaque ? "text-stone-300" : "text-stone-500 dark:text-stone-400")}>
                     {plan.description}
                   </p>
 
-                  <div aria-hidden="true" className="w-16 h-px bg-ouro-suave my-5" />
+                  <div aria-hidden="true" className={cn("w-full h-px mb-6 border-b border-dashed", destaque ? "border-stone-700" : "border-stone-300 dark:border-stone-700")} />
 
-                  <p className="mb-1">
-                    <span className="font-headline font-medium text-3xl md:text-[2.1rem]">{plan.price}</span>
-                  </p>
-                  <p className={`text-[0.72rem] uppercase tracking-[0.12em] mb-6 ${destaque ? 'text-background/60' : 'text-on-surface-variant dark:text-stone-500'}`}>
-                    {detalhe?.duracao} · até {plan.maxParcelas}x
-                  </p>
+                  <div className="mb-8">
+                    <span className="font-handwriting text-4xl md:text-5xl">{plan.price}</span>
+                    <p className={cn("text-[0.72rem] uppercase tracking-[0.12em] mt-2 font-bold", destaque ? "text-stone-400" : "text-stone-400 dark:text-stone-500")}>
+                      {detalhe?.duracao} · Até {plan.maxParcelas}x
+                    </p>
+                  </div>
 
-                  <ul className="space-y-3 flex-grow mb-8">
+                  <ul className="space-y-4 flex-grow mb-10">
                     {detalhe?.inclui.map((item) => (
                       <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
-                        <span
-                          aria-hidden="true"
-                          className={`material-symbols-outlined text-[17px] mt-0.5 ${destaque ? 'text-ouro-suave' : 'text-primary dark:text-emerald-400'}`}
-                        >
-                          check
+                        <span aria-hidden="true" className={cn("mt-1", destaque ? "text-ouro-suave" : "text-primary dark:text-emerald-400")}>
+                          ✓
                         </span>
-                        <span className={destaque ? 'text-background/85' : 'text-on-surface-variant dark:text-stone-300'}>{item}</span>
+                        <span className={destaque ? "text-stone-200" : "text-stone-600 dark:text-stone-300"}>
+                          {item}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -184,60 +192,60 @@ export default function Planos() {
                   <button
                     type="button"
                     onClick={() => openBooking(plan.id)}
-                    data-cursor="Agendar"
-                    className={`no-glass w-full inline-flex justify-center items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-[0.9rem] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 ${
+                    className={cn(
+                      "no-glass w-full inline-flex justify-center items-center gap-2 px-7 py-4 rounded-sm font-semibold text-[0.9rem] transition-all duration-300",
                       destaque
-                        ? 'bg-background text-verde-profundo shadow-float-1 hover:shadow-float-2'
-                        : 'border border-surface-variant dark:border-stone-700 text-on-background dark:text-stone-100 hover:border-ouro-suave'
-                    }`}
+                        ? "bg-white text-[#1A2622] hover:bg-stone-200 shadow-md"
+                        : "border-2 border-stone-800 dark:border-stone-200 text-stone-800 dark:text-stone-100 hover:bg-stone-800 hover:text-white dark:hover:bg-white dark:hover:text-stone-900"
+                    )}
                   >
-                    Agendar consulta
-                    <span aria-hidden="true" className="material-symbols-outlined text-[17px]">arrow_forward</span>
+                    Agendar este formato
                   </button>
-                </GlowWrapper>
+                </article>
               </StaggerItem>
             );
           })}
 
-          {/* Sexto slot: nota editorial preenchendo a grade */}
+          {/* Slot de nota de rodapé */}
           <StaggerItem className="h-full">
-            <aside className="h-full flex flex-col justify-center rounded-[28px] p-8 md:p-9 bg-creme-2 dark:bg-stone-900/60 border border-surface-variant dark:border-stone-800">
-              <p className="font-headline italic text-xl text-on-background dark:text-stone-200 leading-snug mb-4">
-                “Não sei qual plano faz sentido para mim.”
+            <aside className="h-full flex flex-col justify-center rounded-sm p-8 md:p-10 bg-[#E8E4DB] dark:bg-stone-900 border border-[#D9D4C7] dark:border-stone-800 shadow-inner rotate-1">
+              {/* Pin de metal falso */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-stone-400 shadow-sm border border-stone-500" />
+              
+              <p className="font-handwriting text-3xl text-stone-800 dark:text-stone-200 leading-snug mb-4 mt-4">
+                "Mari, eu não sei qual plano é melhor pra mim..."
               </p>
-              <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed mb-6">
-                Normal. Comece pela consulta avulsa ou preencha a triagem: a Mariana
-                revisa cada pedido e indica o caminho certo antes de qualquer pagamento.
+              <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-8">
+                Fique tranquila. Comece preenchendo a triagem e me conte um pouco sobre você. Eu mesma vou ler e te dizer por onde devemos começar, sem você precisar pagar nada antes da hora.
               </p>
               <button
                 type="button"
                 onClick={() => openBooking()}
-                className="no-glass self-start font-semibold text-[0.9rem] text-on-background dark:text-stone-200 border-b border-ouro-suave pb-1 hover:border-tertiary transition-colors"
+                className="no-glass self-start font-semibold text-[0.9rem] text-stone-800 dark:text-stone-200 border-b border-stone-800 dark:border-stone-200 pb-1 hover:text-primary transition-colors"
               >
-                Preencher a triagem
+                Preencher a triagem agora
               </button>
             </aside>
           </StaggerItem>
         </StaggerReveal>
 
-        {/* Como funciona */}
+        {/* Como funciona (Fluxo Orgânico) */}
         <section aria-labelledby="como-funciona" className="mb-24 md:mb-32">
           <StaggerReveal className="max-w-2xl mb-12">
             <StaggerItem>
-              <h2 id="como-funciona" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
-                Como funciona: três etapas, nenhuma automática.
+              <h2 id="como-funciona" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-stone-900 dark:text-stone-100">
+                O fluxo: três passos rápidos e nada automáticos.
               </h2>
             </StaggerItem>
           </StaggerReveal>
 
-          <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8" staggerInterval={0.12}>
+          <StaggerReveal className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12" staggerInterval={0.15}>
             {ETAPAS.map((etapa) => (
-              <StaggerItem key={etapa.num} className="h-full">
-                <div className="h-full bg-white dark:bg-stone-900 rounded-[28px] p-8 shadow-float-1 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5 hover:shadow-float-2">
-                  <span className="font-headline italic text-ouro-suave text-lg">{etapa.num}</span>
-                  <h3 className="font-headline font-medium text-xl text-on-background dark:text-stone-100 mt-2 mb-3">{etapa.titulo}</h3>
-                  <div aria-hidden="true" className="w-16 h-px bg-ouro-suave mb-4" />
-                  <p className="text-sm text-on-surface-variant dark:text-stone-400 leading-relaxed">{etapa.texto}</p>
+              <StaggerItem key={etapa.num} className="h-full relative">
+                <div className="h-full flex flex-col group">
+                  <span className="font-handwriting text-4xl text-stone-300 dark:text-stone-700 transition-colors group-hover:text-primary mb-2 block">{etapa.num}</span>
+                  <h3 className="font-headline font-medium text-2xl text-stone-900 dark:text-stone-100 mb-4">{etapa.titulo}</h3>
+                  <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed border-l-2 border-primary/30 pl-4">{etapa.texto}</p>
                 </div>
               </StaggerItem>
             ))}
@@ -245,20 +253,15 @@ export default function Planos() {
         </section>
 
         {/* CTA final */}
-        <StaggerReveal className="relative overflow-hidden rounded-[32px] bg-verde-profundo dark:bg-emerald-950 px-8 md:px-16 py-14 md:py-20 text-center shadow-float-2">
-          <div aria-hidden="true" className="absolute -bottom-32 -right-24 w-[420px] h-[420px] rounded-full bg-primary/25 blur-[100px] pointer-events-none" />
+        <StaggerReveal className="relative overflow-hidden rounded-sm bg-[#1A2622] dark:bg-emerald-950 px-8 md:px-16 py-16 md:py-24 text-center shadow-2xl">
           <StaggerItem>
-            <p className="text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-ouro-suave mb-5">Próximo passo</p>
-          </StaggerItem>
-          <StaggerItem>
-            <h2 className="font-headline font-medium text-3xl md:text-[2.6rem] leading-[1.12] text-background mb-5">
-              Pronta para começar? <em className="italic text-ouro-suave">A triagem leva cinco minutos.</em>
+            <h2 className="font-headline font-medium text-3xl md:text-[3rem] leading-[1.12] text-white mb-8">
+              Vamos sentar e <em className="font-handwriting text-5xl text-ouro-suave">conversar?</em>
             </h2>
           </StaggerItem>
           <StaggerItem>
-            <p className="text-background/75 font-light text-lg leading-relaxed max-w-[46ch] mx-auto mb-9">
-              Escolha um plano acima ou comece direto pela triagem. Sem compromisso:
-              o pagamento só acontece depois da revisão do seu caso.
+            <p className="text-white/70 font-light text-lg leading-relaxed max-w-[46ch] mx-auto mb-10">
+              A triagem leva menos tempo que fazer um café. O pagamento só acontece depois que eu aprovar o seu caso.
             </p>
           </StaggerItem>
           <StaggerItem>
@@ -266,11 +269,9 @@ export default function Planos() {
               <button
                 type="button"
                 onClick={() => openBooking()}
-                data-cursor="Agendar"
-                className="no-glass inline-flex items-center gap-2 bg-background text-verde-profundo px-9 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                className="no-glass inline-flex items-center gap-2 bg-ouro-suave text-[#1A2622] px-10 py-5 rounded-sm font-bold text-sm uppercase tracking-widest shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
-                Agendar minha consulta
-                <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                Começar minha triagem
               </button>
             </MagneticButton>
           </StaggerItem>

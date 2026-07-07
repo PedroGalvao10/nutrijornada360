@@ -36,8 +36,8 @@ export function SobreAntesDepois() {
             A mesma pessoa, <em className="italic text-primary dark:text-emerald-400">alguns anos de estudo depois.</em>
           </h2>
           <p className="text-on-surface-variant dark:text-stone-400 font-light leading-relaxed max-w-[46ch] mb-4">
-            À esquerda, o dia da aprovação na faculdade de Nutrição — cara
-            pintada e tudo. À direita, a nutricionista que atende hoje.
+            À esquerda, o dia da minha aprovação na faculdade de Nutrição — cara
+            pintada e tudo. À direita, eu hoje, pronta para te receber no consultório.
           </p>
           <p className="text-[0.68rem] tracking-[0.22em] uppercase font-extrabold text-tertiary dark:text-ouro-suave">
             Arraste o divisor ✦ viaje no tempo

@@ -1,31 +1,32 @@
-import { useEffect, useRef, useCallback } from 'react';
-
-// ============================================================
-// InkReveal — máscara que o cursor "pinta" para revelar o
-// conteúdo por baixo (Ink Reveal, 21st.dev / Leva B do blueprint
-// de imersão). Cada movimento cria carimbos orgânicos de tinta
-// (círculos com wobble senoidal) que expandem e desvanecem —
-// sensação de pincelada real. Canvas 2D puro; o loop rAF roda
-// SOMENTE enquanto há tinta viva (auto-desliga).
-// Fiel ao original; adaptação: quem monta decide quando NÃO
-// renderizar (touch/reduced-motion), senão o conteúdo ficaria
-// preso sob a máscara.
-// ============================================================
+"use client";
+import React, { useEffect, useRef, useCallback } from "react";
 
 interface InkRevealProps {
-  /** Cor RGB da máscara, ex.: [250, 246, 240] (token background) */
+  /** RGB color of the mask overlay, e.g. [252, 250, 248] */
   maskColor?: [number, number, number];
+  /** Radius of each ink stamp in px */
   brushSize?: number;
+  /** How long each stamp lives before fading (ms) */
   lifetime?: number;
+  /** Initial radius before the stamp expands */
   rStart?: number;
+  /** Random variation factor for stamp radius (0–1) */
   rVary?: number;
+  /** Min pixel distance between stamps along a stroke */
   stampStep?: number;
+  /** Max stamps alive at once (oldest are pruned) */
   maxStamps?: number;
+  /** Number of segments on the wobble circle (higher = smoother) */
   segments?: number;
+  /** Wobble amplitude weights [primary, secondary, tertiary] */
   wobble?: [number, number, number];
+  /** Gradient inner-radius factor (0–1, relative to stamp radius) */
   gradientInnerRadius?: number;
+  /** Gradient opacity stops [center, mid, edge] */
   gradientStops?: [number, number, number];
+  /** Extra CSS class for the canvas element */
   className?: string;
+  /** Extra inline styles for the canvas element */
   style?: React.CSSProperties;
 }
 
@@ -38,13 +39,13 @@ interface Stamp {
 }
 
 export function InkReveal({
-  maskColor = [250, 246, 240],
-  brushSize = 128,
-  lifetime = 600,
-  rStart = 10,
+  maskColor = [26, 38, 34], // Adapting to verde-profundo by default
+  brushSize = 64,
+  lifetime = 2000,
+  rStart = 5,
   rVary = 0.45,
   stampStep = 10,
-  maxStamps = 200,
+  maxStamps = 300,
   segments = 36,
   wobble = [0.14, 0.08, 0.05],
   gradientInnerRadius = 0.2,
@@ -75,18 +76,27 @@ export function InkReveal({
     canvas.height = Math.round(h * dpr);
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = `rgb(${mc[0]},${mc[1]},${mc[2]})`;
     ctx.fillRect(0, 0, w, h);
   }, [mc]);
 
-  // Um carimbo de tinta: círculo com borda "bêbada" (3 senos sobrepostos)
   const carveInk = useCallback(
-    (ctx: CanvasRenderingContext2D, x: number, y: number, r: number, seed: number, alpha: number) => {
-      const g = ctx.createRadialGradient(x, y, r * gradientInnerRadius, x, y, r);
+    (
+      ctx: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      r: number,
+      seed: number,
+      alpha: number
+    ) => {
+      const g = ctx.createRadialGradient(
+        x, y, r * gradientInnerRadius,
+        x, y, r
+      );
       g.addColorStop(0, `rgba(0,0,0,${gradientStops[0] * alpha})`);
       g.addColorStop(0.5, `rgba(0,0,0,${gradientStops[1] * alpha})`);
       g.addColorStop(1, `rgba(0,0,0,${gradientStops[2] * alpha})`);
@@ -126,7 +136,6 @@ export function InkReveal({
     [brushSize, rVary, maxStamps]
   );
 
-  // Interpola carimbos ao longo do traço (sem buracos em movimento rápido)
   const stampAlong = useCallback(
     (x: number, y: number) => {
       const last = lastPosRef.current;
@@ -146,20 +155,24 @@ export function InkReveal({
     [addStamp, stampStep]
   );
 
+  // Ref segura a versão mais recente do loop: a chamada recursiva usa
+  // loopRef.current (não `loop` diretamente) para não se auto-referenciar
+  // dentro do próprio useCallback.
+  const loopRef = useRef<() => void>(() => {});
+
   const loop = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const { w, h } = dimsRef.current;
     const now = performance.now();
     const stamps = stampsRef.current;
 
-    // Repinta a máscara e recorta (destination-out) a tinta viva
-    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = `rgb(${mc[0]},${mc[1]},${mc[2]})`;
     ctx.fillRect(0, 0, w, h);
-    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalCompositeOperation = "destination-out";
 
     for (let i = stamps.length - 1; i >= 0; i--) {
       const t = (now - stamps[i].born) / lifetime;
@@ -174,36 +187,49 @@ export function InkReveal({
     }
 
     if (stamps.length) {
-      requestAnimationFrame(loop);
+      requestAnimationFrame(() => loopRef.current());
     } else {
       runningRef.current = false;
     }
   }, [carveInk, mc, lifetime, rStart]);
 
+  useEffect(() => {
+    loopRef.current = loop;
+  }, [loop]);
+
   const startLoop = useCallback(() => {
     if (!runningRef.current) {
       runningRef.current = true;
-      requestAnimationFrame(loop);
+      requestAnimationFrame(() => loopRef.current());
     }
-  }, [loop]);
+  }, []);
 
   useEffect(() => {
     resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, [resize]);
 
-  const getRelativePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getRelativePos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    if ('touches' in e && e.touches.length > 0) {
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    } else if ('clientX' in e) {
+      return { x: (e as React.MouseEvent).clientX - rect.left, y: (e as React.MouseEvent).clientY - rect.top };
+    }
+    return { x: 0, y: 0 };
   };
 
   return (
     <canvas
       ref={canvasRef}
-      aria-hidden="true"
       className={className}
-      style={{ position: 'absolute', inset: 0, zIndex: 1, ...style }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 1,
+        ...style,
+      }}
       onMouseEnter={(e) => {
         const pos = getRelativePos(e);
         lastPosRef.current = pos;
@@ -216,6 +242,20 @@ export function InkReveal({
         startLoop();
       }}
       onMouseLeave={() => {
+        lastPosRef.current = null;
+      }}
+      onTouchStart={(e) => {
+        const pos = getRelativePos(e);
+        lastPosRef.current = pos;
+        stampAlong(pos.x, pos.y);
+        startLoop();
+      }}
+      onTouchMove={(e) => {
+        const pos = getRelativePos(e);
+        stampAlong(pos.x, pos.y);
+        startLoop();
+      }}
+      onTouchEnd={() => {
         lastPosRef.current = null;
       }}
     />

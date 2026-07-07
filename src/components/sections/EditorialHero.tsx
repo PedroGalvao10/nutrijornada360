@@ -1,19 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { LiquidText, TextEffect } from '../ui/text-animations';
 import { MagneticButton } from '../ui/MagneticButton';
 import { Typewriter } from '../ui/Typewriter';
-import posthog from 'posthog-js';
-import {
-  ArrowRight,
-  Play,
-  Target,
-  Star,
-  Activity,
-  MessageSquare,
-  Sparkles,
-  Check
-} from "lucide-react";
+import { useBooking } from '../../context/BookingContext';
+import { Star } from 'lucide-react';
 
 // ============================================================
 // EditorialHero — hero imersiva da Home. Três sistemas em camadas:
@@ -64,8 +55,9 @@ const rise = (delay: number) => ({
   transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay },
 });
 
-export function EditorialHero({ ctaText = 'Começar minha jornada', ctaVariant }: Props) {
+export function EditorialHero({ ctaText = 'Começar minha jornada' }: Props) {
   const heroRef = useRef<HTMLElement>(null);
+  const { openBooking } = useBooking();
   const videoLayerRef = useRef<HTMLDivElement>(null);
   const contentLayerRef = useRef<HTMLDivElement>(null);
   const cardLayerRef = useRef<HTMLDivElement>(null);
@@ -153,10 +145,9 @@ export function EditorialHero({ ctaText = 'Começar minha jornada', ctaVariant }
         <motion.div style={{ opacity: veilOpacity }} className="absolute inset-0 bg-stone-950 pointer-events-none" />
       </motion.div>
 
-      <div className="relative z-10 w-full px-6 md:px-12 grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-[4vw] items-center pt-32 pb-16 md:py-24 max-w-[1440px] mx-auto">
-
+      <div className="relative z-10 w-full px-6 md:px-12 flex flex-col md:flex-row items-center pt-32 pb-16 md:py-24 max-w-[1440px] mx-auto gap-12">
         {/* COL 1: CONTENT — plano médio do parallax */}
-        <motion.div style={{ y: contentY }}>
+        <motion.div style={{ y: contentY }} className="w-full md:w-3/5 lg:w-1/2">
           <div ref={contentLayerRef} className="text-left will-change-transform">
             <motion.div {...rise(0.1)}>
               {/* BADGE */}
@@ -181,141 +172,43 @@ export function EditorialHero({ ctaText = 'Começar minha jornada', ctaVariant }
               </span>
             </h1>
 
-            <motion.p
-              {...rise(1.15)}
-              className="text-lg md:text-xl font-light text-stone-300 leading-relaxed max-w-[46ch] mb-10"
-            >
-              Acompanhamento que olha para o seu corpo, a sua rotina e a sua
-              relação com a comida — sem terrorismo nutricional, sem cardápio de gaveta.
+            <motion.p {...rise(1.15)}>
+              <div className="mt-8 text-lg md:text-xl font-light text-stone-300 max-w-xl leading-relaxed">
+                <TextEffect text="O primeiro passo para o emagrecimento consciente não começa no prato. Começa na mente. Descubra um método onde você não precisa brigar com seu próprio corpo." preset="blur" delay={0.3} />
+              </div>
             </motion.p>
 
             <motion.div {...rise(1.35)}>
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-start">
-                <MagneticButton as="div" className="w-full sm:w-auto">
-                  <Link
-                    to="/planos"
-                    onClick={() => posthog.capture('hero_cta_clicked', { variant: ctaVariant || 'control' })}
-                    data-cursor="Ver Planos"
-                    className="inline-flex w-full sm:w-auto justify-center items-center gap-2 bg-verde-profundo text-white px-8 py-4 rounded-full font-semibold text-[0.95rem] shadow-[0_0_40px_rgba(30,58,42,0.5)] hover:shadow-[0_0_60px_rgba(30,58,42,0.8)] border border-white/10 transition-all duration-300 hover:scale-[1.02]"
+                <MagneticButton as="div" className="inline-block">
+                  <button
+                    type="button"
+                    onClick={() => openBooking()}
+                    data-cursor="Agendar"
+                    className="no-glass group relative inline-flex items-center justify-center bg-white text-stone-900 rounded-full py-4 px-8 md:py-5 md:px-10 overflow-hidden"
                   >
-                    {ctaText} <ArrowRight className="w-4 h-4" />
-                  </Link>
+                    <div className="absolute inset-0 bg-ouro-suave scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+                    <span className="relative z-10 flex items-center gap-3 font-semibold uppercase tracking-wider text-sm">
+                      <LiquidText text={ctaText} />
+                      <span className="material-symbols-outlined text-lg leading-none transform group-hover:translate-x-1 transition-transform">
+                        arrow_forward
+                      </span>
+                    </span>
+                  </button>
                 </MagneticButton>
-                <Link
-                  to="/sobre"
-                  data-cursor="Conhecer"
-                  className="group flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-[0.95rem] font-semibold text-stone-200 w-full sm:w-auto backdrop-blur-sm"
-                >
-                  <Play className="w-4 h-4 group-hover:text-ouro-suave transition-colors" />
-                  Ver como funciona
-                </Link>
               </div>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* COL 2: STORYTELLING CARDS — primeiro plano do parallax (tilt 3D) */}
-        <motion.div style={{ y: cardY }} className="w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto relative">
+        {/* COL 2: INSPIRATIONAL BLOCK — primeiro plano do parallax (tilt 3D) */}
+        <motion.div style={{ y: cardY }} className="w-full md:w-2/5 lg:w-1/2 relative hidden md:block">
           <div ref={cardLayerRef} className="will-change-transform" style={{ transformStyle: 'preserve-3d' }}>
-            <motion.div {...rise(0.9)}>
-              {/* MAIN METHOD CARD */}
-              <div className="relative p-6 md:p-8 rounded-[2rem] border border-white/10 border-t-white/30 border-l-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden">
-                {/* Glass Backdrop fix for stacking context */}
-                <div className="absolute inset-0 bg-black/30 -z-10" style={{ WebkitBackdropFilter: 'blur(40px)', backdropFilter: 'blur(40px)' }}></div>
-                {/* Textura de vidro (Ruído) */}
-                <div className="absolute inset-0 opacity-[0.08] pointer-events-none -z-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")" }}></div>
-                {/* Subtle gold glow inside card */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-ouro-suave/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 -z-10" />
-
-                <div className="relative z-10">
-                  <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
-                    <h3 className="text-2xl font-headline font-semibold text-stone-100 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-ouro-suave" />
-                      O Método 360º
-                    </h3>
-                    <span className="text-xs tracking-wider uppercase font-bold text-ouro-suave px-3 py-1.5 rounded-md bg-ouro/10 border border-ouro/20">
-                      Sua Jornada
-                    </span>
-                  </div>
-
-                  {/* Vertical Step Timeline */}
-                  <div className="space-y-6">
-                    {/* Step 1 */}
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-ouro/20 border border-ouro-suave/30 flex items-center justify-center text-ouro-suave text-base font-semibold shrink-0">
-                          1
-                        </div>
-                        <div className="w-px h-full bg-white/10 my-1"></div>
-                      </div>
-                      <div>
-                        <h4 className="text-base font-bold text-stone-100 flex items-center gap-2">
-                          Investigar
-                          <Activity className="w-3.5 h-3.5 text-ouro-suave/70" />
-                        </h4>
-                        <p className="text-sm text-stone-300 mt-1.5 leading-relaxed">
-                          Análise profunda da sua rotina e relação com a comida.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Step 2 */}
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-ouro/20 border border-ouro-suave/30 flex items-center justify-center text-ouro-suave text-base font-semibold shrink-0">
-                          2
-                        </div>
-                        <div className="w-px h-full bg-white/10 my-1"></div>
-                      </div>
-                      <div>
-                        <h4 className="text-base font-bold text-stone-100 flex items-center gap-2">
-                          Personalizar
-                          <Target className="w-3.5 h-3.5 text-ouro-suave/70" />
-                        </h4>
-                        <p className="text-sm text-stone-300 mt-1.5 leading-relaxed">
-                          Metas reais que se adaptam de verdade à sua vida.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Step 3 */}
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-ouro/20 border border-ouro-suave/30 flex items-center justify-center text-ouro-suave text-base font-semibold shrink-0">
-                          3
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="text-base font-bold text-stone-100 flex items-center gap-2">
-                          Acompanhar
-                          <MessageSquare className="w-3.5 h-3.5 text-ouro-suave/70" />
-                        </h4>
-                        <p className="text-sm text-stone-300 mt-1.5 leading-relaxed">
-                          Suporte contínuo e ajustes práticos para o dia a dia.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Footer tags */}
-                  <div className="mt-8 pt-4 border-t border-white/5 flex gap-3 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-stone-200">
-                      <Check className="w-3 h-3 text-ouro-suave" /> Sem Dietas Restritivas
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-stone-200">
-                      <Check className="w-3 h-3 text-ouro-suave" /> Foco Comportamental
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
 
             <motion.div {...rise(1.15)}>
               {/* INSPIRATIONAL BLOCK */}
-              <div className="mt-6 p-6 rounded-[1.5rem] border border-white/10 border-t-white/30 border-l-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                {/* Glass Backdrop fix for stacking context */}
+              <div className="relative p-6 md:p-8 rounded-[2rem] border border-white/10 border-t-white/30 border-l-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden">
                 <div className="absolute inset-0 bg-black/30 -z-10" style={{ WebkitBackdropFilter: 'blur(40px)', backdropFilter: 'blur(40px)' }}></div>
-                {/* Textura de vidro (Ruído) */}
                 <div className="absolute inset-0 opacity-[0.08] pointer-events-none -z-10" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")" }}></div>
                 <div className="absolute top-0 left-0 w-24 h-24 bg-ouro/5 rounded-full blur-[40px] -z-10" />
                 <blockquote className="relative z-10 text-center min-h-[5rem] flex items-center justify-center">

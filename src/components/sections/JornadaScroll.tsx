@@ -30,33 +30,33 @@ const ETAPAS: Etapa[] = [
   {
     Icon: ClipboardList,
     numero: '01',
-    titulo: 'Você conta a sua história',
-    texto: 'Um formulário curto de triagem: objetivo, rotina, saúde. Leva menos de cinco minutos — e é onde tudo começa.',
+    titulo: 'Você me conta a sua história',
+    texto: 'Um formulário curto sobre seus objetivos, rotina e relação com a comida. Leva cinco minutinhos — e é onde começamos a nos conhecer.',
     detalhe: 'Triagem online · 5 minutos',
     tema: 'creme',
   },
   {
     Icon: UserCheck,
     numero: '02',
-    titulo: 'A Mariana revisa o seu caso',
-    texto: 'Cada pedido passa por curadoria humana. Se o plano escolhido não for o ideal para você, ela sugere outro caminho antes de qualquer pagamento.',
-    detalhe: 'Curadoria humana · sem automático',
+    titulo: 'Eu leio o seu caso',
+    texto: 'Nada aqui é feito por robôs. Eu mesma leio a sua história. Se o formato que você escolheu não for o melhor para o seu caso, eu converso com você antes de seguirmos.',
+    detalhe: 'Curadoria humana',
     tema: 'nevoa',
   },
   {
     Icon: Salad,
     numero: '03',
-    titulo: 'Consulta e plano sob medida',
-    texto: 'Presencial em São Paulo ou online. O plano alimentar nasce da sua rotina real — não de um cardápio de gaveta.',
+    titulo: 'O plano nasce da sua vida real',
+    texto: 'O nosso encontro (presencial em São Paulo ou online) é uma conversa. Não tem bronca nem cardápio de gaveta, construímos a estratégia juntos.',
     detalhe: 'Presencial ou online',
     tema: 'creme2',
   },
   {
     Icon: MessagesSquare,
     numero: '04',
-    titulo: 'O acompanhamento continua',
-    texto: 'Suporte via WhatsApp, ajustes baseados no seu corpo e reeducação no seu tempo. A consulta é o começo, não o fim.',
-    detalhe: 'Suporte contínuo',
+    titulo: 'Não solto a sua mão',
+    texto: 'Suporte direto comigo pelo WhatsApp, ajustes de percurso e construção de hábitos. A nossa consulta é só o começo de uma caminhada lado a lado.',
+    detalhe: 'Acompanhamento lado a lado',
     tema: 'profundo',
   },
 ];
@@ -184,7 +184,7 @@ export function JornadaScroll() {
                       data-cursor="Agendar"
                       className="no-glass mt-9 inline-flex items-center gap-2 bg-background text-verde-profundo px-9 py-4 rounded-full font-semibold text-[0.95rem] shadow-float-1 hover:shadow-float-2 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
                     >
-                      Começar a minha jornada
+                      Começar a minha avaliação
                       <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_forward</span>
                     </button>
                   )}

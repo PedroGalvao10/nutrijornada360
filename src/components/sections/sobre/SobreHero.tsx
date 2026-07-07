@@ -1,81 +1,22 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { InkReveal } from '../../ui/InkReveal';
 import marianaProfile from '../../../assets/mariana-profile.webp';
 
 gsap.registerPlugin(ScrollTrigger);
 
 // ============================================================
-// SobreHero — dobra de abertura na direção "Editorial Orgânico",
-// reconstruída sobre o padrão "Portfolio Hero": nome gigante em
-// Lora com a foto da Mariana sobreposta ao centro. Texto entra
-// com blur letra-a-letra (IntersectionObserver, sem libs).
+// SobreHero — A Carta Aberta
+// Removida a estética corporativa/portfolio de nome gigante.
+// Adotamos um layout de carta aberta íntima com a foto da 
+// Mariana como uma polaroid física colada ao lado.
 // ============================================================
-
-interface BlurTextProps {
-  text: string;
-  delay?: number;
-  animateBy?: 'words' | 'letters';
-  className?: string;
-  as?: 'span' | 'p';
-}
-
-// Revela cada segmento saindo de blur+deslocamento quando entra em viewport.
-const BlurText: React.FC<BlurTextProps> = ({ text, delay = 60, animateBy = 'letters', className = '', as = 'span' }) => {
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => entry.isIntersecting && setInView(true),
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const segments = useMemo(
-    () => (animateBy === 'words' ? text.split(' ') : text.split('')),
-    [text, animateBy]
-  );
-
-  const Tag = as as React.ElementType;
-  return (
-    <Tag ref={ref} className={`inline-flex flex-wrap ${className}`}>
-      {segments.map((segment, i) => (
-        <span
-          key={i}
-          style={{
-            display: 'inline-block',
-            filter: inView ? 'blur(0px)' : 'blur(10px)',
-            opacity: inView ? 1 : 0,
-            transform: inView ? 'translateY(0)' : 'translateY(-20px)',
-            transition: `all 0.55s cubic-bezier(0.22,1,0.36,1) ${i * delay}ms`,
-          }}
-        >
-          {segment === ' ' ? ' ' : segment}
-          {animateBy === 'words' && i < segments.length - 1 ? ' ' : ''}
-        </span>
-      ))}
-    </Tag>
-  );
-};
-
-const nameClasses =
-  'font-headline font-medium text-primary dark:text-emerald-400 ' +
-  'text-[3.6rem] sm:text-[6rem] md:text-[8rem] lg:text-[10.5rem] ' +
-  'leading-[0.78] tracking-[-0.04em] uppercase justify-center whitespace-nowrap';
 
 export function SobreHero() {
   const heroRef = useRef<HTMLElement>(null);
 
-  // Parallax de camadas na saída do hero (Parallax Scrolling, 21st.dev,
-  // adaptado sem Lenis): ao rolar, cada camada sobe numa velocidade —
-  // foto (mais próxima) rápida, nome médio, textos lentos — criando
-  // profundidade real de cena. Scrub 0 = colado no dedo.
   useGSAP(
     () => {
       if (!heroRef.current) return;
@@ -86,69 +27,77 @@ export function SobreHero() {
           trigger: heroRef.current,
           start: 'top top',
           end: 'bottom top',
-          scrub: 0,
+          scrub: 1,
         },
       });
 
-      const layers = [
-        { layer: '1', yPercent: 60 }, // foto — primeiro plano
-        { layer: '2', yPercent: 35 }, // nome gigante
-        { layer: '3', yPercent: 15 }, // eyebrow + tagline
-      ];
-      layers.forEach((l, idx) => {
-        tl.to(
-          heroRef.current!.querySelectorAll(`[data-parallax-layer="${l.layer}"]`),
-          { yPercent: -l.yPercent, ease: 'none' },
-          idx === 0 ? undefined : '<'
-        );
-      });
+      // Parallax sutil na foto polaroid
+      tl.to('.polaroid-photo', { yPercent: 20, ease: 'none' }, 0);
     },
     { scope: heroRef }
   );
 
   return (
-    <section ref={heroRef} className="relative overflow-hidden min-h-[92vh] flex flex-col">
-      {/* Glow de fundo on-brand (único elemento animado leve da dobra) */}
-      <div aria-hidden="true" className="absolute -top-40 -right-40 w-[560px] h-[560px] rounded-full bg-verde-nevoa/60 dark:bg-emerald-900/20 blur-[120px] pointer-events-none" />
-      <div aria-hidden="true" className="absolute -bottom-52 -left-40 w-[520px] h-[520px] rounded-full bg-verde-nevoa/40 dark:bg-emerald-900/10 blur-[130px] pointer-events-none" />
+    <section ref={heroRef} className="relative overflow-hidden min-h-[85vh] flex flex-col bg-[#FDFBF7] dark:bg-stone-950">
+      {/* Textura de Papel */}
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-multiply dark:mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }} />
 
-      {/* Eyebrow — mantém a assinatura da página */}
-      <div data-parallax-layer="3" className="relative z-20 max-w-[1280px] w-full mx-auto px-6 md:px-12 pt-28 md:pt-36">
-        <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-tertiary dark:text-ouro-suave">
-          <span aria-hidden="true" className="inline-block w-10 h-px bg-ouro-suave" />
-          Sobre Mariana
-        </p>
-      </div>
-
-      {/* Nome gigante com foto sobreposta ao centro */}
-      <div className="relative flex-1 flex items-center justify-center px-4">
-        <div data-parallax-layer="2" className="relative text-center">
-          <BlurText text="Mariana" animateBy="letters" delay={90} className={nameClasses} />
-          <div aria-hidden="true" className="mx-auto my-3 md:my-5 h-px w-24 md:w-40 bg-ouro-suave/70" />
-          <BlurText text="Bermudes" animateBy="letters" delay={90} className={nameClasses} />
-
-          {/* Foto da Mariana — retrato sobreposto ao centro do nome */}
-          <div data-parallax-layer="1" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="w-[92px] h-[150px] sm:w-[120px] sm:h-[195px] md:w-[150px] md:h-[240px] lg:w-[180px] lg:h-[290px] rounded-full overflow-hidden shadow-float-2 ring-1 ring-white/60 dark:ring-stone-700 transition-transform duration-500 hover:scale-105">
+      <div className="relative max-w-[1280px] w-full mx-auto px-6 md:px-12 pt-32 md:pt-48 pb-20 flex-1 flex flex-col md:flex-row items-center md:items-start gap-12 md:gap-20">
+        
+        {/* Lado Esquerdo: A Foto Polaroid */}
+        <div className="polaroid-photo w-full md:w-5/12 flex justify-center md:justify-end z-10">
+          <div className="relative p-4 pb-16 bg-white dark:bg-stone-900 shadow-xl border border-stone-200 dark:border-stone-800 -rotate-2 transform hover:rotate-0 transition-all duration-500 w-[280px] sm:w-[320px] md:w-[380px] group overflow-hidden">
+            {/* Durex no topo */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-white/60 dark:bg-stone-700/60 backdrop-blur-sm shadow-sm rotate-2 border border-black/5 z-20" />
+            
+            <div className="relative w-full aspect-[4/5] bg-stone-200 dark:bg-stone-800">
               <img
                 src={marianaProfile}
                 alt="Mariana Bermudes, nutricionista"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover grayscale-[0.2] contrast-[1.05]"
               />
+              {/* O Ink Reveal cobre a imagem com a cor da página e o usuário "raspa" para ver a foto */}
+              <InkReveal maskColor={[26, 38, 34]} brushSize={80} className="cursor-crosshair" />
+              
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-700 z-10">
+                <span className="text-white/70 font-handwriting text-2xl rotate-2">Passe o mouse...</span>
+              </div>
+            </div>
+
+            <div className="absolute bottom-4 left-0 w-full text-center">
+              <span className="font-handwriting text-2xl text-stone-600 dark:text-stone-400">Mariana Bermudes</span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Tagline / bio curta */}
-      <div data-parallax-layer="3" className="relative z-20 pb-20 md:pb-28 px-6">
-        <BlurText
-          as="p"
-          animateBy="words"
-          delay={40}
-          text="Nutricionista formada pelo São Camilo. Nutrição comportamental — porque comer bem passa menos por força de vontade e mais por um plano que respeita a sua rotina."
-          className="max-w-[62ch] mx-auto text-center text-base md:text-lg font-light text-on-surface-variant dark:text-stone-400 leading-relaxed"
-        />
+        {/* Lado Direito: A Carta */}
+        <div className="w-full md:w-7/12 flex flex-col justify-center max-w-xl z-20">
+          <p className="inline-flex items-center gap-3 text-[0.68rem] tracking-[0.26em] uppercase font-extrabold text-stone-400 dark:text-stone-500 mb-8">
+            <span aria-hidden="true" className="inline-block w-10 h-px bg-stone-300 dark:bg-stone-700" />
+            Uma carta aberta
+          </p>
+
+          <h1 className="font-headline font-medium text-4xl sm:text-5xl md:text-6xl text-stone-900 dark:text-stone-100 leading-[1.1] mb-8">
+            Prazer, Mariana. <br/>
+            <em className="font-handwriting text-primary dark:text-emerald-500 text-5xl sm:text-6xl md:text-7xl">Mas me chame de Mari.</em>
+          </h1>
+
+          <div className="space-y-6 text-lg md:text-xl font-light text-stone-700 dark:text-stone-400 leading-relaxed">
+            <p>
+              Se você chegou até aqui, é provável que já tenha tentado de tudo. Restrições severas, chás milagrosos, promessas de resultados em trinta dias. E no fim, a culpa sempre parecia pesar mais que a balança.
+            </p>
+            <p>
+              Eu sou nutricionista formada pelo Centro Universitário São Camilo, mas muito além do diploma, a minha escola de verdade foi a escuta.
+            </p>
+            <p>
+              Decidi seguir o caminho da <strong>nutrição comportamental</strong> porque entendi que a comida não entra só no nosso estômago — ela senta à mesa com os nossos medos, ansiedades e a nossa rotina corrida de trabalho.
+            </p>
+          </div>
+
+          <div className="mt-12">
+            <p className="font-handwriting text-4xl text-stone-800 dark:text-stone-300">Vamos mudar essa história?</p>
+          </div>
+        </div>
       </div>
     </section>
   );

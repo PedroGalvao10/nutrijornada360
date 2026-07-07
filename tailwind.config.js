@@ -72,7 +72,8 @@ export default {
       fontFamily: {
         "headline": ["Lora", "serif"],
         "body": ["Raleway", "sans-serif"],
-        "label": ["Raleway", "sans-serif"]
+        "label": ["Raleway", "sans-serif"],
+        "handwriting": ["Caveat", "cursive"]
       },
       boxShadow: {
         "float-1": "0 12px 32px rgba(38,48,43,.07)",

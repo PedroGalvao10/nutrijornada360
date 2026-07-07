@@ -211,7 +211,7 @@ float drawWireframe(vec2 p, int shape, mat3 rotation, float scale, float thickne
     return clamp(result, 0.0, 1.0);
 }
 
-vec3 render(vec2 st, vec2 mouse) {
+vec4 render(vec2 st, vec2 mouse) {
     float mouseDistance = length(st - mouse);
     float mouseInfluence = 1.0 - smoothstep(0.0, 0.5, mouseDistance);
 
@@ -227,25 +227,24 @@ vec3 render(vec2 st, vec2 mouse) {
 
     float shape = drawWireframe(st, u_shape, rotation, scale, thickness, blur);
 
-    // Traço creme com toque ouro (paleta da marca sobre verde-escuro)
-    vec3 color = vec3(0.95, 0.90, 0.80);
+    // Traço verde-profundo elegante (pode ser ajustado)
+    vec3 color = vec3(0.12, 0.23, 0.16);
     float dimming = 1.0 - mouseInfluence * 0.3;
-    color *= shape * dimming;
+    float alpha = shape * dimming;
+    color *= alpha; // Premultiplied color
 
     float vignette = 1.0 - length(st) * 0.2;
     color *= vignette;
-    color = pow(color, vec3(0.9));
+    alpha *= vignette;
 
-    // Fundo verde-profundo escuro
-    vec3 bg = vec3(0.043, 0.078, 0.055);
-    return bg + color;
+    return vec4(color, alpha);
 }
 
 void main() {
     vec2 st = coord(gl_FragCoord.xy);
     vec2 mouse = coord(u_mouse * u_pixelRatio) * vec2(1., -1.);
-    vec3 color = render(st, mouse);
-    gl_FragColor = vec4(color, 1.0);
+    vec4 colorAlpha = render(st, mouse);
+    gl_FragColor = colorAlpha;
 }
 `;
 
@@ -281,8 +280,8 @@ export function GeometricBlurMesh({ className = '' }: { className?: string }) {
 
     const gl = canvas.getContext('webgl', {
       antialias: true,
-      alpha: false,
-      premultipliedAlpha: false,
+      alpha: true,
+      premultipliedAlpha: true,
       preserveDrawingBuffer: false,
     });
     if (!gl) return;

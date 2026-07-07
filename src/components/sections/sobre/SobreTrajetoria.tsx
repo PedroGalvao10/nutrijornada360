@@ -24,18 +24,18 @@ const ETAPAS: Etapa[] = [
     titulo: 'Formação',
     contexto: 'Centro Universitário São Camilo',
     descricao:
-      'Graduada em Nutrição pelo Centro Universitário São Camilo, referência em saúde em São Paulo.',
+      'Me formei em Nutrição pelo Centro Universitário São Camilo, uma das maiores referências em saúde de São Paulo.',
   },
   {
     Icon: FlaskConical,
     titulo: 'Vida acadêmica',
     contexto: 'Pesquisa · Educação nutricional',
     descricao:
-      'Envolvida com pesquisa e educação nutricional ainda na graduação, aproximando ciência e prática.',
+      'Me envolvi profundamente com pesquisa e educação nutricional ainda na faculdade, aproximando a ciência da prática diária.',
     itens: [
       'Diretora de Pesquisa da Liga de Unidades de Alimentação e Nutrição',
-      'Monitora de Marketing Nutricional',
-      'Foco em rotulagem de alimentos e educação nutricional',
+      'Fui Monitora de Marketing Nutricional',
+      'Foquei meus estudos em rotulagem de alimentos e educação',
     ],
   },
   {
@@ -43,7 +43,7 @@ const ETAPAS: Etapa[] = [
     titulo: 'Experiência profissional',
     contexto: 'Clínica · Hospitalar · Coletiva',
     descricao:
-      'Da alta gastronomia à saúde coletiva, uma vivência que atravessa contextos e sempre volta ao cuidado com gente.',
+      'Passei pela alta gastronomia e pela saúde coletiva. Uma vivência que atravessou contextos, mas sempre me trouxe de volta ao cuidado com a pessoa.',
     itens: [
       'Rosewood Hotel Group',
       'Nutrição Clínica no Hospital São Camilo',
@@ -93,7 +93,7 @@ export function SobreTrajetoria() {
     <section aria-labelledby="trajetoria" className="max-w-[1280px] mx-auto px-6 md:px-12 pb-24 md:pb-32">
       <div className="max-w-2xl mb-12 md:mb-16">
         <h2 id="trajetoria" className="font-headline font-medium text-3xl md:text-4xl leading-[1.12] text-on-background dark:text-stone-100">
-          Do hospital ao consultório, sempre perto de gente.
+          Do hospital ao consultório particular, a minha escola sempre foi ouvir.
         </h2>
       </div>
 

@@ -2,22 +2,11 @@ import { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useViewportVisibility } from '../../hooks/useViewportVisibility';
 import { StaggerReveal, StaggerItem } from '../ui/StaggerReveal';
-import { GlowWrapper } from '../ui/GlowWrapper';
 import { MagneticButton } from '../ui/MagneticButton';
-import { HulyTextHighlight } from '../HulyTextHighlight';
+import { TextEffect } from '../ui/text-animations';
 
 export function PlansSection() {
   const plansVideoRef = useRef<HTMLVideoElement>(null);
-  
-  // Refs para 3D Tilt - Planos (Desativados temporariamente para permitir o backdrop-blur perfeito sem bugs de Stacking Context do Chrome)
-  const plano1Ref = useRef<HTMLDivElement>(null);
-  const plano2Ref = useRef<HTMLDivElement>(null);
-  const plano3Ref = useRef<HTMLDivElement>(null);
-
-  // useTilt(plano1Ref, 10);
-  // useTilt(plano2Ref, 10);
-  // useTilt(plano3Ref, 10);
-
   const isPlansVideoVisible = useViewportVisibility(plansVideoRef);
 
   useEffect(() => {
@@ -30,146 +19,104 @@ export function PlansSection() {
   }, [isPlansVideoVisible]);
 
   return (
-    <section className="relative py-24 md:py-32 flex flex-col items-center justify-center overflow-hidden w-full bg-stone-900 border-none">
-      {/* Video Background Layer */}
-      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-stone-900">
+    <section className="relative py-32 md:py-48 flex flex-col items-center justify-center overflow-hidden w-full bg-stone-900 border-none">
+      {/* Video Background Layer (Cinematic) */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <video 
           ref={plansVideoRef}
           muted 
           playsInline 
           loop
           preload="metadata"
-          className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-90 brightness-75 saturate-[0.7] blur-[2px] scale-[1.02]"
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover opacity-60 brightness-75 saturate-50 blur-[2px] scale-[1.05]"
         >
           <source src="/bg-plans.webm" type="video/webm" />
           <source src="/bg-plans.mp4" type="video/mp4" />
         </video>
-        {/* Overlay mantendo o aspecto escuro sem usar o pesadíssimo backdrop-blur */}
-        <div className="absolute inset-0 bg-stone-950/40"></div>
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-surface-variant dark:from-stone-900 to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background dark:from-stone-950 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-stone-950/70 mix-blend-multiply"></div>
+        {/* Soft fade masks */}
+        <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-stone-950 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-stone-950 to-transparent z-10 pointer-events-none"></div>
       </div>
 
-      <div className="relative z-20 w-full px-6 md:px-12 text-center md:text-left pt-10">
-        <StaggerReveal className="mb-16 md:mb-24 md:w-3/4">
+      <div className="relative z-20 w-full max-w-[1200px] mx-auto px-6 md:px-12">
+        
+        {/* Editorial Header */}
+        <StaggerReveal className="mb-24 text-center flex flex-col items-center">
           <StaggerItem>
-            <h2 className="text-5xl md:text-[4rem] font-headline text-white tracking-tight font-medium leading-[1.05] mb-6">
-              Sua jornada começa aqui.
+            <p className="inline-flex items-center gap-3 text-[0.65rem] tracking-[0.26em] uppercase font-bold text-ouro-suave mb-8">
+              <span aria-hidden="true" className="inline-block w-8 h-[1px] bg-ouro-suave/50" />
+              Jornadas de Cuidado
+              <span aria-hidden="true" className="inline-block w-8 h-[1px] bg-ouro-suave/50" />
+            </p>
+          </StaggerItem>
+          <StaggerItem>
+            <h2 className="text-4xl md:text-5xl lg:text-[4.5rem] leading-[1.05] tracking-[-0.02em] font-medium text-white mb-8">
+              Como podemos <br />
+              <em className="italic text-verde-nevoa/90">caminhar juntos.</em>
             </h2>
           </StaggerItem>
           <StaggerItem>
-            <div className="text-xl md:text-2xl text-white/80 font-normal max-w-2xl leading-relaxed">
-              <HulyTextHighlight
-                text="Modalidades de atendimento desenhadas para integrar a nutrição ao seu estilo de vida da forma mais orgânica possível."
-                highlightWords="integrar a nutrição ao seu estilo de vida"
-              />
+            <div className="text-lg md:text-xl font-light text-stone-400 max-w-2xl text-center leading-relaxed">
+              <TextEffect text="Escolha o formato que melhor abraça o seu momento de vida. Sem pacotes engessados, apenas o cuidado que você precisa, na intensidade exata." preset="blur" delay={0.2} />
             </div>
           </StaggerItem>
         </StaggerReveal>
 
+        {/* Membership / Care Journeys */}
         <StaggerReveal 
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-stretch"
           staggerInterval={0.2}
         >
+          {/* Option 1 */}
           <StaggerItem>
-            <GlowWrapper 
-              ref={plano1Ref}
-              className="no-glass parallax-shadow group border border-white/20 rounded-[2.25rem] p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
-              style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(30px) saturate(200%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
-              }}
-              data-cursor="Foco Individual"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-              <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mb-10 text-white/90 group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
-                <span className="material-symbols-outlined font-light text-[24px]">person</span>
+            <div className="group h-full flex flex-col relative transition-all duration-700">
+              <div className="mb-8">
+                <span className="font-handwriting text-3xl text-ouro-suave/80 block mb-4">A Essência</span>
+                <h3 className="text-4xl font-headline text-white mb-6">Acompanhamento Pontual</h3>
+                <div className="w-12 h-[1px] bg-white/20 mb-6 group-hover:w-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+                <p className="text-stone-300 font-light leading-relaxed text-lg mb-8">
+                  Um primeiro passo firme e direcionado. Juntas, mergulhamos na sua rotina atual para fazer ajustes precisos que já começam a transformar sua relação com a comida. Ideal para check-ups ou demandas específicas.
+                </p>
               </div>
-              <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Individual</h3>
-              <div className="flex-grow">
-                <p className="text-white/70 mb-12 font-light leading-relaxed text-lg tilt-child tz-10">Acompanhamento 100% focado no seu metabolismo e rotina.</p>
-              </div>
-              <div className="w-fit tilt-child tz-20">
-                <MagneticButton as="div" className="w-fit">
-                  <Link to="/planos" className="text-white font-medium flex items-center gap-2 group-hover:gap-4 transition-all duration-500 ease-out z-10">
-                    Ver Plano
-                    <span className="material-symbols-outlined text-sm font-bold leading-none opacity-80 group-hover:opacity-100 transform translate-y-px">arrow_forward</span>
+              
+              <div className="mt-auto pt-8">
+                <MagneticButton as="div" className="inline-block">
+                  <Link to="/planos" className="text-sm font-bold tracking-widest uppercase text-stone-200 group-hover:text-ouro-suave transition-colors flex items-center gap-3">
+                    Agendar Sessão
+                    <span className="material-symbols-outlined text-lg leading-none transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
                   </Link>
                 </MagneticButton>
               </div>
-            </GlowWrapper>
+            </div>
           </StaggerItem>
 
+          {/* Option 2 (Premium/Recommended) */}
           <StaggerItem>
-            <GlowWrapper 
-              ref={plano2Ref}
-              className="no-glass parallax-shadow group border border-white/30 rounded-[2.25rem] p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
-              style={{
-                background: 'rgba(255, 255, 255, 0.16)',
-                backdropFilter: 'blur(45px) saturate(220%)',
-                WebkitBackdropFilter: 'blur(45px) saturate(220%)',
-              }}
-              data-cursor="Mais Popular"
-            >
-              <div className="absolute top-0 right-0 p-8">
-                <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse"></div>
+            <div className="group h-full flex flex-col relative transition-all duration-700 md:pl-12 md:border-l border-white/10">
+              <div className="mb-8">
+                <span className="font-handwriting text-4xl text-verde-nevoa block mb-4">A Transformação</span>
+                <h3 className="text-4xl font-headline text-white mb-6">Jornada 360º</h3>
+                <div className="w-12 h-[1px] bg-white/20 mb-6 group-hover:w-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+                <p className="text-stone-300 font-light leading-relaxed text-lg mb-8">
+                  O meu cuidado de ponta a ponta. Mais do que consultas, eu seguro a sua mão durante o processo inteiro. Suporte diário, materiais de apoio e uma verdadeira reestruturação do seu estilo de vida.
+                </p>
               </div>
-              <div className="w-14 h-14 rounded-full border border-white/30 bg-white/10 flex items-center justify-center mb-10 text-white group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
-                <span className="material-symbols-outlined font-light text-[24px]">star</span>
-              </div>
-              <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Premium 360º</h3>
-              <div className="flex-grow">
-                <p className="text-white/85 mb-14 font-light leading-relaxed text-lg tilt-child tz-10">Suporte direto via WhatsApp, lista de compras e plano com focus integrativo.</p>
-              </div>
-              <div className="w-full tilt-child tz-20">
-                <MagneticButton as="div" className="w-full">
+              
+              <div className="mt-auto pt-8">
+                <MagneticButton as="div" className="inline-block w-full sm:w-auto">
                   <Link 
                     to="/planos" 
-                    className="w-full bg-white text-[#384a38] rounded-full py-5 px-6 flex items-center justify-between font-semibold group-hover:shadow-[0_8px_32_rgba(255,255,255,0.2)] group-hover:scale-[1.02] transition-all duration-500 ease-out z-10"
-                    data-cursor="Assinar 360º"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-stone-900 rounded-full py-4 px-8 font-semibold tracking-wide uppercase text-sm hover:bg-ouro-suave transition-colors duration-500"
                   >
-                    Assinar Agora
-                    <span className="material-symbols-outlined text-[18px] leading-none transform group-hover:translate-x-2 transition-transform duration-500 text-[#384a38] font-bold">arrow_forward</span>
+                    Iniciar Transformação
+                    <span className="material-symbols-outlined text-[18px] leading-none">arrow_forward</span>
                   </Link>
                 </MagneticButton>
               </div>
-            </GlowWrapper>
+            </div>
           </StaggerItem>
 
-          <StaggerItem>
-            <GlowWrapper 
-              ref={plano3Ref}
-              className="no-glass parallax-shadow group border border-white/20 rounded-[2.25rem] p-8 md:p-10 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col relative overflow-hidden transform-style-3d h-full cursor-pointer"
-              style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(30px) saturate(200%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
-              }}
-              data-cursor="Conforto Digital"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-              <div className="w-14 h-14 rounded-full border border-white/20 bg-white/5 flex items-center justify-center mb-10 text-white/90 group-hover:scale-110 transition-transform duration-700 ease-out tilt-child tz-30">
-                <span className="material-symbols-outlined font-light text-[24px]">computer</span>
-              </div>
-              <h3 className="text-3xl font-headline text-white mb-5 tracking-tight font-medium tilt-child tz-20">Online</h3>
-              <div className="flex-grow">
-                <p className="text-white/70 mb-12 font-light leading-relaxed text-lg tilt-child tz-10">Sessões terapêuticas nutricionais do conforto de onde você estiver.</p>
-              </div>
-              <div className="w-fit tilt-child tz-20">
-                <MagneticButton as="div" className="w-fit">
-                  <Link 
-                    to="/planos" 
-                    className="text-white font-medium flex items-center gap-2 group-hover:gap-4 transition-all duration-500 ease-out z-10"
-                    data-cursor="Ver Online"
-                  >
-                    Ver Plano
-                    <span className="material-symbols-outlined text-sm font-bold leading-none opacity-80 group-hover:opacity-100 transform translate-y-px">arrow_forward</span>
-                  </Link>
-                </MagneticButton>
-              </div>
-            </GlowWrapper>
-          </StaggerItem>
         </StaggerReveal>
       </div>
     </section>

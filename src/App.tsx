@@ -74,6 +74,7 @@ function App() {
   return (
     // reducedMotion="user": todas as animações framer-motion respeitam prefers-reduced-motion
     <MotionConfig reducedMotion="user">
+      <div className="premium-grain" aria-hidden="true"></div>
       <SplashScreen />
       <AppContent />
     </MotionConfig>

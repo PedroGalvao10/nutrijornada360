@@ -260,3 +260,17 @@ export function DotPatternQuote({ text, author, role, className }: { text: strin
     </div>
   );
 }
+
+// 10. MixedHeading
+export function MixedHeading({ text, sansClass = 'font-body font-bold', serifClass = 'font-headline italic', className = '' }: { text: string, sansClass?: string, serifClass?: string, className?: string }) {
+  const parts = text.split(/\*([^*]+)\*/);
+  return (
+    <span className={className}>
+      {parts.map((part, i) =>
+        i % 2 === 1
+          ? <span key={i} className={serifClass}>{part}</span>
+          : <span key={i} className={sansClass}>{part}</span>
+      )}
+    </span>
+  );
+}
