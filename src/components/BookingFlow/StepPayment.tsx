@@ -105,7 +105,7 @@ export function StepPayment(_props: Props) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="mb-3 flex-shrink-0">
-        <h2 className="text-2xl font-bold font-headline text-on-surface dark:text-stone-100 mb-2">
+        <h2 className="font-headline font-medium text-2xl text-on-background dark:text-stone-100 mb-2">
           Contrato Aprovado! 🎉
         </h2>
         <p className="text-on-surface-variant dark:text-stone-400 text-sm">
@@ -115,14 +115,14 @@ export function StepPayment(_props: Props) {
 
       <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-4 pb-4">
         {/* STEP: Countdown */}
-        <div className={`text-center p-3 rounded-xl border ${
+        <div className={`text-center p-3 rounded-[16px] border ${
           isExpired 
-            ? 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20'
+            ? 'bg-error/5 border-error/20'
             : 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20'
         }`}>
           <p className="text-[10px] uppercase tracking-wider text-stone-500 mb-1">Tempo restante</p>
           <p className={`text-2xl font-mono font-bold ${
-            isExpired ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'
+            isExpired ? 'text-error' : 'text-amber-600 dark:text-amber-400'
           }`}>
             {timeLeft}
           </p>
@@ -132,7 +132,7 @@ export function StepPayment(_props: Props) {
         <motion.div 
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="flex flex-col items-center p-5 bg-white dark:bg-stone-900 rounded-2xl border border-outline/10 dark:border-stone-700/20"
+          className="flex flex-col items-center p-5 bg-white dark:bg-stone-950 rounded-[20px] border border-surface-variant dark:border-stone-700/40 shadow-float-1"
         >
           <div className="bg-white p-3 rounded-xl mb-3">
             <QRCodeSVG
@@ -143,18 +143,18 @@ export function StepPayment(_props: Props) {
             />
           </div>
           <p className="text-xs text-stone-500 mb-2">Escaneie com o app do seu banco</p>
-          <p className="text-2xl font-bold text-primary dark:text-emerald-400">{selectedPlan.price}</p>
+          <p className="font-headline font-medium text-2xl text-primary dark:text-emerald-400">{selectedPlan.price}</p>
         </motion.div>
 
         {/* STEP: Chave PIX para cópia */}
-        <div className="flex items-center gap-2 bg-stone-50 dark:bg-stone-800/50 p-3 rounded-xl">
+        <div className="flex items-center gap-2 bg-creme-2 dark:bg-stone-800/50 p-3.5 rounded-[16px] border border-surface-variant/60 dark:border-stone-700/30">
           <div className="flex-grow">
-            <p className="text-[10px] text-stone-400 uppercase tracking-wider">Chave PIX (Telefone)</p>
+            <p className="text-[0.6rem] text-tertiary dark:text-ouro-suave font-extrabold uppercase tracking-[0.16em]">Chave PIX (telefone)</p>
             <p className="font-mono font-bold text-on-surface dark:text-stone-100">{PIX_KEY_DISPLAY}</p>
           </div>
           <button
             onClick={copyKey}
-            className="px-3 py-2 bg-primary/10 dark:bg-emerald-500/10 text-primary dark:text-emerald-400 rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors flex items-center gap-1"
+            className="no-glass px-3.5 py-2 bg-verde-profundo dark:bg-emerald-600 text-background dark:text-white rounded-full text-xs font-semibold hover:shadow-float-1 transition-all flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-sm">
               {copied ? 'check' : 'content_copy'}
@@ -168,7 +168,7 @@ export function StepPayment(_props: Props) {
           href={`https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMsg}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-4 bg-[#25D366] text-white rounded-xl font-bold hover:bg-[#20BD5A] transition-all shadow-md active:scale-[0.98]"
+          className="no-glass flex items-center justify-center gap-2 w-full py-4 bg-[#25D366] text-white rounded-full font-semibold hover:bg-[#20BD5A] transition-all shadow-float-1 active:scale-[0.99]"
         >
           <span className="material-symbols-outlined">chat</span>
           Enviar Comprovante via WhatsApp
@@ -180,7 +180,7 @@ export function StepPayment(_props: Props) {
             href={`/api/booking/contract-pdf/${activeBookingToken}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 text-primary dark:text-emerald-400 border-2 border-primary/20 dark:border-emerald-500/20 rounded-xl font-bold text-sm hover:bg-primary/5 dark:hover:bg-emerald-500/5 transition-all"
+            className="no-glass flex items-center justify-center gap-2 w-full py-3 text-verde-profundo dark:text-emerald-400 border border-surface-variant dark:border-stone-700 rounded-full font-semibold text-sm hover:border-ouro-suave transition-colors"
           >
             <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
             Baixar Contrato Aprovado (PDF)

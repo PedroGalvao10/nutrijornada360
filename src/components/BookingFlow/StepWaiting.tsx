@@ -72,7 +72,7 @@ export function StepWaiting({ onApproved, onRejected }: Props) {
       <motion.h2
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-xl font-bold font-headline text-on-surface dark:text-stone-100 mb-3"
+        className="font-headline font-medium text-2xl text-on-background dark:text-stone-100 mb-3"
       >
         Assinatura recebida com sucesso!
       </motion.h2>
@@ -108,7 +108,7 @@ export function StepWaiting({ onApproved, onRejected }: Props) {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
         </span>
-        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+        <span className="text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave uppercase tracking-[0.22em]">
           Aguardando verificação
         </span>
       </motion.div>

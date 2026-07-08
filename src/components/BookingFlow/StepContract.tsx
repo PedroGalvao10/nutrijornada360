@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useBooking } from '../../context/BookingContext';
 import type { BookingFormData } from '../../context/BookingContext';
 import { SignatureCanvas } from './SignatureCanvas';
+import { BfButton, BfBack } from './bfui';
 
 // ============================================================
 // STEP: Contrato Dinâmico + Assinatura Digital
@@ -76,8 +77,8 @@ export function StepContract({ data, onChange, onNext, onBack }: Props) {
       setActiveBooking(result.bookingToken, 'pending_review');
       onNext();
 
-    } catch (err: any) {
-      setError(err.message || 'Erro de conexão. Tente novamente.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro de conexão. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }
@@ -92,10 +93,8 @@ export function StepContract({ data, onChange, onNext, onBack }: Props) {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="mb-3 flex-shrink-0">
         <div className="flex items-center gap-2 mb-2">
-          <button onClick={onBack} className="p-1 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-colors">
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
-          </button>
-          <h2 className="text-2xl font-bold font-headline text-on-surface dark:text-stone-100">Contrato Digital</h2>
+          <BfBack onClick={onBack} />
+          <h2 className="font-headline font-medium text-2xl text-on-background dark:text-stone-100">Contrato digital</h2>
         </div>
         <p className="text-on-surface-variant dark:text-stone-400 text-sm">
           Revise os termos e assine digitalmente.
@@ -104,12 +103,12 @@ export function StepContract({ data, onChange, onNext, onBack }: Props) {
 
       <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-4 pb-4">
         {/* STEP: Preview simplificado do contrato */}
-        <div className="bg-white dark:bg-stone-900 p-4 rounded-xl border border-outline/10 dark:border-stone-700/20 text-xs leading-relaxed space-y-3">
+        <div className="bg-white dark:bg-stone-950 p-5 rounded-[18px] border border-surface-variant dark:border-stone-700/40 shadow-float-1 text-xs leading-relaxed space-y-3">
           <div className="text-center border-b border-stone-200 dark:border-stone-700 pb-3 mb-3">
-            <h3 className="text-sm font-bold text-on-surface dark:text-stone-100 uppercase tracking-wider">
+            <h3 className="font-headline font-medium text-sm text-on-background dark:text-stone-100 uppercase tracking-[0.14em]">
               Contrato de Prestação de Serviços
             </h3>
-            <p className="text-[10px] text-stone-400 uppercase tracking-widest mt-1">
+            <p className="text-[0.6rem] text-tertiary dark:text-ouro-suave font-extrabold uppercase tracking-[0.2em] mt-1">
               Acompanhamento Nutricional Personalizado
             </p>
           </div>
@@ -121,7 +120,7 @@ export function StepContract({ data, onChange, onNext, onBack }: Props) {
             <strong>CONTRATANTE:</strong> {data.nome || '—'}, CPF {data.cpf || '—'}, E-mail {data.email || '—'}
           </p>
 
-          <div className="bg-primary/5 dark:bg-emerald-500/5 p-2 rounded-lg">
+          <div className="bg-verde-nevoa/40 dark:bg-emerald-900/20 p-3 rounded-[12px] border border-ouro-suave/20">
             <p className="text-stone-600 dark:text-stone-400">
               <strong>PLANO:</strong> {selectedPlan.title} — {selectedPlan.price}
             </p>
@@ -144,29 +143,25 @@ export function StepContract({ data, onChange, onNext, onBack }: Props) {
 
         {/* STEP: Área de assinatura */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-2 ml-1 uppercase tracking-[0.16em]">
             Sua assinatura digital
           </label>
           <SignatureCanvas onSignatureChange={handleSignatureChange} />
         </div>
 
         {error && (
-          <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl">
-            <p className="text-red-600 dark:text-red-400 text-xs">{error}</p>
+          <div className="p-3 bg-error/5 border border-error/20 rounded-[14px]">
+            <p className="text-error text-xs font-semibold">{error}</p>
           </div>
         )}
       </div>
 
-      <div className="pt-4 flex-shrink-0 border-t border-outline/5 dark:border-stone-800 mt-2">
-        <button
+      <div className="pt-4 flex-shrink-0 border-t border-surface-variant/60 dark:border-stone-800 mt-2">
+        <BfButton
           type="button"
           onClick={handleSubmit}
           disabled={isSubmitting || !data.assinaturaBase64}
-          className={`w-full py-4 rounded-xl font-bold transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-2 ${
-            isSubmitting || !data.assinaturaBase64
-              ? 'bg-stone-200 dark:bg-stone-800 text-stone-400 cursor-not-allowed'
-              : 'bg-primary dark:bg-emerald-600 text-on-primary dark:text-white hover:bg-primary/90 dark:hover:bg-emerald-500'
-          }`}
+          data-cursor="Assinar"
         >
           {isSubmitting ? (
             <>
@@ -175,11 +170,11 @@ export function StepContract({ data, onChange, onNext, onBack }: Props) {
             </>
           ) : (
             <>
-              Assinar e Enviar Contrato
-              <span className="material-symbols-outlined text-lg">draw</span>
+              Assinar e enviar o contrato
+              <span aria-hidden="true" className="material-symbols-outlined text-lg">draw</span>
             </>
           )}
-        </button>
+        </BfButton>
       </div>
     </div>
   );

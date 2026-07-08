@@ -1,5 +1,6 @@
 import { useBooking } from '../../context/BookingContext';
 import type { BookingFormData } from '../../context/BookingContext';
+import { BfButton, BfBack } from './bfui';
 
 // ============================================================
 // STEP: Checkout — Resumo do plano + seleção de parcelamento
@@ -29,10 +30,8 @@ export function StepCheckout({ data, onChange, onNext, onBack }: Props) {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="mb-4 flex-shrink-0">
         <div className="flex items-center gap-2 mb-2">
-          <button onClick={onBack} className="p-1 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-colors">
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
-          </button>
-          <h2 className="text-2xl font-bold font-headline text-on-surface dark:text-stone-100">Checkout</h2>
+          <BfBack onClick={onBack} />
+          <h2 className="font-headline font-medium text-2xl text-on-background dark:text-stone-100">Checkout</h2>
         </div>
         <p className="text-on-surface-variant dark:text-stone-400 text-sm">
           Confira os detalhes do seu investimento.
@@ -41,24 +40,24 @@ export function StepCheckout({ data, onChange, onNext, onBack }: Props) {
 
       <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-5 pb-4">
         {/* STEP: Card do plano selecionado */}
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-emerald-500/10 dark:to-emerald-500/5 p-5 rounded-2xl border border-primary/20 dark:border-emerald-500/20">
+        <div className="bg-verde-nevoa/50 dark:bg-emerald-900/20 p-5 rounded-[20px] border border-ouro-suave/30">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-primary/20 dark:bg-emerald-500/20 rounded-xl flex items-center justify-center">
               <span className="material-symbols-outlined text-primary dark:text-emerald-400">star</span>
             </div>
             <div>
-              <h3 className="font-bold text-on-surface dark:text-stone-100">{selectedPlan.title}</h3>
+              <h3 className="font-headline font-medium text-on-background dark:text-stone-100">{selectedPlan.title}</h3>
               <p className="text-xs text-on-surface-variant dark:text-stone-400">{selectedPlan.description}</p>
             </div>
           </div>
-          <div className="text-3xl font-bold text-primary dark:text-emerald-400 font-headline">
+          <div className="font-headline font-medium text-3xl text-primary dark:text-emerald-400">
             {selectedPlan.price}
           </div>
         </div>
 
         {/* STEP: Seleção de parcelamento */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-2 ml-1 uppercase tracking-[0.16em]">
             Parcelamento via PIX
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -69,10 +68,10 @@ export function StepCheckout({ data, onChange, onNext, onBack }: Props) {
                   key={n}
                   type="button"
                   onClick={() => onChange({ parcelas: n })}
-                  className={`p-3 rounded-xl border-2 transition-all text-center ${
+                  className={`p-3 rounded-[16px] border transition-all text-center ${
                     data.parcelas === n
-                      ? 'border-primary bg-primary/5 dark:border-emerald-500 dark:bg-emerald-500/10'
-                      : 'border-outline/10 dark:border-stone-700/30 hover:border-primary/30'
+                      ? 'border-ouro-suave bg-verde-nevoa/50 dark:border-ouro-suave dark:bg-emerald-900/20'
+                      : 'border-surface-variant dark:border-stone-700/50 hover:border-ouro-suave/60'
                   }`}
                 >
                   <div className="text-lg font-bold text-on-surface dark:text-stone-100">{n}x</div>
@@ -86,7 +85,7 @@ export function StepCheckout({ data, onChange, onNext, onBack }: Props) {
         </div>
 
         {/* STEP: Resumo do pagamento */}
-        <div className="bg-stone-50 dark:bg-stone-800/50 p-4 rounded-xl border border-outline/5 dark:border-stone-700/20">
+        <div className="bg-creme-2 dark:bg-stone-800/50 p-4 rounded-[16px] border border-surface-variant/60 dark:border-stone-700/30">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-stone-500">Valor total</span>
             <span className="font-bold text-on-surface dark:text-stone-100">{selectedPlan.price}</span>
@@ -113,14 +112,10 @@ export function StepCheckout({ data, onChange, onNext, onBack }: Props) {
       </div>
 
       <div className="pt-4 flex-shrink-0 border-t border-outline/5 dark:border-stone-800 mt-2">
-        <button
-          type="button"
-          onClick={onNext}
-          className="w-full py-4 bg-primary dark:bg-emerald-600 text-on-primary dark:text-white rounded-xl font-bold hover:bg-primary/90 dark:hover:bg-emerald-500 transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-2"
-        >
-          Gerar Contrato
-          <span className="material-symbols-outlined text-lg">description</span>
-        </button>
+        <BfButton type="button" onClick={onNext} data-cursor="Contrato">
+          Gerar contrato
+          <span aria-hidden="true" className="material-symbols-outlined text-lg">description</span>
+        </BfButton>
       </div>
     </div>
   );

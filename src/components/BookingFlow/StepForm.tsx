@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useBooking } from '../../context/BookingContext';
 import type { BookingFormData } from '../../context/BookingContext';
+import { BfField, BfButton, BfBack } from './bfui';
 
 // ============================================================
 // STEP: Formulário de dados pessoais expandido
 // Nome, Email, WhatsApp, CPF, Data de Nascimento
+// (validação e máscaras intactas — apenas a pele migrou para
+// o kit bfui / Editorial Orgânico)
 // ============================================================
 
 interface Props {
@@ -56,84 +59,70 @@ export function StepForm({ data, onChange, onNext, onBack }: Props) {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="mb-4 flex-shrink-0">
         <div className="flex items-center gap-2 mb-2">
-          <button onClick={onBack} className="p-1 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-colors">
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
-          </button>
-          <h2 className="text-2xl font-bold font-headline text-on-surface dark:text-stone-100">Seus Dados</h2>
+          <BfBack onClick={onBack} />
+          <h2 className="font-headline font-medium text-2xl text-on-background dark:text-stone-100">Seus dados</h2>
         </div>
-        <p className="text-on-surface-variant dark:text-stone-400 text-sm">Preencha seus dados pessoais para o contrato.</p>
+        <p className="text-on-surface-variant dark:text-stone-400 text-sm font-light">Preencha os seus dados pessoais para o contrato.</p>
       </div>
 
       {selectedPlan && (
-        <div className="bg-white/10 dark:bg-black/20 p-3 rounded-lg mb-4 border border-white/10 dark:border-white/5 flex-shrink-0">
-          <p className="text-xs font-semibold text-primary dark:text-emerald-400 uppercase tracking-wider mb-1">Plano Selecionado</p>
-          <p className="font-bold text-on-surface dark:text-stone-100">{selectedPlan.title} — {selectedPlan.price}</p>
+        <div className="bg-verde-nevoa/50 dark:bg-emerald-900/20 p-3.5 rounded-[16px] mb-4 border border-ouro-suave/30 flex-shrink-0">
+          <p className="text-[0.6rem] font-extrabold text-tertiary dark:text-ouro-suave uppercase tracking-[0.18em] mb-1">Plano selecionado</p>
+          <p className="font-headline font-medium text-on-background dark:text-stone-100">{selectedPlan.title} — {selectedPlan.price}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col flex-grow overflow-hidden">
         <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-3 pb-2">
-          {/* Nome */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">Nome Completo</label>
-            <input type="text" value={data.nome}
-              onChange={(e) => onChange({ nome: e.target.value })}
-              placeholder="Seu nome completo"
-              className={`w-full p-3.5 rounded-xl border transition-all dark:bg-stone-800 dark:text-white text-sm ${errors.nome ? 'border-red-500 bg-red-50/30' : 'border-outline/20 focus:border-primary'}`}
-            />
-            {errors.nome && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.nome}</p>}
-          </div>
+          <BfField
+            label="Nome completo"
+            type="text"
+            value={data.nome}
+            onChange={(e) => onChange({ nome: e.target.value })}
+            placeholder="Seu nome completo"
+            error={errors.nome}
+          />
 
-          {/* Email */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">E-mail</label>
-            <input type="email" value={data.email}
-              onChange={(e) => onChange({ email: e.target.value })}
-              placeholder="exemplo@email.com"
-              className={`w-full p-3.5 rounded-xl border transition-all dark:bg-stone-800 dark:text-white text-sm ${errors.email ? 'border-red-500 bg-red-50/30' : 'border-outline/20 focus:border-primary'}`}
-            />
-            {errors.email && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.email}</p>}
-          </div>
+          <BfField
+            label="E-mail"
+            type="email"
+            value={data.email}
+            onChange={(e) => onChange({ email: e.target.value })}
+            placeholder="exemplo@email.com"
+            error={errors.email}
+          />
 
-          {/* WhatsApp */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">WhatsApp</label>
-            <input type="text" value={data.whatsapp}
-              onChange={(e) => onChange({ whatsapp: maskPhone(e.target.value) })}
-              placeholder="(11) 99999-9999"
-              className={`w-full p-3.5 rounded-xl border transition-all dark:bg-stone-800 dark:text-white text-sm ${errors.whatsapp ? 'border-red-500 bg-red-50/30' : 'border-outline/20 focus:border-primary'}`}
-            />
-            {errors.whatsapp && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.whatsapp}</p>}
-          </div>
+          <BfField
+            label="WhatsApp"
+            type="text"
+            value={data.whatsapp}
+            onChange={(e) => onChange({ whatsapp: maskPhone(e.target.value) })}
+            placeholder="(11) 99999-9999"
+            error={errors.whatsapp}
+          />
 
-          {/* CPF */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">CPF</label>
-            <input type="text" value={data.cpf}
-              onChange={(e) => onChange({ cpf: maskCPF(e.target.value) })}
-              placeholder="000.000.000-00"
-              maxLength={14}
-              className={`w-full p-3.5 rounded-xl border transition-all dark:bg-stone-800 dark:text-white text-sm ${errors.cpf ? 'border-red-500 bg-red-50/30' : 'border-outline/20 focus:border-primary'}`}
-            />
-            {errors.cpf && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.cpf}</p>}
-          </div>
+          <BfField
+            label="CPF"
+            type="text"
+            value={data.cpf}
+            onChange={(e) => onChange({ cpf: maskCPF(e.target.value) })}
+            placeholder="000.000.000-00"
+            maxLength={14}
+            error={errors.cpf}
+          />
 
-          {/* Data de Nascimento */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">Data de Nascimento (opcional)</label>
-            <input type="date" value={data.dataNascimento}
-              onChange={(e) => onChange({ dataNascimento: e.target.value })}
-              className="w-full p-3.5 rounded-xl border border-outline/20 focus:border-primary transition-all dark:bg-stone-800 dark:text-white text-sm"
-            />
-          </div>
+          <BfField
+            label="Data de nascimento (opcional)"
+            type="date"
+            value={data.dataNascimento}
+            onChange={(e) => onChange({ dataNascimento: e.target.value })}
+          />
         </div>
 
-        <div className="pt-4 flex-shrink-0 border-t border-outline/5 dark:border-stone-800 mt-2">
-          <button type="submit"
-            className="w-full py-4 bg-primary dark:bg-emerald-600 text-on-primary dark:text-white rounded-xl font-bold hover:bg-primary/90 dark:hover:bg-emerald-500 transition-all shadow-md active:scale-[0.98]"
-          >
-            Continuar para Triagem
-          </button>
+        <div className="pt-4 flex-shrink-0 border-t border-surface-variant/60 dark:border-stone-800 mt-2">
+          <BfButton type="submit" data-cursor="Continuar">
+            Continuar para a triagem
+          </BfButton>
         </div>
       </form>
     </div>

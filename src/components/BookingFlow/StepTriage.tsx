@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { BookingFormData } from '../../context/BookingContext';
+import { BfButton, BfBack } from './bfui';
 
 // ============================================================
 // STEP: Formulário de triagem — objetivos, saúde, rotina
@@ -56,20 +57,18 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="mb-4 flex-shrink-0">
         <div className="flex items-center gap-2 mb-2">
-          <button onClick={onBack} className="p-1 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-colors">
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
-          </button>
-          <h2 className="text-2xl font-bold font-headline text-on-surface dark:text-stone-100">Triagem Inicial</h2>
+          <BfBack onClick={onBack} />
+          <h2 className="font-headline font-medium text-2xl text-on-background dark:text-stone-100">Triagem inicial</h2>
         </div>
-        <p className="text-on-surface-variant dark:text-stone-400 text-sm">
-          Nos ajude a entender seu momento atual para personalizar seu atendimento.
+        <p className="text-on-surface-variant dark:text-stone-400 text-sm font-light">
+          Me ajude a entender o seu momento atual para personalizar o atendimento.
         </p>
       </div>
 
       <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-6 pb-4">
         {/* STEP: Objetivo */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-2 ml-1 uppercase tracking-[0.16em]">
             Qual seu principal objetivo?
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -78,10 +77,10 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
                 key={obj.id}
                 type="button"
                 onClick={() => onChange({ objetivo: obj.id })}
-                className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all text-left text-sm ${
+                className={`flex items-center gap-2 p-3 rounded-[16px] border transition-all text-left text-sm ${
                   data.objetivo === obj.id
-                    ? 'border-primary bg-primary/5 dark:border-emerald-500 dark:bg-emerald-500/10 text-primary dark:text-emerald-400'
-                    : 'border-outline/10 dark:border-stone-700/30 hover:border-primary/30'
+                    ? 'border-ouro-suave bg-verde-nevoa/50 dark:border-ouro-suave dark:bg-emerald-900/20 text-verde-profundo dark:text-emerald-400'
+                    : 'border-surface-variant dark:border-stone-700/50 hover:border-ouro-suave/60'
                 }`}
               >
                 <span className="material-symbols-outlined text-lg">{obj.icon}</span>
@@ -89,13 +88,13 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
               </button>
             ))}
           </div>
-          {errors.objetivo && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.objetivo}</p>}
+          {errors.objetivo && <p className="text-error font-semibold text-[10px] mt-1 ml-1">{errors.objetivo}</p>}
         </div>
 
         {/* STEP: Descrição do objetivo */}
         {data.objetivo && (
           <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">
+            <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-1.5 ml-1 uppercase tracking-[0.16em]">
               Descreva seu objetivo em poucas palavras (opcional)
             </label>
             <textarea
@@ -103,14 +102,14 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
               onChange={(e) => onChange({ descricaoObjetivo: e.target.value })}
               placeholder="Ex: Quero perder 10kg mantendo massa muscular..."
               rows={2}
-              className="w-full p-3 rounded-xl border border-outline/20 focus:border-primary dark:bg-stone-800 dark:text-white text-sm resize-none transition-all"
+              className="w-full p-3 rounded-[14px] border border-surface-variant focus:border-ouro-suave outline-none focus:ring-2 focus:ring-ouro-suave/40 dark:bg-stone-800 dark:text-white text-sm resize-none transition-all"
             />
           </div>
         )}
 
         {/* STEP: Condições de saúde */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-2 ml-1 uppercase tracking-[0.16em]">
             Condições de saúde relevantes
           </label>
           <div className="flex flex-wrap gap-2">
@@ -121,8 +120,8 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
                 onClick={() => toggleCondicao(c)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                   (data.condicoesSaude || []).includes(c)
-                    ? 'bg-primary/10 border-primary/30 text-primary dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-400'
-                    : 'border-outline/10 text-stone-500 hover:border-primary/20'
+                    ? 'bg-verde-nevoa/70 border-ouro-suave/50 text-verde-profundo dark:bg-emerald-900/30 dark:border-ouro-suave/50 dark:text-emerald-300'
+                    : 'border-surface-variant text-on-surface-variant hover:border-ouro-suave/50'
                 }`}
               >
                 {c}
@@ -133,7 +132,7 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
 
         {/* STEP: Medicamentos */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-1.5 ml-1 uppercase tracking-[0.16em]">
             Medicamentos em uso (opcional)
           </label>
           <input
@@ -141,13 +140,13 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
             value={data.medicamentos}
             onChange={(e) => onChange({ medicamentos: e.target.value })}
             placeholder="Ex: Metformina, Levotiroxina..."
-            className="w-full p-3 rounded-xl border border-outline/20 focus:border-primary dark:bg-stone-800 dark:text-white text-sm transition-all"
+            className="w-full p-3 rounded-[14px] border border-surface-variant focus:border-ouro-suave outline-none focus:ring-2 focus:ring-ouro-suave/40 dark:bg-stone-800 dark:text-white text-sm transition-all"
           />
         </div>
 
         {/* STEP: Rotina alimentar */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-2 ml-1 uppercase tracking-[0.16em]">
             Como é sua rotina alimentar hoje?
           </label>
           <div className="space-y-2">
@@ -160,10 +159,10 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
                 key={opt.id}
                 type="button"
                 onClick={() => onChange({ rotinaAlimentar: opt.id })}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left text-sm ${
+                className={`w-full flex items-center gap-3 p-3 rounded-[16px] border transition-all text-left text-sm ${
                   data.rotinaAlimentar === opt.id
-                    ? 'border-primary bg-primary/5 dark:border-emerald-500 dark:bg-emerald-500/10'
-                    : 'border-outline/10 dark:border-stone-700/30 hover:border-primary/30'
+                    ? 'border-ouro-suave bg-verde-nevoa/50 dark:border-ouro-suave dark:bg-emerald-900/20'
+                    : 'border-surface-variant dark:border-stone-700/50 hover:border-ouro-suave/60'
                 }`}
               >
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
@@ -175,12 +174,12 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
               </button>
             ))}
           </div>
-          {errors.rotina && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.rotina}</p>}
+          {errors.rotina && <p className="text-error font-semibold text-[10px] mt-1 ml-1">{errors.rotina}</p>}
         </div>
 
         {/* STEP: Exercícios */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2 ml-1 uppercase">
+          <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-2 ml-1 uppercase tracking-[0.16em]">
             Pratica exercícios físicos?
           </label>
           <div className="space-y-2">
@@ -193,10 +192,10 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
                 key={opt.id}
                 type="button"
                 onClick={() => onChange({ praticaExercicio: opt.id })}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left text-sm ${
+                className={`w-full flex items-center gap-3 p-3 rounded-[16px] border transition-all text-left text-sm ${
                   data.praticaExercicio === opt.id
-                    ? 'border-primary bg-primary/5 dark:border-emerald-500 dark:bg-emerald-500/10'
-                    : 'border-outline/10 dark:border-stone-700/30 hover:border-primary/30'
+                    ? 'border-ouro-suave bg-verde-nevoa/50 dark:border-ouro-suave dark:bg-emerald-900/20'
+                    : 'border-surface-variant dark:border-stone-700/50 hover:border-ouro-suave/60'
                 }`}
               >
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
@@ -208,13 +207,13 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
               </button>
             ))}
           </div>
-          {errors.exercicio && <p className="text-red-500 text-[10px] mt-1 ml-1">{errors.exercicio}</p>}
+          {errors.exercicio && <p className="text-error font-semibold text-[10px] mt-1 ml-1">{errors.exercicio}</p>}
         </div>
 
         {/* STEP: Detalhes do exercício */}
         {data.praticaExercicio && data.praticaExercicio !== 'nao' && (
           <div>
-            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 ml-1 uppercase">
+            <label className="block text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave mb-1.5 ml-1 uppercase tracking-[0.16em]">
               Quais exercícios pratica? (opcional)
             </label>
             <input
@@ -222,20 +221,16 @@ export function StepTriage({ data, onChange, onNext, onBack }: Props) {
               value={data.detalhesExercicio}
               onChange={(e) => onChange({ detalhesExercicio: e.target.value })}
               placeholder="Ex: Musculação, corrida, pilates..."
-              className="w-full p-3 rounded-xl border border-outline/20 focus:border-primary dark:bg-stone-800 dark:text-white text-sm transition-all"
+              className="w-full p-3 rounded-[14px] border border-surface-variant focus:border-ouro-suave outline-none focus:ring-2 focus:ring-ouro-suave/40 dark:bg-stone-800 dark:text-white text-sm transition-all"
             />
           </div>
         )}
       </div>
 
-      <div className="pt-4 flex-shrink-0 border-t border-outline/5 dark:border-stone-800 mt-2">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          className="w-full py-4 bg-primary dark:bg-emerald-600 text-on-primary dark:text-white rounded-xl font-bold hover:bg-primary/90 dark:hover:bg-emerald-500 transition-all shadow-md active:scale-[0.98]"
-        >
-          Continuar para Checkout
-        </button>
+      <div className="pt-4 flex-shrink-0 border-t border-surface-variant/60 dark:border-stone-800 mt-2">
+        <BfButton type="button" onClick={handleSubmit} data-cursor="Continuar">
+          Continuar para o checkout
+        </BfButton>
       </div>
     </div>
   );

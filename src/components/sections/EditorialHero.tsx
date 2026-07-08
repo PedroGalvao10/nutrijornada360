@@ -173,11 +173,11 @@ export function EditorialHero({ ctaText = 'Começar minha jornada', ctaVariant }
               </span>
             </h1>
 
-            <motion.p {...rise(1.15)}>
+            <motion.div {...rise(1.15)}>
               <div className="mt-8 text-lg md:text-xl font-light text-stone-300 max-w-xl leading-relaxed">
                 <TextEffect text="O primeiro passo para o emagrecimento consciente não começa no prato. Começa na mente. Descubra um método onde você não precisa brigar com seu próprio corpo." preset="blur" delay={0.3} />
               </div>
-            </motion.p>
+            </motion.div>
 
             <motion.div {...rise(1.35)}>
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-start">

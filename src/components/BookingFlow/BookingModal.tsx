@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useBooking, INITIAL_FORM_DATA } from '../../context/BookingContext';
 import type { BookingFormData } from '../../context/BookingContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -57,35 +57,39 @@ export function BookingModal() {
   const [step, setStep] = useState<BookingStep>('preview');
   const [formData, setFormData] = useState<BookingFormData>({ ...INITIAL_FORM_DATA });
 
-  // STEP: Determina step inicial ao abrir com base no estado ativo
-  useEffect(() => {
-    if (!isOpen) return;
-
-    if (activeBookingToken) {
-      // Tem booking ativo — retoma do ponto onde parou
-      switch (activeBookingStatus) {
-        case 'pending_review':
-          setStep('waiting');
-          break;
-        case 'approved':
-          setStep('payment');
-          break;
-        case 'rejected':
-          setStep('rejected');
-          break;
-        case 'paid':
-          setStep('complete');
-          break;
-        default:
-          setStep('waiting');
+  // STEP: Determina step inicial ao abrir com base no estado ativo.
+  // Ajuste de estado durante o render (padrão react.dev) — dispara
+  // apenas na transição fechado→aberto, sem cascata de effects.
+  const [wasOpen, setWasOpen] = useState(false);
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+    if (isOpen) {
+      if (activeBookingToken) {
+        // Tem booking ativo — retoma do ponto onde parou
+        switch (activeBookingStatus) {
+          case 'pending_review':
+            setStep('waiting');
+            break;
+          case 'approved':
+            setStep('payment');
+            break;
+          case 'rejected':
+            setStep('rejected');
+            break;
+          case 'paid':
+            setStep('complete');
+            break;
+          default:
+            setStep('waiting');
+        }
+      } else if (selectedPlan) {
+        // Tem plano pré-selecionado — pula direto para form
+        setStep('form');
+      } else {
+        setStep('preview');
       }
-    } else if (selectedPlan) {
-      // Tem plano pré-selecionado — pula direto para form
-      setStep('form');
-    } else {
-      setStep('preview');
     }
-  }, [isOpen, activeBookingToken, activeBookingStatus, selectedPlan]);
+  }
 
   // STEP: Handler de atualização parcial do form data
   const updateFormData = useCallback((partial: Partial<BookingFormData>) => {
@@ -109,16 +113,16 @@ export function BookingModal() {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Backdrop — véu verde-profundo, coerente com a marca */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={closeBooking}
-        className="absolute inset-0 bg-stone-900/40 dark:bg-black/60 backdrop-blur-md"
+        className="absolute inset-0 bg-verde-profundo/40 dark:bg-black/60 backdrop-blur-md"
       />
 
-      {/* Modal Card */}
+      {/* Modal Card — superfície sólida creme (Editorial Orgânico) */}
       <motion.div
         role="dialog"
         aria-modal="true"
@@ -126,26 +130,27 @@ export function BookingModal() {
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative antigravity-glass bg-white/10 dark:bg-black/60 w-full max-w-2xl h-[92vh] max-h-[800px] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-white/20 dark:border-white/5"
+        className="relative bg-background dark:bg-stone-900 w-full max-w-2xl h-[92vh] max-h-[800px] rounded-[32px] shadow-float-2 overflow-hidden flex flex-col border border-white/60 dark:border-stone-800"
       >
-        {/* Header: Progress Bar + Close */}
+        {/* Header: etiqueta da etapa + progresso ouro */}
         <div className="flex-shrink-0 px-8 pt-6 pb-2">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest">
+            <span className="inline-flex items-center gap-2.5 text-[0.62rem] font-extrabold text-tertiary dark:text-ouro-suave uppercase tracking-[0.24em]">
+              <span aria-hidden="true" className="inline-block w-6 h-px bg-ouro-suave" />
               {STEP_LABELS[step]}
             </span>
             <button
               onClick={closeBooking}
               aria-label="Fechar agendamento"
-              className="w-8 h-8 rounded-full bg-white/50 dark:bg-stone-800/50 backdrop-blur-sm flex items-center justify-center text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors"
+              className="no-glass w-8 h-8 rounded-full bg-creme-2 dark:bg-stone-800 flex items-center justify-center text-on-surface-variant/60 hover:text-verde-profundo dark:hover:text-white transition-colors"
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
           </div>
-          {/* Progress bar */}
-          <div className="w-full h-1 bg-stone-200/50 dark:bg-stone-700/30 rounded-full overflow-hidden">
+          {/* Progress bar — fio dourado */}
+          <div className="w-full h-1 bg-surface-variant/60 dark:bg-stone-700/30 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-primary dark:bg-emerald-500 rounded-full"
+              className="h-full bg-ouro-suave rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -262,10 +267,12 @@ export function BookingModal() {
         </div>
 
         {/* Brand Footer */}
-        <div className="flex-shrink-0 p-4 bg-stone-100/50 dark:bg-stone-800/30 flex justify-center border-t border-outline/5">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400">
+        <div className="flex-shrink-0 p-4 bg-creme-2 dark:bg-stone-800/40 flex justify-center items-center gap-3 border-t border-surface-variant/60 dark:border-stone-800">
+          <span aria-hidden="true" className="inline-block w-6 h-px bg-ouro-suave/60" />
+          <span className="text-[0.6rem] font-extrabold uppercase tracking-[0.22em] text-on-surface-variant/60 dark:text-stone-500">
             NutriJornada 360º — Mariana Bermudes
           </span>
+          <span aria-hidden="true" className="inline-block w-6 h-px bg-ouro-suave/60" />
         </div>
       </motion.div>
     </div>
