@@ -7,6 +7,7 @@ import Logistica from './Logistica';
 import { ContainerScroll } from '../components/ui/container-scroll-animation';
 import ArticlesSection from '../components/ArticlesSection';
 import { EditorialHero } from '../components/sections/EditorialHero';
+import { OcorpoComoSistema } from '../components/sections/OcorpoComoSistema';
 import { MissionSection } from '../components/sections/MissionSection';
 import { ManifestoSection } from '../components/sections/ManifestoSection';
 import { ParallaxBreak } from '../components/sections/ParallaxBreak';
@@ -62,6 +63,9 @@ export default function Home() {
 
       {/* Beat imersivo — manifesto em partículas */}
       <ManifestoSection />
+
+      {/* DNA Interativo — como o método funciona (continua o beat dark) */}
+      <OcorpoComoSistema />
 
       {/* Quebra cinematográfica — janela que se abre no scroll */}
       <ParallaxBreak />

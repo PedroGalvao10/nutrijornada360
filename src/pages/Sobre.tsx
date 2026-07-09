@@ -3,7 +3,6 @@ import { SobreHero } from '../components/sections/sobre/SobreHero';
 import { SobreTrajetoria } from '../components/sections/sobre/SobreTrajetoria';
 import { SobreAntesDepois } from '../components/sections/sobre/SobreAntesDepois';
 import { SobreHistoria } from '../components/sections/sobre/SobreHistoria';
-import { SobrePublicacoes } from '../components/sections/sobre/SobrePublicacoes';
 
 // ============================================================
 // Sobre — página na direção "Editorial Orgânico".
@@ -21,7 +20,6 @@ export default function Sobre() {
       <SobreTrajetoria />
       <SobreAntesDepois />
       <SobreHistoria />
-      <SobrePublicacoes />
     </div>
   );
 }

@@ -25,7 +25,7 @@ export function OcorpoComoSistema() {
       <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-transparent to-stone-950 z-0 pointer-events-none" />
 
       <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 w-full">
-        {/* Cabeçalho Editorial */}
+        {/* Cabeçalho — método, não repete a tese (já dita no beat anterior) */}
         <div className="max-w-3xl mb-24 md:mb-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -35,14 +35,13 @@ export function OcorpoComoSistema() {
           >
             <p className="text-[0.75rem] md:text-[0.85rem] tracking-[0.24em] uppercase font-bold text-ouro-suave mb-6 flex items-center gap-4">
               <span className="w-12 h-px bg-ouro-suave/50" />
-              Filosofia 360º
+              Como conectamos os pontos
             </p>
-            <h2 className="font-headline font-medium text-4xl md:text-6xl lg:text-[5.5rem] leading-[1.05] tracking-[-0.02em] text-white">
-              O corpo humano é um <br className="hidden md:block" />
-              <em className="italic text-verde-nevoa/90">sistema integrado.</em>
+            <h2 className="font-headline font-medium text-3xl md:text-5xl leading-[1.1] tracking-[-0.02em] text-white">
+              Três camadas, <em className="italic text-verde-nevoa/90">um único plano.</em>
             </h2>
             <div className="mt-8 text-lg md:text-2xl font-light text-stone-300 max-w-2xl leading-relaxed">
-              <TextEffect text="Ignorar sua rotina, suas emoções e seu contexto é o motivo pelo qual as dietas falham. Nosso acompanhamento conecta os pontos." preset="blur" delay={0.2} />
+              <TextEffect text="Cada etapa do seu acompanhamento existe para eliminar o achismo — da leitura do seu histórico até o ajuste contínuo da rota." preset="blur" delay={0.2} />
             </div>
           </motion.div>
         </div>
